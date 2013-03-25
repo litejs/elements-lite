@@ -1,0 +1,5 @@
+ in CSS, you can apply this rules:
+ #content {
+	 margin:10; /*any browser*/
+	 *margin:15; /*ie 6*/
+	 _margin:20; /*ie 6 and 7*/
