@@ -1,0 +1,24 @@
+<script src="../elements-lite.js"></script>
+<body>
+<script>
+var el = El("ul.test").to(document.body)
+
+
+El("li", "2").to(el)
+var el4 = El("li", "4").to(el)
+
+el4.addClass("li-4")
+
+var ul2 = El("ul").append([ El("li").append("4.1"), El("li").append(["4.2"]) ])
+ul2.to(el4)
+
+El("li", "1").to(el, true)
+El("li", "3").to(el, el4)
+El("li", 6).to(el)
+El("li", "5").after(el.find(".li-4"))
+
+</script>
+
+</body>
+
+

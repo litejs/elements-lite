@@ -2,227 +2,219 @@
 
 
 /*
-* @version  0.0.1
+* @version  0.0.2
 * @author   Lauri Rooden - https://github.com/litejs/el-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
 
 
 
-!function(win/* window */, doc, P/* String "prototype" */) {
-
-	//** Page builder
-
+!function(win, doc, P) {
 	var elCache = {}
 	, fnCache = {}
+	, nativeEl = (win.HTMLElement || win.Element || El)[P]
 	, el_re = /([.#:])([-\w]+)/g
-	, a = {
-		/* TODO: Extend El api
-		* add El.siblings( [selector ] )
-		* add El.children( [selector ] )
-		* add El.invoke
-		* https://github.com/WebReflection/dom4#dom4
-		*/
-		append: function(e, b/*efore*/) {
-			var t = this
-			if (e) {
-				if (typeof e == "string" || typeof e == "number") e = El.text(e)
-				else if ( !("nodeType" in e) && "length" in e ) {
-					// document.createDocumentFragment is unsupported in IE5.5
-					// f = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
-					var len = e.length, i = 0, f = doc.createDocumentFragment()
-					while (i<len) t.append.call(f, e[i++])
-					e = f
-				}
 
-				if (e.nodeType) t.insertBefore(e, b ? (b===true ? t.firstChild : typeof b == "number" ? t.childNodes[b] : b) : null)
-				e.append_hook && e.append_hook()
-				//"child_hook" in t && t.child_hook()
-			}
-			return t
-		},
 
-		after: function(e, b) {
-			e.parentNode.append(this, b ? e : e.nextSibling)
-			return this
-		},
 
-		to: function(e, b) {
-			e.append(this, b)
-			return this
-		},
-
-		hasClass: function(n) {
-			return (" "+this.className+" ").indexOf(" "+n+" ") > -1
-		},
-
-		addClass: function(n) {
-			var t = this
-			t.className += t.className == "" ? n : t.hasClass(n) ? "" : " " + n
-			return t
-		},
-
-		rmClass: function(n) {
-			var t = this
-			t.className = (" "+t.className+" ").replace(" "+n+" "," ").trim()
-			return t
-		},
-
-		toggleClass: function(n, s) {
-			if (s === void 0) s = !this.hasClass(n) // arguments.length == 1
-			this[ s ? "addClass" : "rmClass" ](n)
-			return s
-		},
-
-		empty: function() {
-			var t = this, n
-			while (n = t.firstChild) t.kill.call(n)
-			return t
-		},
-
-		kill: function() {
-			var t = this
-			if (t.parentNode) t.parentNode.removeChild(t)
-			Event.removeAll(t)
-			t.empty && t.empty()
-			t.kill_hook && t.kill_hook()
-			return t
-		},
-
-		on: function(ev, fn) {
-			Event.add(this, ev, fn)
-			return this
-		},
-
-		non: function(ev, fn) {
-			Event.remove(this, ev, fn)
-			return this
-		},
-
-		set: function(args) {
-			var t = this, k = typeof args, v
-			if (args) {
-				if (k == "string" || k == "number" || args.nodeType || "length" in args) t.append(args)
-				else for (k in args) 
-				/** hasOwnProperty
-				if (args.hasOwnProperty(arg)) 
-				//*/
-				{
-					v = args[k]
-					/* Starting in Internet Explorer 9 standards mode, Internet Explorer 10 standards mode, 
-					* and win8_appname_long apps, you cannot identify the browser as Internet Explorer 
-					* by testing for the equivalence of the vertical tab (\v) and the "v". 
-					* In earlier versions, the expression "\v" === "v" returns true. 
-					* In Internet Explorer 9 standards mode, Internet Explorer 10 standards mode, 
-					* and win8_appname_long apps, the expression returns false.
-					*/
-					if (k == "class" || k == "className") t.addClass(v)
-					else if (typeof v == "string") {
-						/*
-						* IE5-7 doesn't set styles and removes events when you try to set them.
-						*/
-						t.setAttribute(k, v)
-
-						/*
-						* there are bug in ie<9 where changed 'name' param not accepted on form submit
-						*/
-	/*
-	* The JScript engine used in IE doesn't recognize vertical tabulation character
-	* http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
-	* oldIE = "\v" == "v"
-	* oldIE = /msie [\w.]+/i.exec(navigator.userAgent)
-	*
-	* The documentMode is an IE only property, supported in IE8+.
-	* Note: If no !DOCTYPE is specified, IE8 renders the page in IE5 mode!
-	*/
-
-						if (k == "name" && "\v" == "v") {
-							//IE8 and below also support ('<P>')
-							t.mergeAttributes(doc.createElement("<INPUT name='" + k + "'/>"), false)
-						}
-
-						// http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
-						// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
-					}
-					else if (!v) t.removeAttribute(k)
-					else t[k] = v
-				}
-			}
-			return t
-		},
-
-		find: doc.querySelector ?
-			function(sel) {
-				// IE8 don't support :disabled
-				return this.querySelector(sel)
-			} :
-			function(sel) {
-				var el
-				, i = 0
-				, rules = ["_"]
-				, tag = sel.replace(el_re, function(_, o, s) {
-						rules.push( o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" : o == "#" ? "_.id=='"+s+"'" : "_."+s )
-						return ""
-					}) || "*"
-				, els = this.getElementsByTagName(tag)
-				, fn = rules.join("&&").fn()
-
-				while (el = els[i++]) if (fn(el)) return el.to ? el : extend(el)
-			}
-	}
-
-	function El(n/*ame */, a/*rgs */) {
+	function El(name, args) {
 		var el, pre = {}
-		n = n.replace(el_re, function(_, o, s) {
+		name = name.replace(el_re, function(_, o, s) {
 			pre[ o == "." ? (o = "class", (pre[o] && (s = pre[o]+" "+s)), o) : o == "#" ? "id" : s ] = s
 			return ""
 		}) || "div"
 
-		el = (elCache[n] || (elCache[n] = doc.createElement(n))).cloneNode(true).set(pre)
+		el = (elCache[name] || (elCache[name] = doc.createElement(name))).cloneNode(true).set(pre)
 
-		return fnCache[n] && fnCache[n](el, a) || el.set(a)
+		return fnCache[name] && fnCache[name](el, args) || el.set(args)
 	}
 
 
 	function extend(e, p, k) {
 		if (e) {
-			if (!p) p = El[P]
+			p = El[P]
 			for (k in p) e[k] = p[k]
 		}
 		return e
 	}
 
-	doc.head = doc.head || doc.getElementsByTagName("head")[0]
 
-	/**
-	 * For IE 6-7
-	 * IE8 exposes Element
-	 */
-	if (!(El[P] = extend( (win.HTMLElement || win.Element || {})[P] , a))) {
-		var c = doc.createElement
-		
-		El[P] = a
+	if (nativeEl === El[P]) {
+		/*
+		* IE 6-7
+		*/
 
-		extend(doc.head)
+		var create = doc.createElement
+		doc.createElement = function(name) {return extend(create(name))}
+
 		extend(doc.body)
 	
-		doc.createElement = function(n) {return extend(c(n))}
-
-		// remove background image flickers on hover in IE6
-		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){} @*/
-		// You could also use CSS
-		// html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
+		/*
+		* Remove background image flickers on hover in IE6
+		*
+		* You could also use CSS
+		* html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
+		*/
+		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
+	
+	El[P] = nativeEl	
+
+
+	/* TODO: Extend El api
+	* add El.siblings( [selector ] )
+	* add El.children( [selector ] )
+	* add El.invoke
+	* https://github.com/WebReflection/dom4#dom4
+	*/
+	nativeEl.append = function(e, before) {
+		var t = this
+		if (e) {
+			if (typeof e == "string" || typeof e == "number") e = El.text(e)
+			else if ( !("nodeType" in e) && "length" in e ) {
+				/*
+				* document.createDocumentFragment is unsupported in IE5.5
+				* f = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
+				*/
+				var len = e.length, i = 0, f = doc.createDocumentFragment()
+				while (i<len) t.append.call(f, e[i++])
+				e = f
+			}
+
+			if (e.nodeType) t.insertBefore(e, before ? (before===true ? t.firstChild : typeof before == "number" ? t.childNodes[before] : before) : null)
+			e.append_hook && e.append_hook()
+			//"child_hook" in t && t.child_hook()
+		}
+		return t
+	}
+
+	nativeEl.after = function(e, before) {
+		e.parentNode.append(this, before ? e : e.nextSibling)
+		return this
+	}
+
+	nativeEl.to = function(e, before) {
+		e.append(this, before)
+		return this
+	}
+
+	nativeEl.hasClass = function(name) {
+		return (" "+this.className+" ").indexOf(" "+name+" ") > -1
+	}
+
+	nativeEl.addClass = function(name) {
+		var t = this
+		t.className += t.className == "" ? name : t.hasClass(name) ? "" : " " + name
+		return t
+	}
+
+	nativeEl.rmClass = function(name) {
+		var t = this
+		t.className = (" "+t.className+" ").replace(" "+name+" "," ").trim()
+		return t
+	}
+
+	nativeEl.toggleClass = function(name, s) {
+		if (s === void 0) s = !this.hasClass(name) // arguments.length == 1
+		this[ s ? "addClass" : "rmClass" ](name)
+		return s
+	}
+
+	nativeEl.empty = function() {
+		var t = this, n
+		while (n = t.firstChild) t.kill.call(n)
+		return t
+	}
+
+	nativeEl.kill = function() {
+		var t = this
+		if (t.parentNode) t.parentNode.removeChild(t)
+		Event.removeAll(t)
+		t.empty && t.empty()
+		t.kill_hook && t.kill_hook()
+		return t
+	}
+
+	nativeEl.on = function(ev, fn) {
+		Event.add(this, ev, fn)
+		return this
+	}
+
+	nativeEl.non = function(ev, fn) {
+		Event.remove(this, ev, fn)
+		return this
+	}
+
+	nativeEl.set = function(args) {
+		var t = this, k = typeof args, v
+		if (args) {
+			if (k == "string" || k == "number" || args.nodeType || "length" in args) t.append(args)
+			else for (k in args) 
+			/** hasOwnProperty
+			if (args.hasOwnProperty(arg)) 
+			//*/
+			{
+				v = args[k]
+				if (k == "class" || k == "className") t.addClass(v)
+				else if (typeof v == "string") {
+					/*
+					* IE5-7 doesn't set styles and removes events when you try to set them.
+					*/
+					t.setAttribute(k, v)
+
+					/*
+					* there are bug in IE<9 where changed 'name' param not accepted on form submit
+					* The JScript engine used in IE doesn't recognize vertical tabulation character
+					* oldIE = "\v" == "v"
+					* 
+					* IE8 and below also support document.createElement('<P>')
+					*
+					* http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
+					* http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
+					*/
+
+					if (k == "name" && "\v" == "v") {
+						t.mergeAttributes(doc.createElement("<INPUT name='" + k + "'/>"), false)
+					}
+
+				}
+				else if (!v) t.removeAttribute(k)
+				else t[k] = v
+			}
+		}
+		return t
+	}
+
+	nativeEl.find = doc.querySelector ?
+		function(sel) {
+			// IE8 don't support :disabled
+			return this.querySelector(sel)
+		} :
+		function(sel) {
+			var el
+			, i = 0
+			, rules = ["_"]
+			, tag = sel.replace(el_re, function(_, o, s) {
+					rules.push( o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" : o == "#" ? "_.id=='"+s+"'" : "_."+s )
+					return ""
+				}) || "*"
+			, els = this.getElementsByTagName(tag)
+			, fn = rules.join("&&").fn()
+
+			while (el = els[i++]) if (fn(el)) return el.to ? el : extend(el)
+		}
+
+
 
 	El.get = function(el) {
 		if (typeof el == "string") el = doc.getElementById(el)
 		return el && el.to ? el : extend(el)
 	}
 
-	El.cache = function(n, el, custom) {
-		elCache[n] = typeof el == "string" ? El(el) : el
+	El.cache = function(name, el, custom) {
+		elCache[name] = typeof el == "string" ? El(el) : el
 		if (custom) {
-			fnCache[n] = custom
+			fnCache[name] = custom
 		}
 	}
 	El.cache.el = elCache
@@ -231,9 +223,6 @@
 		return doc.createTextNode(str)
 	}
 	win.El = El
-	//*/
-
-
 
 }(this, document, "prototype")
 
