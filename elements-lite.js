@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.0.2
+* @version  0.0.3
 * @author   Lauri Rooden - https://github.com/litejs/el-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -29,36 +29,6 @@
 		return fnCache[name] && fnCache[name](el, args) || el.set(args)
 	}
 
-
-	function extend(e, p, k) {
-		if (e) {
-			p = El[P]
-			for (k in p) e[k] = p[k]
-		}
-		return e
-	}
-
-
-	if (nativeEl === El[P]) {
-		/*
-		* IE 6-7
-		*/
-
-		var create = doc.createElement
-		doc.createElement = function(name) {return extend(create(name))}
-
-		extend(doc.body)
-	
-		/*
-		* Remove background image flickers on hover in IE6
-		*
-		* You could also use CSS
-		* html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
-		*/
-		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
-	}
-	
-	El[P] = nativeEl	
 
 
 	/* TODO: Extend El api
@@ -204,6 +174,37 @@
 			while (el = els[i++]) if (fn(el)) return el.to ? el : extend(el)
 		}
 
+
+	function extend(e, p, k) {
+		if (e) {
+			p = El[P]
+			for (k in p) e[k] = p[k]
+		}
+		return e
+	}
+
+
+
+	if (nativeEl === El[P]) {
+		/*
+		* IE 6-7
+		*/
+
+		var create = doc.createElement
+		doc.createElement = function(name) {return extend(create(name))}
+
+		extend(doc.body)
+
+		/*
+		* Remove background image flickers on hover in IE6
+		*
+		* You could also use CSS
+		* html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
+		*/
+		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
+	}
+
+	El[P] = nativeEl
 
 
 	El.get = function(el) {
