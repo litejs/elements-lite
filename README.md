@@ -8,13 +8,13 @@ Elements
 
 DOM builder for browser.
 Download [compressed][1] 
-(2641 bytes or 1154 bytes gzipped)
+(2718 bytes or 1202 bytes gzipped)
 or [uncompressed][2] source.
 
 
 ### Usage
 
-`<script src=sha-lite.js></script>` should place inside body.
+`<script src=elements-lite.js></script>` should place inside body.
 
 ```javascript
 El("div", "test").to(document.body)

@@ -2,13 +2,14 @@
 <html><head>
 </head>
 <body>
+<script src="fn.js"></script>
 <script src="../elements-lite.js"></script>
 <script>
 var el = El("ul.test").to(document.body)
 
 
 El("li", "2").to(el)
-var el4 = El("li", "4").to(el)
+var el4 = El("li#el-4", "4").to(el)
 
 el4.addClass("li-4")
 
@@ -19,6 +20,14 @@ El("li", "1").to(el, true)
 El("li", "3").to(el, el4)
 El("li", 6).to(el)
 El("li", "5").after(el.find(".li-4"))
+var el7 = El("li", 7).to(el)
+
+el7.append([
+	" " + (el.find("#el-4") === el4),
+	" " + (el._find("#el-4") === el4),
+	" " + (el.find(".li-4") === el4),
+	" " + (el._find(".li-4") === el4)
+])
 
 </script>
 

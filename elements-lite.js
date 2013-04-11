@@ -2,8 +2,8 @@
 
 
 /*
-* @version  0.0.3
-* @author   Lauri Rooden - https://github.com/litejs/el-lite
+* @version  0.0.4
+* @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
 
@@ -12,8 +12,9 @@
 !function(win, doc, P) {
 	var elCache = {}
 	, fnCache = {}
-	, nativeEl = (win.HTMLElement || win.Element || El)[P]
+	, proto = (win.HTMLElement || win.Element || El)[P]
 	, el_re = /([.#:])([-\w]+)/g
+	, id_re = /^#([-\w]+)$/
 
 
 
@@ -37,7 +38,32 @@
 	* add El.invoke
 	* https://github.com/WebReflection/dom4#dom4
 	*/
-	nativeEl.append = function(e, before) {
+
+	/*
+	* How elements.js extends the DOM
+	* -------------------------------
+	*
+	* All DOM extensions on the element are available by default.
+	*
+	* In browsers that does not support adding methods to prototype of native objects 
+	* such as HTMLElement or Element, document.createElement will be overrided
+	* to extend created elements. El.get() and element.find will extend
+	* returned elements.
+	*/
+
+
+
+	/*
+	* ### element.append( content, [ before ] ) -> element
+	*
+	* - **content** `element || Array || String || Number`
+	* - **before** `optional`
+	*     - true - Insert content to the beginning of element
+	*     - element - Insert content before specified element
+	*     - Number - Insert content before nth child
+	*/
+
+	proto.append = function(e, before) {
 		var t = this
 		if (e) {
 			if (typeof e == "string" || typeof e == "number") e = El.text(e)
@@ -51,52 +77,52 @@
 				e = f
 			}
 
-			if (e.nodeType) t.insertBefore(e, before ? (before===true ? t.firstChild : typeof before == "number" ? t.childNodes[before] : before) : null)
+			if (e.nodeType) t.insertBefore(e, before ? (before === true ? t.firstChild : typeof before == "number" ? t.childNodes[before] : before) : null)
 			e.append_hook && e.append_hook()
 			//"child_hook" in t && t.child_hook()
 		}
 		return t
 	}
 
-	nativeEl.after = function(e, before) {
+	proto.after = function(e, before) {
 		e.parentNode.append(this, before ? e : e.nextSibling)
 		return this
 	}
 
-	nativeEl.to = function(e, before) {
+	proto.to = function(e, before) {
 		e.append(this, before)
 		return this
 	}
 
-	nativeEl.hasClass = function(name) {
+	proto.hasClass = function(name) {
 		return (" "+this.className+" ").indexOf(" "+name+" ") > -1
 	}
 
-	nativeEl.addClass = function(name) {
+	proto.addClass = function(name) {
 		var t = this
 		t.className += t.className == "" ? name : t.hasClass(name) ? "" : " " + name
 		return t
 	}
 
-	nativeEl.rmClass = function(name) {
+	proto.rmClass = function(name) {
 		var t = this
 		t.className = (" "+t.className+" ").replace(" "+name+" "," ").trim()
 		return t
 	}
 
-	nativeEl.toggleClass = function(name, s) {
-		if (s === void 0) s = !this.hasClass(name) // arguments.length == 1
+	proto.toggleClass = function(name, s) {
+		if (arguments.length == 1) s = !this.hasClass(name)
 		this[ s ? "addClass" : "rmClass" ](name)
 		return s
 	}
 
-	nativeEl.empty = function() {
+	proto.empty = function() {
 		var t = this, n
 		while (n = t.firstChild) t.kill.call(n)
 		return t
 	}
 
-	nativeEl.kill = function() {
+	proto.kill = function() {
 		var t = this
 		if (t.parentNode) t.parentNode.removeChild(t)
 		Event.removeAll(t)
@@ -105,17 +131,17 @@
 		return t
 	}
 
-	nativeEl.on = function(ev, fn) {
+	proto.on = function(ev, fn) {
 		Event.add(this, ev, fn)
 		return this
 	}
 
-	nativeEl.non = function(ev, fn) {
+	proto.non = function(ev, fn) {
 		Event.remove(this, ev, fn)
 		return this
 	}
 
-	nativeEl.set = function(args) {
+	proto.set = function(args) {
 		var t = this, k = typeof args, v
 		if (args) {
 			if (k == "string" || k == "number" || args.nodeType || "length" in args) t.append(args)
@@ -155,24 +181,33 @@
 		return t
 	}
 
-	nativeEl.find = doc.querySelector ?
+	/*
+	* Expose slow find for testing
+	*/
+
+	proto._find = function(sel) {
+		/*
+		* Fast case
+		*/
+		if (id_re.test(sel)) return El.get(RegExp.$1)
+		var el
+		, i = 0
+		, rules = ["_"]
+		, tag = sel.replace(el_re, function(_, o, s) {
+				rules.push( o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" : o == "#" ? "_.id=='"+s+"'" : "_."+s )
+				return ""
+			}) || "*"
+		, els = this.getElementsByTagName(tag)
+		, fn = rules.join("&&").fn()
+
+		while (el = els[i++]) if (fn(el)) return el.to ? el : extend(el)
+	}
+
+	proto.find = doc.querySelector ?
 		function(sel) {
 			// IE8 don't support :disabled
 			return this.querySelector(sel)
-		} :
-		function(sel) {
-			var el
-			, i = 0
-			, rules = ["_"]
-			, tag = sel.replace(el_re, function(_, o, s) {
-					rules.push( o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" : o == "#" ? "_.id=='"+s+"'" : "_."+s )
-					return ""
-				}) || "*"
-			, els = this.getElementsByTagName(tag)
-			, fn = rules.join("&&").fn()
-
-			while (el = els[i++]) if (fn(el)) return el.to ? el : extend(el)
-		}
+		} : proto._find
 
 
 	function extend(e, p, k) {
@@ -185,7 +220,7 @@
 
 
 
-	if (nativeEl === El[P]) {
+	if (proto === El[P]) {
 		/*
 		* IE 6-7
 		*/
@@ -204,12 +239,12 @@
 		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
 
-	El[P] = nativeEl
+	El[P] = proto
 
 
-	El.get = function(el) {
-		if (typeof el == "string") el = doc.getElementById(el)
-		return el && el.to ? el : extend(el)
+	El.get = function(id) {
+		if (typeof id == "string") id = doc.getElementById(id)
+		return id && id.to ? id : extend(id)
 	}
 
 	El.cache = function(name, el, custom) {
