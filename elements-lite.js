@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.0.4
+* @version  0.1.0
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -14,7 +14,6 @@
 	, fnCache = {}
 	, proto = (win.HTMLElement || win.Element || El)[P]
 	, el_re = /([.#:])([-\w]+)/g
-	, id_re = /^#([-\w]+)$/
 
 
 
@@ -124,10 +123,10 @@
 
 	proto.kill = function() {
 		var t = this
-		if (t.parentNode) t.parentNode.removeChild(t)
-		Event.removeAll(t)
-		t.empty && t.empty()
+		t.parentNode && t.parentNode.removeChild(t)
+		Event.removeAll && Event.removeAll(t)
 		t.kill_hook && t.kill_hook()
+		t.empty && t.empty()
 		return t
 	}
 
@@ -186,10 +185,6 @@
 	*/
 
 	proto._find = function(sel) {
-		/*
-		* Fast case
-		*/
-		if (id_re.test(sel)) return El.get(RegExp.$1)
 		var el
 		, i = 0
 		, rules = ["_"]

@@ -23,7 +23,7 @@ update-readme:
 	        "$$(cat $(FILE) | wc -c) bytes" \
 	        "$(SIZE) bytes" \
 	        "$(SIZE_GZ) bytes"
-	@sed -i '/ bytes or .* gzipped/s/.*/($(SIZE) bytes or $(SIZE_GZ) bytes gzipped)/' README.md
+	@sed -i '/ bytes, .* gzipped/s/.*/($(SIZE) bytes, $(SIZE_GZ) bytes gzipped)/' README.md
 
 update-version:
 	@sed -i '/@version/s/[^ ]*$$/$(VERSION)/' $(FILE)
