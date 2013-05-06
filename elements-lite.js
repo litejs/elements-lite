@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.1.1
+* @version  0.1.2
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -76,7 +76,7 @@
 				e = f
 			}
 
-			if (e.nodeType) t.insertBefore(e, before === true ? t.firstChild : typeof before == "number" ? t.childNodes[before] : before || null)
+			if (e.nodeType) t.insertBefore(e, (before === true ? t.firstChild : typeof before == "number" ? t.childNodes[before] : before) || null)
 			e.append_hook && e.append_hook()
 			//"child_hook" in t && t.child_hook()
 		}
