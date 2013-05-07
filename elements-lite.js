@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.1.2
+* @version  0.1.3
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -13,14 +13,17 @@
 	var elCache = {}
 	, fnCache = {}
 	, proto = (win.HTMLElement || win.Element || El)[P]
-	, el_re = /([.#:])([-\w]+)/g
+	, el_re = /([.#:[])([-\w]+)(?:=([-\w]+)])?/g
 
 
 
 	function El(name, args) {
 		var el, pre = {}
-		name = name.replace(el_re, function(_, o, s) {
-			pre[ o == "." ? (o = "class", (pre[o] && (s = pre[o]+" "+s)), o) : o == "#" ? "id" : s ] = s
+		name = name.replace(el_re, function(_, o, s, val) {
+			pre[
+				o == "." ? (o = "class", (pre[o] && (s = pre[o]+" "+s)), o) :
+				o == "#" ? "id" :
+				s ] = val || s
 			return ""
 		}) || "div"
 
@@ -153,7 +156,7 @@
 				if (k == "class" || k == "className") t.addClass(v)
 				else if (typeof v == "string") {
 					/*
-					* IE5-7 doesn't set styles and removes events when you try to set them.
+					* Note: IE5-7 doesn't set styles and removes events when you try to set them.
 					*/
 					t.setAttribute(k, v)
 
@@ -188,20 +191,31 @@
 		var el
 		, i = 0
 		, rules = ["_"]
-		, tag = sel.replace(el_re, function(_, o, s) {
-				rules.push( o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" : o == "#" ? "_.id=='"+s+"'" : "_."+s )
+		, tag = sel.replace(el_re, function(_, o, s, v) {
+				rules.push(
+					o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" :
+					o == "#" ? "_.id=='"+s+"'" :
+					"_.getAttribute(['"+s+"'])"+(v?"=='"+v+"'":"")
+				)
 				return ""
 			}) || "*"
 		, els = this.getElementsByTagName(tag)
 		, fn = rules.join("&&").fn()
+		, src = rules.join("&&")
 
-		while (el = els[i++]) if (fn(el)) return el.to ? el : extend(el)
+		while (el = els[i++]) {
+			if (fn(el)) {
+				return el.to ? el : extend(el)
+			}
+		}
 	}
 
 	proto.find = doc.querySelector ?
 		function(sel) {
-			// IE8 don't support :disabled
-			return this.querySelector(sel)
+			/*
+			* Note: IE8 don't support :disabled
+			*/
+			return document.querySelector(sel)
 		} : proto._find
 
 

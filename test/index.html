@@ -17,12 +17,14 @@ var ul2 = El("ul").append([ El("li").append("4.1"), El("li").append(["4.2"]) ])
 ul2.to(el4)
 
 El("li", "1").to(el, true)
-El("li", "3").to(el, el4)
+var el3 = El("li[data-id=li-123]", "3").to(el, el4)
 El("li", 6).to(el)
 El("li", "5").after(el.find(".li-4"))
 var el7 = El("li", 7).to(el)
 
 el7.append([
+	" " + (el.find("[data-id=li-123]") === el3),
+	" " + (el._find("[data-id=li-123]") === el3),
 	" " + (el.find("#el-4") === el4),
 	" " + (el._find("#el-4") === el4),
 	" " + (el.find(".li-4") === el4),
