@@ -1,0 +1,113 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	height: 100%;
+	font-size:100%;
+	line-height:1.125em;
+	-webkit-text-size-adjust: none;
+	-webkit-touch-callout: none;
+}
+
+button {
+ 	vertical-align: middle;
+
+	-webkit-user-select: none;
+	 -khtml-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+
+	width:auto;overflow:visible; /* Fixes extra padding issue in IE6/7 */
+}
+
+input {
+	vertical-align: middle;
+}
+
+/* for IE8 */
+:focus {
+	outline: none;
+}
+
+/* for FireFox */
+::-moz-focus-inner {
+	border: 0;
+	padding: 0;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+a, button, .hand {
+	cursor: pointer; *cursor: hand; /* Alternate cursor for IE */
+}
+img {
+	border: 0;
+}
+
+
+/*
+global classes
+*/
+.hidden {
+	display: none;
+}
+.transparent{
+	opacity:0 !important;
+	filter:alpha(opacity=0) !important;
+}
+.abs {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+.absr {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+.rel {
+	position:relative;
+	height:100%;
+}
+.max {
+	width:100%;
+	height:100%;
+	overflow: hidden;
+}
+.reset {
+	border:0;
+	margin:0;
+	padding:0;
+}
+.noselect {
+  -webkit-user-select: none;
+   -khtml-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+/* for slider knob */
+.anim {
+  -webkit-transition: all 0.3s ease-out;
+     -moz-transition: all 0.3s ease-out;
+       -o-transition: all 0.3s ease-out;
+          transition: all 0.3s ease-out;
+
+  -webkit-transform: translate3d(0, 0, 0); /* for remove first flicker on iphone */
+}
+
+
+/* Prevent the text contents of draggable elements from being selectable. */
+[draggable=true] {
+	-webkit-user-drag: element;
+	 -khtml-user-drag: element;
+
+	-webkit-user-select: none;
+	 -khtml-user-select: none;
+	   -moz-user-select: none;
+	     -o-user-select: none;
+	        user-select: none;
+}
+

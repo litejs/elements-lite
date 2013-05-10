@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html><head>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" type="text/css" href="common.css">
 </head>
 <body>
 <script src="fn.js"></script>
@@ -8,7 +10,7 @@
 var el = El("ul.test").to(document.body)
 
 
-El("li", "2").to(el)
+El("li", "2. Screen: " + screen.width + "x" + screen.height).to(el)
 var el4 = El("li#el-4", "4").to(el)
 
 el4.addClass("li-4")

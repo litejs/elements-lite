@@ -8,6 +8,10 @@
 */
 
 
+/* TODO: find ways for automated testing
+* http://www.browserscope.org/user/tests/howto
+*/
+
 
 !function(win, doc, P) {
 	var elCache = {}
