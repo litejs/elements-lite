@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.1.3
+* @version  0.1.4
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -157,10 +157,15 @@
 			//*/
 			{
 				v = args[k]
-				if (k == "class" || k == "className") t.addClass(v)
+				// El uses class
+				if (k == "class") t.addClass(v)
 				else if (typeof v == "string") {
 					/*
 					* Note: IE5-7 doesn't set styles and removes events when you try to set them.
+					*
+					* in IE6, a label with a for attribute linked to a select list 
+					* will cause a re-selection of the first option instead of just giving focus.
+					* http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
 					*/
 					t.setAttribute(k, v)
 
@@ -189,6 +194,9 @@
 
 	/*
 	* Expose slow find for testing
+	*
+	* TODO: look another way
+	* http://ajaxian.com/archives/creating-a-queryselector-for-ie-that-runs-at-native-speed
 	*/
 
 	proto._find = function(sel) {
@@ -219,7 +227,7 @@
 			/*
 			* Note: IE8 don't support :disabled
 			*/
-			return document.querySelector(sel)
+			return this.querySelector(sel)
 		} : proto._find
 
 

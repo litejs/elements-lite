@@ -1,27 +1,40 @@
+* {
+	font: inherit;
+	color: inherit;
+	vertical-align: baseline;
+
+	/*
+	 * Use W3C Box Model by default for IE6-7
+	 * Traditional Box Model box-sizing: border-box;
+	 */
+	-webkit-box-sizing: content-box; /* Chrome4+, Safary3.1+ */
+	   -moz-box-sizing: content-box; /* Firefox */
+	        box-sizing: content-box; /* IE8+, Chrome10+, Safary5+, Opera8.5+ */
+}
+
+/* force a vertical scrollbar to prevent a jumpy page */
+html {
+	overflow-y: scroll;
+	-webkit-text-size-adjust: 100%;
+}
+
 html, body {
+	height: 100%;
+	font-size: 100%;
+	line-height: 1.25;
+}
+
+.min-height {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+}
+
+html, body, a img, .reset {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	height: 100%;
-	font-size:100%;
-	line-height:1.125em;
-	-webkit-text-size-adjust: none;
-	-webkit-touch-callout: none;
-}
-
-button {
- 	vertical-align: middle;
-
-	-webkit-user-select: none;
-	 -khtml-user-select: none;
-	   -moz-user-select: none;
-	        user-select: none;
-
-	width:auto;overflow:visible; /* Fixes extra padding issue in IE6/7 */
-}
-
-input {
-	vertical-align: middle;
+	outline: 0;
 }
 
 /* for IE8 */
@@ -39,23 +52,62 @@ a {
 	color: inherit;
 	text-decoration: none;
 }
+
 a, button, .hand {
-	cursor: pointer; *cursor: hand; /* Alternate cursor for IE */
+	cursor:pointer;*cursor:hand; /* Alternate cursor for IE */
 }
-img {
-	border: 0;
+
+/*
+ * Firefox default is: b, strong { font-weight: bolder; }
+ * and it does not render well with some fonts (Helvetica Neue on macs for example).
+ */
+b, strong, th {
+	font-weight: bold;
 }
+
+button, .noselect {
+	-webkit-user-select: none;
+	 -khtml-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+}
+
+button {
+	width:auto;overflow:visible; /* Fixes extra padding issue in IE6/7 */
+}
+
+button, input, select {
+	vertical-align: middle;
+}
+
+/* tables still need cellspacing="0" in the markup */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+
+/*
+ * Most browsers don't print background images by default.
+ * Use foreground images as sprites
+ */
 
 
 /*
 global classes
 */
-.hidden {
+.hide {
 	display: none;
 }
-.transparent{
+.transparent {
 	opacity:0 !important;
 	filter:alpha(opacity=0) !important;
+}
+.max {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 }
 .abs {
 	position: absolute;
@@ -68,24 +120,13 @@ global classes
 	right: 0px;
 }
 .rel {
-	position:relative;
-	height:100%;
+	position: relative;
+	height: 100%;
 }
-.max {
-	width:100%;
-	height:100%;
+.nowrap {
 	overflow: hidden;
-}
-.reset {
-	border:0;
-	margin:0;
-	padding:0;
-}
-.noselect {
-  -webkit-user-select: none;
-   -khtml-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* for slider knob */
@@ -97,6 +138,43 @@ global classes
 
   -webkit-transform: translate3d(0, 0, 0); /* for remove first flicker on iphone */
 }
+
+
+
+
+
+
+
+
+/*
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    contenteditable attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that are clearfixed.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ *
+ * THANKS: Nicolas Gallagher - micro clearfix http://nicolasgallagher.com/micro-clearfix-hack/
+ */
+.cf:before,
+.cf:after {
+	content: " ";   /* 1 */
+	display: table; /* 2 */
+}
+.cf:after {
+	clear: both;
+}
+/* Trigger hasLayout and contain floats in IE 6/7 */
+.cf {
+	*zoom: 1;
+}
+/* you could use the overflow method, but it’s not universally ideal */
+
+
+
+
+
 
 
 /* Prevent the text contents of draggable elements from being selectable. */

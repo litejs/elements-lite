@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "description": "DOM buildel for browser",
   "main": "elements-lite.js",
