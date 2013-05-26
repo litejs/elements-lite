@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.1.5
+* @version  0.1.6
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -105,7 +105,7 @@
 		* http://jsperf.com/regexp-indexof-perf/32
 		* return (" "+this.className+" ").indexOf(" "+name+" ") > -1
 		*/
-		return RegExp("\b" + name + "\b").test(this.className)
+		return RegExp("\\b" + name + "\\b").test(this.className)
 	}
 
 	proto.addClass = function(name) {
