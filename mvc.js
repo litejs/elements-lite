@@ -84,6 +84,9 @@
 			}
 			return t
 		},
+		set: function(args, silent) {
+			this.each(function(item){item.set(args, silent)})
+		},
 		remove: function(item) {
 			var self = this
 			if (item.lists.remove(self) > -1) {
@@ -158,7 +161,7 @@
 	}
 	
 	Filter.prototype = {
-		test: Fn.True,
+		test: True,
 		str: "all",
 		subset: function(target) {
 			// TODO:2011-11-07:lauriro:Find better way to compare filters.
