@@ -1,4 +1,13 @@
 
+
+
+/*
+* @version  0.1.9
+* @author   Lauri Rooden - https://github.com/litejs/elements-lite
+* @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
+*/
+
+
 !function(w) {
   var lastSize, lastOrient
 	, b = document.body

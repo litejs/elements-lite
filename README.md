@@ -1,6 +1,6 @@
 
-[1]: https://raw.github.com/litejs/elements-lite/master/min.js
-[2]: https://raw.github.com/litejs/elements-lite/master/elements-lite.js
+[1]: https://raw.github.com/litejs/elements-lite/master/min.elements.js
+[2]: https://raw.github.com/litejs/elements-lite/master/elements.js
 
 
 Elements
