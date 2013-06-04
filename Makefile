@@ -5,13 +5,12 @@ wc        = $(shell wc -c <"$(1)")
 
 
 define COMPILE
-	# Call Google Closure Compiler: $(1) -> $(2)
 	@curl -s \
 		    --data-urlencode 'output_info=compiled_code' \
 				--data-urlencode 'output_format=text' \
 				--data-urlencode 'js_code@$(1)' \
 				'http://closure-compiler.appspot.com/compile' > $(2)
-	@echo "# Compiled from $$(wc -c <"$(1)") to $$(wc -c <"$(2)") bytes"
+	@echo "# Compiled $(1) -> $(2) from $$(wc -c <"$(1)") to $$(wc -c <"$(2)") bytes"
 endef
 
 define TOGGLE
@@ -22,25 +21,27 @@ endef
 
 NAME=$(call read_conf,name)
 FILE=$(call read_conf,main)
-MIN=$(FILE:.js=.min.js)
 VERSION=$(call read_conf,version)
+MIN=min.$(FILE)
 
-SETUPS = mvc.min.js
+LIST = responsive mvc
+SETUPS = $(foreach x,$(LIST),min.$(x).js)
 
 .PHONY: test
 
-all: update-version $(MIN) $(SETUPS) test update-readme
+all: $(MIN) $(SETUPS) test update-readme
+	# Setups: $(SETUPS)
 
 
-%.min.js: %.js
-	# Build $@ from $*.js
+min.%.js: %.js package.json
+	@sed -i '/@version/s/[^ ]*$$/$(VERSION)/' $*.js
 	$(call COMPILE,$*.js,$@)
 
 
 
 update-readme: SIZE=$(shell cat $(MIN) | wc -c)
 update-readme: SIZE_GZ=$(shell gzip -c $(MIN) | wc -c)
-update-readme:
+update-readme: $(FILE)
 	@printf "Original Size %s Compiled Size %s or %s gzipped\n" \
 	        "$$(cat $(FILE) | wc -c) bytes" \
 	        "$(SIZE) bytes" \
@@ -50,8 +51,6 @@ update-readme:
 update-readme-from-source:
 	@sed -e '/\/\*/,/\*\//!d' -e 's,[ /]*\*[ /]\?,,' -e 's/^@/    @/' $(FILE) > README.md
 
-update-version:
-	@sed -i '/@version/s/[^ ]*$$/$(VERSION)/' $(FILE)
 
 update-tests:
 	@printf "$$(cat test/html.tpl)" "$$(for file in test/*.liquid; do printf '\n\n\n<script type="text/liquid">\n%s\n</script>' "$$(cat $$file)"; done)" > test/test.html

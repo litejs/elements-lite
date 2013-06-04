@@ -8,7 +8,7 @@ Elements
 
 DOM builder for browser.
 Download [compressed][1] 
-(2741 bytes, 1224 bytes gzipped)
+(2741 bytes, 1219 bytes gzipped)
 or [uncompressed][2] source.
 
 
