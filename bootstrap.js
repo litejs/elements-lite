@@ -35,7 +35,7 @@ xhr.q = []
 
 function load(files, cb) {
 	if (typeof files == "string") files = [files];
-	for (var len = files.length, res = [];len--;) function(i) {
+	for (var len = files.length, res = [];len--;) !function(i) {
 		xhr("GET", files[i], function(str) {
 			res[i] = str;
 			if (!--len) {
@@ -51,5 +51,6 @@ function load(files, cb) {
 * Function.prototype.bind is most missing fn
 * http://kangax.github.io/es5-compat-table/
 */
-load( Function.prototype.bind ? "m.js" : ["up.js","m.js"])
+Function.prototype.bind || _load.unshift("up.js")
+load(_load)
 

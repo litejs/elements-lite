@@ -2,22 +2,18 @@
 
 
 /*
-* @version  0.1.9
+* @version  0.1.10
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
 
 
 
+!function(root) {
 
 
-!function(exports, Fn) {
 
-	Array.from = function(a) {
-		for (var b=[], c=a.length; c--;) b[c] = a[c]
-		return b
-	}
-	Array.indexFor = function(arr, el, fn) {
+	function indexFor(arr, el, fn) {
 		var o
 		, i = 0
 		, l = arr.length
@@ -25,9 +21,9 @@
 		if (fn && l > 0 && fn(el, arr[l-1]) < 1) {
 			while (i<l) fn(el, arr[o=(i+l)>>1]) < 0 ? l=o : i=o+1
 		}
-
 		return l
 	}
+
 	var Model = Init.extend(Fn.Events, {
 		init: function(data) {
 			var t = this
@@ -43,29 +39,23 @@
 				changed.push(arg)
 			}
 			if (!silent && changed.length) {
-				t.emit("change", changed)
+				t.emit("change", changed, silent)
 			}
 			return changed
 		},
 		get: function(name) {
 			return this.data[name]
+		},
+		destroy: function(options) {
+			var t = this
+			, arr = t.lists
+			, len = arr.length
+
+			for (;len > 0;) arr[--len].remove(t)
+
+			t.trigger("destroy", options);
 		}
 	}).cache(true, function(a){return a[0]["id"]})
-
-	Model.merge = function(cur, next, path, changed) {
-		path = path || ""
-		changed = changed || []
-
-		var key, val
-		for (key in next) if (next.hasOwnProperty(key) && cur[key] !== next[key]) {
-			val = next[key]
-			changed.push(path+key)
-			if (val === null) delete cur[key]
-			else if (typeof val == "object" && Object.keys(val).length && typeof cur[key] == "object") Model.merge(cur[key], val, path+key+".", changed)
-			else cur[key] = val
-		}
-		return changed
-	}
 
 	var List = Init.extend(Fn.Items, Fn.Events, {
 		init: function(name) {
@@ -79,7 +69,7 @@
 			item instanceof t.model || (item = t.model(data), item.set(data, true))
 			if (item.lists.indexOf(t) == -1) {
 				item.lists.push(t)
-				pos = pos !== void 0 ? pos : Array.indexFor(t.items, item, t.sortFn)
+				pos = pos !== void 0 ? pos : indexFor(t.items, item, t.sortFn)
 				t.items.splice(pos , 0, item)
 				t.emit("add", item, pos)
 			}
@@ -175,30 +165,25 @@
 
 	List.Filter = Filter.cache(true)
 
-	exports.Model = Model
-	exports.List = List
+	root.Model = Model
+	root.List = List
 
-}(this, Fn)
+	Model.merge = function(cur, next, path, changed) {
+		path = path || ""
+		changed = changed || []
+
+		var key, val
+		for (key in next) if (next.hasOwnProperty(key) && cur[key] !== next[key]) {
+			val = next[key]
+			changed.push(path+key)
+			if (val === null) delete cur[key]
+			else if (typeof val == "object" && Object.keys(val).length && typeof cur[key] == "object") Model.merge(cur[key], val, path+key+".", changed)
+			else cur[key] = val
+		}
+		return changed
+	}
+
+}(this)
 
 
-/** Tests
-!function(){
-	var test = new TestCase("Model");
-
-	var sortedList = List.extend({sortFn: function(a, b){return a.get("id") - b.get("id")}});
-	var list = sortedList("test");
-
-	list.add({id:1})
-	list.add({id:3})
-	list.add({id:2})
-	list.add({id:3})
-
-	test.compare(
-	  list.pluck("id").join(",")
-	, "1,2,3"
-	, "List.add");
-
-	test.done();
-}()
-//*/
 
