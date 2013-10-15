@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.1.12
+* @version  0.1.13
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -22,12 +22,14 @@
 
 
 	function El(name, args) {
-		var el, pre = {}
+		var el
+		, pre = {}
 		name = name.replace(el_re, function(_, o, s, val) {
 			pre[
 				o == "." ? (o = "class", (pre[o] && (s = pre[o]+" "+s)), o) :
 				o == "#" ? "id" :
-				s ] = val || s
+				s 
+			] = val || s
 			return ""
 		}) || "div"
 
@@ -79,7 +81,12 @@
 				* f = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
 				*/
 				
-				for (var len = e.length, i = 0, f = doc.createDocumentFragment(); i<len;) t.append.call(f, e[i++]);
+				for (
+					var len = e.length
+					, i = 0
+					, f = doc.createDocumentFragment();
+					i < len
+					; ) t.append.call(f, e[i++]);
 				e = f
 			}
 
@@ -221,8 +228,7 @@
 				return ""
 			}) || "*"
 		, els = this.getElementsByTagName(tag)
-		, fn = rules.join("&&").fn()
-		, src = rules.join("&&")
+		, fn = Function("_", "return " + rules.join("&&"))
 
 		while (el = els[i++]) {
 			if (fn(el)) {

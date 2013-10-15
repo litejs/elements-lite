@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.1.12
+* @version  0.1.13
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
