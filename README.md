@@ -3,7 +3,7 @@
 [2]: https://raw.github.com/litejs/elements-lite/master/elements.js
 
 
-    @version    0.1.11
+    @version    0.1.12
     @date       2013-10-15
     @stability  1 - Experimental
 
@@ -13,7 +13,7 @@ Elements
 
 DOM builder for browser.
 Download [compressed][1] 
-(2740 bytes, 1220 bytes gzipped)
+(2771 bytes, 1229 bytes gzipped)
 or [uncompressed][2] source.
 
 
