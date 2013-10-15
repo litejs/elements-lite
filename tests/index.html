@@ -16,6 +16,20 @@
 var el = El("ul.test").to(document.body)
 
 
+
+
+function View() {
+
+}
+
+View.prototype = {
+render: function(){}
+}
+
+
+
+
+
 El("li", "2. Screen: " + screen.width + "x" + screen.height).to(el)
 var el4 = El("li#el-4", "4").to(el)
 

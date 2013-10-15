@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.1.10
+* @version  0.1.11
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -17,7 +17,7 @@
 	var elCache = {}
 	, fnCache = {}
 	, proto = (root.HTMLElement || root.Element || El)[P]
-	, el_re = /([.#:[])([-\w]+)(?:=([-\w]+)])?/g
+	, el_re = /([.#:[])([-\w]+)(?:=([-\w]+)])?]?/g
 
 
 
@@ -211,7 +211,7 @@
 				rules.push(
 					o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" :
 					o == "#" ? "_.id=='"+s+"'" :
-					"_.getAttribute(['"+s+"'])"+(v?"=='"+v+"'":"")
+					"_.getAttribute('"+s+"')"+(v?"=='"+v+"'":"")
 				)
 				return ""
 			}) || "*"

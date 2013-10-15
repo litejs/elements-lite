@@ -1,4 +1,4 @@
-
+# $< isn't quite portable (IIRC, bsdmake has the meaning of $^ and $< exactly swapped to what gmake uses)
 
 
 read_conf = $(shell sed '/"$(1)":/!d;s///;s/[ 	,"]//g' package.json)
@@ -8,6 +8,7 @@ MAIN      = $(call read_conf,main)
 VERSION   = $(call read_conf,version)
 ALL      := min.$(MAIN)
 CUSTOM   :=
+DATE      = $(shell date +%F)
 
 
 
@@ -37,29 +38,32 @@ endef
 -include *.mk
 
 
-ALL += $(foreach x,$(CUSTOM),min.$(x).js)
+# Reset the default goal.
+.DEFAULT_GOAL :=
 
-
-$(foreach x, $(CUSTOM), $(eval $(call CUSTOM_TARGET,$(x)) ))
-
-
-.PHONY: test
+.PHONY: help test clean
 
 #- Build commands are:
 #- 
 #-    all             Build everything
 #-    test            Run tests
+#-    clean           Remove untracked files
 #- 
 help:
-	@sed -n "/^#- /s///p" Makefile
+	@sed -n "/^#- /s///p" $(MAKEFILE_LIST)
 
+clean:
+	@git clean -xdf
+
+
+
+ALL += $(foreach x,$(CUSTOM),min.$(x).js)
+$(foreach x, $(CUSTOM), $(eval $(call CUSTOM_TARGET,$(x)) ))
 
 all: $(ALL) test update-readme
-	# Setups: $(CUSTOM)
 
 
 min.%.js: %.js package.json
-	# target min.%.js
 	@sed -i '/@version/s/[^ ]*$$/$(VERSION)/' $*.js
 	$(call COMPILE,$*.js,$@)
 
@@ -71,7 +75,9 @@ min.%.js: %.js package.json
 	@cat $@
 
 
-update-readme: $(MAIN)
+update-readme:: $(MAIN) package.json
+	@sed -i '/@version/s/[^ ]*$$/$(VERSION)/' README.md
+	@sed -i '/@date/s/[^ ]*$$/$(DATE)/' README.md
 	@sed -i "/ bytes, .* gzipped/s/.*/($$(wc -c <min.$(MAIN)) bytes, $$(gzip -c min.$(MAIN) | wc -c) bytes gzipped)/" README.md
 
 update-readme-from-source:
