@@ -1,25 +1,36 @@
 {
-	"name": "elements-lite",
-	"version": "0.1.13",
-	"license": "MIT",
-	"description": "DOM buildel for browser",
-	"main": "elements.js",
-	"author": "Lauri Rooden <lauri@rooden.ee>",
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/litejs/elements-lite.git"
-	},
-	"bugs": {
-		"url": "https://github.com/litejs/elements-lite/issues"
-	},
-	"keywords": [
-		"browser",
-		"elements",
-		"DOM",
-		"litejs"
-	],
-	"scripts": {
-		"test": "node tests/run.js"
-	},
-	"readmeFilename": "README.md"
+  "name": "elements-lite",
+  "version": "0.1.14",
+  "license": "MIT",
+  "description": "DOM buildel for browser",
+  "main": "elements.js",
+  "author": "Lauri Rooden <lauri@rooden.ee>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/litejs/elements-lite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/litejs/elements-lite/issues"
+  },
+  "keywords": [
+    "browser",
+    "elements",
+    "DOM",
+    "litejs"
+  ],
+  "scripts": {
+    "build": "node node_modules/buildman/index.js --all",
+    "travis-test": "istanbul cover ./tests/run.js && (coveralls < coverage/lcov.info || exit 0)",
+    "test": "node tests/run.js"
+  },
+  "readmeFilename": "README.md",
+  "buildman": {
+    "min.elements.js": "elements.js",
+    "min.bootstrap.js": "bootstrap.js",
+    "min.responsive.js": "responsive.js"
+  },
+  "devDependencies": {
+    "testman": ">=0.0.11",
+    "buildman": ">=0.1.0"
+  }
 }
