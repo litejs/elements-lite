@@ -34,7 +34,7 @@
     "responsive-min.js": "responsive.js"
   },
   "testling": {
-    "files": "tests/run.js",
+    "files": "tests/run-browser.js",
     "browsers": [
       "ie/6..10",
       "ff/3",
