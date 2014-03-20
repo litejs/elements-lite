@@ -49,6 +49,7 @@ require("testman")
 		equal(getString(el.append(h2)), "<div><h2></h2></div>").
 		anyOf(getString(h2.append(select)),	[ '<h2><select id="id2" disabled="disabled" class="cl2"></select></h2>'
 		     					, '<h2><select disabled="disabled" class="cl2" id="id2"></select></h2>'
+							, '<h2><select id="id2" class="cl2" disabled="disabled"></select></h2>'
 		     					]).
 
 		equal(el.find("#id2"), select).
