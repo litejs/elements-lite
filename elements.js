@@ -4,8 +4,8 @@
 /*
 * @version  0.1.15
 * @date     2014-03-20
-* @author   Lauri Rooden - https://github.com/litejs/elements-lite
-* @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
+* @author   Lauri Rooden <lauri@rooden.ee>
+* @license  MIT License
 */
 
 
@@ -307,7 +307,7 @@
 	}
 	root.El = El
 
-}(this, document, "prototype")
+}(window, document, "prototype")
 
 
 

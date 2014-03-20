@@ -10,21 +10,75 @@
   font-size: 1.5em;
 }
 </style>
-<script src="fn.js"></script>
-<script src="../elements-lite.js"></script>
+<script src="../../functional-lite/index.js"></script>
+<script src="../../date-format-lite/date-format.js"></script>
+<script src="../../liquid-filters-lite/liquid-filters-lite.js"></script>
+<script src="../elements.js"></script>
+<script src="../haml.js"></script>
+<script id="index" type="text/haml">
+:template test
+ .test
+  a#button1.link1.link2[href="#A link"][title=Link] A Link
+  h3
+   .div DIV
+
+:template li-row
+ li
+
+.index
+</script>
 <script>
+
+// navigator.userLanguage for IE, navigator.language for others
+var lang = navigator.language || navigator.userLanguage;
+// http://stackoverflow.com/questions/3084675/internationalization-in-javascript
+// http://stackoverflow.com/questions/9640630/javascript-i18n-internationalization-frameworks-libraries-for-client-side-use
+
+
+function i18n() {
+	i18n.current = i18n.en;
+}
+
+i18n.en = {
+	date: "%a, %d %b %Y %H:%M:%S %z",
+	name: "Name {date|lang}"
+}
+
+i18n.et = {
+	date: "%Y %H:%M:%S %z",
+	name: "Nimi {date|lang:'et'}"
+}
+
+Date.prototype.lang = function(lng) {
+	return this.format( (i18n[lng]||i18n.en).date )
+}
+
+String.prototype.lang = function(lng) {
+	var str = _lng.current[lng] || _lng.main[lng] || lng
+	return str
+}
+
+El.prototype.render = function(data) {
+	var tags = this.getElementsByTagName("*")
+	console.log("render", this)
+	var len = tags.length
+	while (len--) {
+		var key = tags[len].getAttribute("data-i18n")
+		if (key) {
+			var lang = tags[len].getAttribute("lang")
+			console.log("render replace", key)
+			tags[len].innerHTML = (i18n[ lang || "en"][key] || "").format(data)
+		}
+	}
+}
+
+El.render("index")
+
 var el = El("ul.test").to(document.body)
 
 
-
-
-function View() {
-
-}
-
-View.prototype = {
-render: function(){}
-}
+var h3 = El("h3")
+h3.append(El("div", "DIV"))
 
 
 
@@ -38,10 +92,10 @@ el4.addClass("li-4")
 var ul2 = El("ul").append([ El("li").append("4.1"), El("li").append(["4.2"]) ])
 ul2.to(el4)
 
-El("li", "1").to(el, true)
-var el3 = El("li[data-id=li-123]", "3").to(el, el4)
+El("li", "One").to(el, true)
+var el3 = El("li[data-id=li-123]", "Three").to(el, el4)
 El("li", 6).to(el)
-El("li", "5").after(el.find(".li-4"))
+El("li", "Five").after(el.find(".li-4"))
 var el7 = El("li", 7).to(el)
 
 el7.append([

@@ -1,31 +1,112 @@
+global.document = global.document || require("../lib/min-document.js")
+global.HTMLElement = global.HTMLElement || document.HTMLElement
+global.window = global.window || global
+global.Event = global.Event || {}
 
+require("../")
+
+var getString = (function() {
+	var DIV = document.createElement("div");
+
+	if (DIV.hasOwnProperty("toString")) {
+		console.log("toString")
+		return function(node) {
+			return node.toString()
+		}
+	}
+
+	if ('outerHTML' in DIV)
+		return function(node) {
+			return node.outerHTML;
+		};
+
+	return function(node) {
+		var div = document.createElement("div");
+		div.appendChild(node.cloneNode(true));
+		return div.innerHTML;
+	};
+
+})();
+
+var el, h1, h2, h3, h4, select
+
+require("testman")
+.describe("El").
+	it ("should build elements").
+		run(function(){
+			el = El("div")
+			select = El("select#id2.cl2:disabled")
+			h1 = El("h1")
+			h2 = El("h2")
+			h3 = El("h3")
+			h4 = El("h4")
+		}).
+		equal(getString(el), "<div></div>").
+		equal(getString(h1), "<h1></h1>").
+		equal(getString(h2), "<h2></h2>").
+		equal(getString(h3), "<h3></h3>").
+		equal(getString(h4), "<h4></h4>").
+		equal(getString(el.append(h2)), "<div><h2></h2></div>").
+		anyOf(getString(h2.append(select)),	[ '<h2><select id="id2" disabled="disabled" class="cl2"></select></h2>'
+		     					, '<h2><select disabled="disabled" class="cl2" id="id2"></select></h2>'
+		     					]).
+
+		equal(el.find("#id2"), select).
+		equal(el.find(".cl2"), select).
+		equal(el.find("#id2.cl2"), select).
+		equal(el.find(".cl2#id2"), select).
+		equal(el.find("select"), select).
+		equal(el.find("select#id2"), select).
+		equal(el.find("select.cl2"), select).
+		equal(el.find("select#id2.cl2"), select).
+		equal(el.find("select.cl2#id2"), select).
+		equal(el.find("SELECT"), select).
+		equal(el.find("SELECT#id2"), select).
+		equal(el.find("SELECT.cl2"), select).
+		equal(el.find("SELECT#id2.cl2"), select).
+		equal(el.find("SELECT.cl2#id2"), select).
+
+		equal(el.find("h2"), h2).
+		equal(!!el.find(".cl3"), false).
+
+		equal(select.kill(), select).
+
+		equal(getString(El("")), "<div></div>").
+		equal(getString(El("div")), "<div></div>").
+		equal(getString(El("", "element")), "<div>element</div>").
+		equal(getString(El("div", "element")), "<div>element</div>").
+		equal(getString(El("#123")), '<div id="123"></div>').
+		equal(getString(El("div#123")), '<div id="123"></div>').
+		equal(getString(El(".c1")), '<div class="c1"></div>').
+		equal(getString(El("div.c1")), '<div class="c1"></div>').
+		equal(getString(El(".c1.c2")), '<div class="c1 c2"></div>').
+		equal(getString(El("div.c1.c2")), '<div class="c1 c2"></div>').
+		anyOf(getString(El("#123.c1")),	[ '<div id="123" class="c1"></div>'
+		     				, '<div class="c1" id="123"></div>'
+						]).
+		anyOf(getString(El("div#123.c1")),	[ '<div id="123" class="c1"></div>'
+		     					, '<div class="c1" id="123"></div>'
+		     					]).
+
+		equal(getString(El("a[href='http://example.com/']")), '<a href="http://example.com/"></a>').
+		equal(getString(El('a[href="http://example.com/"]')), '<a href="http://example.com/"></a>').
+		anyOf(getString(El("a[href='http://example.com/'][title=Link]")),
+			[ '<a href="http://example.com/" title="Link"></a>'
+			, '<a title="Link" href="http://example.com/"></a>',
+			]).
+		anyOf(getString(El('a[href="http://example.com/"][title="Link to site"]')),
+			[ '<a href="http://example.com/" title="Link to site"></a>'
+			, '<a title="Link to site" href="http://example.com/"></a>'
+			]).
+done()
 
 
 /** Tests for El
 !function(){
 	var test_el = new TestCase("El");
 
-	var el = El("div")
-	  , select = El("select#id2.cl2:disabled")
 
-	var h1 = El("h1");
-	var h2 = El("h2");
-	var h3 = El("h3");
-	var h4 = El("h4");
 
-	el.append(h2);
-	test_el.compare(el.innerHTML.toLowerCase(), "<h2></h2>", "El.append");
-	h2.append(select)
-	test_el.compare(
-	  el.find("#id2"), select
-	, el.find(".cl2"), select
-	//, el.find("select:disabled"), select
-	, el.find("#id2.cl2"), select
-	//, el.find("#id2.cl2:disabled"), select
-	//, el.find("select#id2.cl2:disabled"), select
-	, el.find("select#id2.cl2"), select
-	, el.find("select#id2"), select
-	, el.find("select"), select
 	, el.find("h2"), h2
 	//, !!el.find("select:enabled"), false
 	, !!el.find("select.cl3"), false
