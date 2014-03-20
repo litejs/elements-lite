@@ -3,8 +3,8 @@
 [2]: https://raw.github.com/litejs/elements-lite/master/elements.js
 
 
-    @version    0.1.14
-    @date       2014-01-02
+    @version    0.1.15
+    @date       2014-03-20
     @stability  1 - Experimental
 
 

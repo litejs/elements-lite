@@ -2,8 +2,8 @@
 
 
 /*
-* @version  0.1.14
-* @date     2014-01-02
+* @version  0.1.15
+* @date     2014-03-20
 * @author   Lauri Rooden - https://github.com/litejs/elements-lite
 * @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
 */
@@ -14,25 +14,35 @@
 */
 
 
-!function(root, doc, P) {
+!function(root, doc, protoStr) {
 	var elCache = {}
 	, fnCache = {}
-	, proto = (root.HTMLElement || root.Element || El)[P]
-	, el_re = /([.#:[])([-\w]+)(?:=([-\w]+)])?]?/g
+	, proto = (root.HTMLElement || root.Element || El)[protoStr]
+	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\.|.)*?\4|[-\w]+)])?]?/g
 
+
+	/*
+	* Examples:
+	*   - El("input#123.nice[type=checkbox]:checked:disabled[data-lang=en]")
+	*/
 
 
 	function El(name, args) {
 		var el
 		, pre = {}
-		name = name.replace(el_re, function(_, o, s, val) {
+		name = name.replace(elRe, function(_, op, key, val, quotation) {
 			pre[
-				o == "." ? (o = "class", (pre[o] && (s = pre[o]+" "+s)), o) :
-				o == "#" ? "id" :
-				s 
-			] = val || s
+				op == "." ? (op = "class", (pre[op] && (key = pre[op]+" "+key)), op) :
+				op == "#" ? "id" :
+				key
+			] = (quotation ? val.slice(1, -1): val) || key
 			return ""
 		}) || "div"
+
+		/*
+		* NOTE: IE’s cloneNode operation consolidates the two text nodes together as one
+		* http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
+		*/
 
 		el = (elCache[name] || (elCache[name] = doc.createElement(name))).cloneNode(true).set(pre)
 
@@ -54,7 +64,7 @@
 	*
 	* All DOM extensions on the element are available by default.
 	*
-	* In browsers that does not support adding methods to prototype of native objects 
+	* In browsers that does not support adding methods to prototype of native objects
 	* such as HTMLElement or Element, document.createElement will be overrided
 	* to extend created elements. El.get() and element.find will extend
 	* returned elements.
@@ -81,7 +91,7 @@
 				* document.createDocumentFragment is unsupported in IE5.5
 				* f = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
 				*/
-				
+
 				for (
 					var len = e.length
 					, i = 0
@@ -168,9 +178,9 @@
 		var t = this, k = typeof args, v
 		if (args) {
 			if (k == "string" || k == "number" || args.nodeType || "length" in args) t.append(args)
-			else for (k in args) 
+			else for (k in args)
 			/** hasOwnProperty
-			if (args.hasOwnProperty(arg)) 
+			if (args.hasOwnProperty(arg))
 			//*/
 			{
 				v = args[k]
@@ -180,7 +190,7 @@
 					/*
 					* Note: IE5-7 doesn't set styles and removes events when you try to set them.
 					*
-					* in IE6, a label with a for attribute linked to a select list 
+					* in IE6, a label with a for attribute linked to a select list
 					* will cause a re-selection of the first option instead of just giving focus.
 					* http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
 					*/
@@ -220,7 +230,7 @@
 		var el
 		, i = 0
 		, rules = ["_"]
-		, tag = sel.replace(el_re, function(_, o, s, v) {
+		, tag = sel.replace(elRe, function(_, o, s, v) {
 				rules.push(
 					o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" :
 					o == "#" ? "_.id=='"+s+"'" :
@@ -249,7 +259,7 @@
 
 	function extend(e, p, k) {
 		if (e) {
-			p = El[P]
+			p = El[protoStr]
 			for (k in p) e[k] = p[k]
 		}
 		return e
@@ -257,7 +267,7 @@
 
 
 
-	if (proto === El[P]) {
+	if (proto === El[protoStr]) {
 		/*
 		* IE 6-7
 		*/
@@ -276,7 +286,7 @@
 		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
 
-	El[P] = proto
+	El[protoStr] = proto
 
 
 	El.get = function(id) {
