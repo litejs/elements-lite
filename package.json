@@ -28,7 +28,7 @@
   "devDependencies": {
     "testman": "*",
     "buildman": "*",
-    "browser-upgrade-lite": "^0.1.8"
+    "browser-upgrade-lite": "*"
   },
   "buildman": {
     "min.js": "elements.js",

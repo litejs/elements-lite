@@ -5,8 +5,7 @@ require("../")
 var getString = (function() {
 	var DIV = document.createElement("div");
 
-	if (DIV.hasOwnProperty("toString")) {
-		console.log("toString")
+	if (DIV.__fake) {
 		return function(node) {
 			return node.toString()
 		}
