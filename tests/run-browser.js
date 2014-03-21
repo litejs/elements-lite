@@ -47,6 +47,7 @@ require("testman")
 		anyOf(getString(h2.append(select)),	[ '<h2><select id="id2" disabled="disabled" class="cl2"></select></h2>'
 		     					, '<h2><select disabled="disabled" class="cl2" id="id2"></select></h2>'
 							, '<h2><select id="id2" class="cl2" disabled="disabled"></select></h2>'
+							, '<h2><select class=cl2 id=id2 disabled></select></h2>'
 		     					]).
 
 		equal(el.find("#id2"), select).
@@ -73,17 +74,35 @@ require("testman")
 		equal(getString(El("div")), "<div></div>").
 		equal(getString(El("", "element")), "<div>element</div>").
 		equal(getString(El("div", "element")), "<div>element</div>").
-		equal(getString(El("#123")), '<div id="123"></div>').
-		equal(getString(El("div#123")), '<div id="123"></div>').
-		equal(getString(El(".c1")), '<div class="c1"></div>').
-		equal(getString(El("div.c1")), '<div class="c1"></div>').
+		equal(getString(El("p", "element")), "<p>element</p>").
+		anyOf(getString(El("#123")),	[ '<div id="123"></div>'
+						, '<div id=123></div>'
+						]).
+		anyOf(getString(El("div#123")),	[ '<div id="123"></div>'
+						, '<div id=123></div>'
+						]).
+		anyOf(getString(El("p#123")),	[ '<p id="123"></p>'
+						, '<p id=123></p>'
+						]).
+		anyOf(getString(El(".c1")),	[ '<div class="c1"></div>'
+						, '<div class=c1></div>'
+						]).
+		anyOf(getString(El("div.c1")),	[ '<div class="c1"></div>'
+						, '<div class=c1></div>'
+						]).
+		anyOf(getString(El("p.c1")),	[ '<p class="c1"></p>'
+						, '<p class=c1></p>'
+						]).
 		equal(getString(El(".c1.c2")), '<div class="c1 c2"></div>').
 		equal(getString(El("div.c1.c2")), '<div class="c1 c2"></div>').
+		equal(getString(El("p.c1.c2")), '<p class="c1 c2"></p>').
 		anyOf(getString(El("#123.c1")),	[ '<div id="123" class="c1"></div>'
 		     				, '<div class="c1" id="123"></div>'
+						, '<div class=c1 id=123></div>'
 						]).
 		anyOf(getString(El("div#123.c1")),	[ '<div id="123" class="c1"></div>'
 		     					, '<div class="c1" id="123"></div>'
+							, '<div class=c1 id=123></div>'
 		     					]).
 
 		equal(getString(El("a[href='http://example.com/']")), '<a href="http://example.com/"></a>').
@@ -91,6 +110,7 @@ require("testman")
 		anyOf(getString(El("a[href='http://example.com/'][title=link]")),
 			[ '<a href="http://example.com/" title="link"></a>'
 			, '<a title="link" href="http://example.com/"></a>',
+			, '<a title=link href="http://example.com/"></a>'
 			]).
 		anyOf(getString(El('a[href="http://example.com/"][title="link to site"]')),
 			[ '<a href="http://example.com/" title="link to site"></a>'
