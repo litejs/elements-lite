@@ -48,6 +48,7 @@ require("testman")
 		     					, '<h2><select disabled="disabled" class="cl2" id="id2"></select></h2>'
 							, '<h2><select id="id2" class="cl2" disabled="disabled"></select></h2>'
 							, '<h2><select class=cl2 id=id2 disabled></select></h2>'
+							, '<h2><select id=id2 class=cl2 disabled></select></h2>'
 		     					]).
 
 		equal(el.find("#id2"), select).
@@ -99,10 +100,12 @@ require("testman")
 		anyOf(getString(El("#123.c1")),	[ '<div id="123" class="c1"></div>'
 		     				, '<div class="c1" id="123"></div>'
 						, '<div class=c1 id=123></div>'
+						, '<div id=123 class=c1></div>'
 						]).
 		anyOf(getString(El("div#123.c1")),	[ '<div id="123" class="c1"></div>'
 		     					, '<div class="c1" id="123"></div>'
 							, '<div class=c1 id=123></div>'
+							, '<div id=123 class=c1></div>'
 		     					]).
 
 		equal(getString(El("a[href='http://example.com/']")), '<a href="http://example.com/"></a>').
