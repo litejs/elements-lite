@@ -2,8 +2,8 @@
 
 
 /*
-* @version  0.1.15
-* @date     2014-03-20
+* @version  0.1.16
+* @date     2014-03-21
 * @author   Lauri Rooden <lauri@rooden.ee>
 * @license  MIT License
 */
