@@ -1,3 +1,4 @@
+global.Event = global.Event || {}
 
 require("browser-upgrade-lite")
 require("../")
@@ -13,7 +14,7 @@ var getString = (function() {
 
 	if ('outerHTML' in DIV)
 		return function(node) {
-			return node.outerHTML;
+			return node.outerHTML.toLowerCase().trim();
 		};
 
 	return function(node) {
@@ -87,13 +88,13 @@ require("testman")
 
 		equal(getString(El("a[href='http://example.com/']")), '<a href="http://example.com/"></a>').
 		equal(getString(El('a[href="http://example.com/"]')), '<a href="http://example.com/"></a>').
-		anyOf(getString(El("a[href='http://example.com/'][title=Link]")),
-			[ '<a href="http://example.com/" title="Link"></a>'
-			, '<a title="Link" href="http://example.com/"></a>',
+		anyOf(getString(El("a[href='http://example.com/'][title=link]")),
+			[ '<a href="http://example.com/" title="link"></a>'
+			, '<a title="link" href="http://example.com/"></a>',
 			]).
-		anyOf(getString(El('a[href="http://example.com/"][title="Link to site"]')),
-			[ '<a href="http://example.com/" title="Link to site"></a>'
-			, '<a title="Link to site" href="http://example.com/"></a>'
+		anyOf(getString(El('a[href="http://example.com/"][title="link to site"]')),
+			[ '<a href="http://example.com/" title="link to site"></a>'
+			, '<a title="link to site" href="http://example.com/"></a>'
 			]).
 done()
 
