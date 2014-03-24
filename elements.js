@@ -119,7 +119,10 @@
 	}
 
 	proto.to = function(e, before) {
-		e.append(this, before)
+		/*
+		* call append from proto so it works with DocumentFragment
+		*/
+		proto.append.call(e, this, before)
 		return this
 	}
 
@@ -217,6 +220,22 @@
 			}
 		}
 		return t
+	}
+
+
+	/*
+	* In Safari 2.x, innerText functions properly only 
+	* if an element is neither hidden (via style.display == "none") 
+	* nor orphaned from the document. 
+	* Otherwise, innerText results in an empty string.
+	*
+	* textContent is suported from IE9
+	*/
+
+	proto.text = function(newText) {
+		var t = this
+		, attr = "textContent" in t ? "textContent" : "innerText"
+		return arguments.length ? (t[attr] = newText) : t[attr]
 	}
 
 	/*

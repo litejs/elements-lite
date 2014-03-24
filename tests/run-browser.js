@@ -6,12 +6,6 @@ require("../")
 var getString = (function() {
 	var DIV = document.createElement("div");
 
-	if (DIV.__fake) {
-		return function(node) {
-			return node.toString()
-		}
-	}
-
 	if ('outerHTML' in DIV)
 		return function(node) {
 			return node.outerHTML.toLowerCase().trim();
@@ -27,8 +21,9 @@ var getString = (function() {
 
 var el, h1, h2, h3, h4, select
 
-require("testman")
-.describe("El").
+require("testman").
+
+describe("El").
 	it ("should build elements").
 		run(function(){
 			el = El("div")
@@ -119,6 +114,15 @@ require("testman")
 			[ '<a href="http://example.com/" title="link to site"></a>'
 			, '<a title="link to site" href="http://example.com/"></a>'
 			]).
+	it ("supports boolean attributes").
+		equal(getString(El("input:selected")), '<input selected="selected">').
+	it ("has empty() method").
+		equal(el.empty(), el).
+		equal(el.innerHTML, "").
+	it ("has text() method").
+		equal(el.text(), "").
+		equal(el.text("hello"), "hello").
+		equal(el.text(), "hello").
 done()
 
 
