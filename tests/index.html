@@ -18,22 +18,45 @@
 <script id="index" type="text/haml">
 :template test
  .test
-  a#button1.link1.link2[href="#A link"][title=Link] A Link
+  a#button1.link1.link2[title=Link][href="#A link"] > b.bold1 > i.ital1 A Link
+  a#button1.link1.link2[title='A Link'][href="#A"] = A Link
   h3
    .div DIV
 
 :template li-row
- li
+ li.row
 
+:template ul2
+	.list
+		.begin
+		ul.list \=for user in users
+			li =text\:Hello {name|lower}
+			.input =text:Hello <b>{name|upper}</b>
+			.input =html:Hello <b>{name|upper}</b>
+			input =value:Hello {name|upper}
+				span.rgt>b stop
+		.end \= Static text
+		.foot \> Static text
 .index
 </script>
 <script>
+
+/*
+input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
+*/
 
 // navigator.userLanguage for IE, navigator.language for others
 var lang = navigator.language || navigator.userLanguage;
 // http://stackoverflow.com/questions/3084675/internationalization-in-javascript
 // http://stackoverflow.com/questions/9640630/javascript-i18n-internationalization-frameworks-libraries-for-client-side-use
 
+/*
+   <ul data-bind2="foreach: months">
+   	<li>
+   		The current item is: <b data-bind="text: $data"></b>
+   	</li>
+   </ul>
+*/
 
 function i18n() {
 	i18n.current = i18n.en;
@@ -59,17 +82,27 @@ String.prototype.lang = function(lng) {
 }
 
 El.prototype.render = function(data) {
-	var tags = this.getElementsByTagName("*")
-	console.log("render", this)
-	var len = tags.length
-	while (len--) {
-		var key = tags[len].getAttribute("data-i18n")
-		if (key) {
-			var lang = tags[len].getAttribute("lang")
-			console.log("render replace", key)
-			tags[len].innerHTML = (i18n[ lang || "en"][key] || "").format(data)
-		}
+	var attr, bind, lang
+	, node = this
+	, attrMap = {
+		text: "textContent" in node ? "textContent" : "innerText",
+		html: "innerHTML"
 	}
+
+	if (bind = node.getAttribute("data-bind")) {
+		if (attr = bind.match(/(\w+)\:/)) {
+			bind = bind.slice( attr[0].length )
+			attr = attrMap[attr[1]] || attr[1]
+		}
+		lang = node.getAttribute("lang")
+		node[ attr || attrMap.text ] = (i18n[ lang || "en"][bind] || bind).format(data)
+	}
+	console.log("look", node)
+
+	for (node = node.firstChild; node; node = node.nextSibling) {
+		if (node.nodeType == 1) node.render(data)
+	}
+	return this
 }
 
 El.render("index")

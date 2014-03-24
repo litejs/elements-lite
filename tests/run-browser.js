@@ -3,21 +3,15 @@ global.Event = global.Event || {}
 require("browser-upgrade-lite")
 require("../")
 
-var getString = (function() {
-	var DIV = document.createElement("div");
+function getString(node) {
+	if ('outerHTML' in node)
+		return node.outerHTML.toLowerCase().trim();
 
-	if ('outerHTML' in DIV)
-		return function(node) {
-			return node.outerHTML.toLowerCase().trim();
-		};
+	var div = document.createElement("div");
+	div.appendChild(node.cloneNode(true));
+	return div.innerHTML;
+}
 
-	return function(node) {
-		var div = document.createElement("div");
-		div.appendChild(node.cloneNode(true));
-		return div.innerHTML;
-	};
-
-})();
 
 var el, h1, h2, h3, h4, select
 
@@ -38,33 +32,6 @@ describe("El").
 		equal(getString(h2), "<h2></h2>").
 		equal(getString(h3), "<h3></h3>").
 		equal(getString(h4), "<h4></h4>").
-		equal(getString(el.append(h2)), "<div><h2></h2></div>").
-		anyOf(getString(h2.append(select)),	[ '<h2><select id="id2" disabled="disabled" class="cl2"></select></h2>'
-		     					, '<h2><select disabled="disabled" class="cl2" id="id2"></select></h2>'
-							, '<h2><select id="id2" class="cl2" disabled="disabled"></select></h2>'
-							, '<h2><select class=cl2 id=id2 disabled></select></h2>'
-							, '<h2><select id=id2 class=cl2 disabled></select></h2>'
-		     					]).
-
-		equal(el.find("#id2"), select).
-		equal(el.find(".cl2"), select).
-		equal(el.find("#id2.cl2"), select).
-		equal(el.find(".cl2#id2"), select).
-		equal(el.find("select"), select).
-		equal(el.find("select#id2"), select).
-		equal(el.find("select.cl2"), select).
-		equal(el.find("select#id2.cl2"), select).
-		equal(el.find("select.cl2#id2"), select).
-		equal(el.find("SELECT"), select).
-		equal(el.find("SELECT#id2"), select).
-		equal(el.find("SELECT.cl2"), select).
-		equal(el.find("SELECT#id2.cl2"), select).
-		equal(el.find("SELECT.cl2#id2"), select).
-
-		equal(el.find("h2"), h2).
-		equal(!!el.find(".cl3"), false).
-
-		equal(select.kill(), select).
 
 		equal(getString(El("")), "<div></div>").
 		equal(getString(El("div")), "<div></div>").
@@ -114,15 +81,107 @@ describe("El").
 			[ '<a href="http://example.com/" title="link to site"></a>'
 			, '<a title="link to site" href="http://example.com/"></a>'
 			]).
-	it ("supports boolean attributes").
-		equal(getString(El("input:selected")), '<input selected="selected">').
-	it ("has empty() method").
+
+	it ("has kill() and empty() methods").
+		equal(select.kill(), select).
+		equal(h2.innerHTML, "").
 		equal(el.empty(), el).
 		equal(el.innerHTML, "").
+
+	it ("set childs").
+		equal(getString(el.append(h2)), "<div><h2></h2></div>").
+		equal(getString(el.append(h1, h2)), "<div><h1></h1><h2></h2></div>").
+		equal(getString(h4.after(h2)), "<h4></h4>").
+		equal(getString(el), "<div><h1></h1><h2></h2><h4></h4></div>").
+		equal(getString(h3.after(h4, true)), "<h3></h3>").
+		equal(getString(el), "<div><h1></h1><h2></h2><h3></h3><h4></h4></div>").
+		equal(getString(h3.to(el, h4)), "<h3></h3>").
+		equal(getString(el), "<div><h1></h1><h2></h2><h3></h3><h4></h4></div>").
+
+		equal(getString(h1.append([h2, h3])), "<h1><h2></h2><h3></h3></h1>").
+		equal(getString(el), "<div><h1><h2></h2><h3></h3></h1><h4></h4></div>").
+
+		anyOf(getString(select.to(h2)),	[ '<select id="id2" disabled="disabled" class="cl2"></select>'
+		     				, '<select disabled="disabled" class="cl2" id="id2"></select>'
+						, '<select id="id2" class="cl2" disabled="disabled"></select>'
+						, '<select class=cl2 id=id2 disabled></select>'
+						, '<select id=id2 class=cl2 disabled></select>'
+		     				]).
+
+	it ("find childs").
+
+		equal(el.find("#id2"), select).
+		equal(el.find(".cl2"), select).
+		equal(el.find("#id2.cl2"), select).
+		equal(el.find(".cl2#id2"), select).
+		equal(el.find("select"), select).
+		equal(el.find("select#id2"), select).
+		equal(el.find("select.cl2"), select).
+		equal(el.find("select#id2.cl2"), select).
+		equal(el.find("select.cl2#id2"), select).
+		equal(el.find("SELECT"), select).
+		equal(el.find("SELECT#id2"), select).
+		equal(el.find("SELECT.cl2"), select).
+		equal(el.find("SELECT#id2.cl2"), select).
+		equal(el.find("SELECT.cl2#id2"), select).
+
+		equal(el.find("h2"), h2).
+		equal(!!el.find(".cl3"), false).
+
+
+	it ("supports boolean attributes").
+		equal(getString(El("input:selected")), '<input selected="selected">').
 	it ("has text() method").
 		equal(el.text(), "").
 		equal(el.text("hello"), "hello").
 		equal(el.text(), "hello").
+
+
+	it ("has class methods").
+		equal(el.className, "").
+		equal(el.hasClass("c1"), false).
+		equal(el.hasClass("c2"), false).
+		equal(el.hasClass("c3"), false).
+
+		equal(el.addClass("c1"), el).
+		equal(el.hasClass("c1"), true).
+		equal(el.hasClass("c2"), false).
+		equal(el.hasClass("c3"), false).
+
+		equal(el.addClass("c2"), el).
+		equal(el.hasClass("c1"), true).
+		equal(el.hasClass("c2"), true).
+		equal(el.hasClass("c3"), false).
+
+		equal(el.rmClass("c3"), el).
+		equal(el.hasClass("c1"), true).
+		equal(el.hasClass("c2"), true).
+		equal(el.hasClass("c3"), false).
+
+		equal(el.rmClass("c2"), el).
+		equal(el.hasClass("c1"), true).
+		equal(el.hasClass("c2"), false).
+		equal(el.hasClass("c3"), false).
+
+		equal(el.rmClass("c1"), el).
+		equal(el.hasClass("c1"), false).
+		equal(el.hasClass("c2"), false).
+		equal(el.hasClass("c3"), false).
+
+		equal(el.className, "").
+
+
+		equal(el.toggleClass("c1"), true).
+		equal(el.hasClass("c1"), true).
+		equal(el.toggleClass("c1", true), true).
+		equal(el.hasClass("c1"), true).
+		equal(el.toggleClass("c1"), false).
+		equal(el.hasClass("c1"), false).
+		equal(el.toggleClass("c1", false), false).
+		equal(el.hasClass("c1"), false).
+		equal(el.className, "").
+
+
 done()
 
 

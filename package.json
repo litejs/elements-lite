@@ -1,7 +1,7 @@
 {
   "name": "elements-lite",
-  "version": "0.1.16",
-  "stability": 2,
+  "version": "0.1.17",
+  "stability": 1,
   "license": "MIT",
   "author": "Lauri Rooden <lauri@rooden.ee>",
   "description": "DOM buildel for browser",

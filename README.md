@@ -8,19 +8,22 @@
 [GitHub repo]: https://github.com/litejs/elements-lite
 
 
-    @version    0.1.16
-    @date       2014-03-21
-    @stability  2 - Unstable
+    @version    0.1.17
+    @date       2014-03-24
+    @stability  1 - Experimental
 
 
 Elements &ndash; [![Build][1]][2] [![Coverage][3]][4]
 ========
 
+Syntax follows CSS Selectors where possible.
 
 Usage
 -----
 
 `<script src=elements-lite.js></script>` should place inside body.
+
+### Create elements one by one
 
 ```javascript
 El("div", "test").to(document.body)
@@ -49,7 +52,7 @@ External links
 --------------
 
 -   [GitHub repo][]
--   [npm module][]
+-   [npm package][]
 
 
 

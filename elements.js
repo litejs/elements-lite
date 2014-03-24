@@ -2,11 +2,14 @@
 
 
 /*
-* @version  0.1.16
-* @date     2014-03-21
-* @author   Lauri Rooden <lauri@rooden.ee>
-* @license  MIT License
+* @version    0.1.17
+* @date       2014-03-24
+* @stability  1 - Experimental
+* @author     Lauri Rooden <lauri@rooden.ee>
+* @license    MIT License
 */
+
+
 
 
 /* TODO: find ways for automated testing
@@ -114,7 +117,7 @@
 	}
 
 	proto.after = function(e, before) {
-		e.parentNode.append(this, before ? e : e.nextSibling)
+		proto.append.call(e.parentNode, this, before ? e : e.nextSibling)
 		return this
 	}
 
