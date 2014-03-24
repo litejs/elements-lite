@@ -85,47 +85,47 @@
 	*     - Number - Insert content before nth child
 	*/
 
-	proto.append = function(e, before) {
+	proto.append = function(child, before) {
 		var t = this
-		if (e) {
-			if (typeof e == "string" || typeof e == "number") e = El.text(e)
-			else if ( !("nodeType" in e) && "length" in e ) {
+		if (child) {
+			if (typeof child == "string" || typeof child == "number") child = El.text(child)
+			else if ( !("nodeType" in child) && "length" in child ) {
 				/*
 				* document.createDocumentFragment is unsupported in IE5.5
-				* f = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
+				* fragment = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
 				*/
 
 				for (
-					var len = e.length
+					var len = child.length
 					, i = 0
-					, f = doc.createDocumentFragment();
+					, fragment = doc.createDocumentFragment();
 					i < len
-					; ) t.append.call(f, e[i++]);
-				e = f
+					; ) t.append.call(fragment, child[i++]);
+				child = fragment
 			}
 
-			if (e.nodeType) t.insertBefore(e,
+			if (child.nodeType) t.insertBefore(child,
 				(before === true ? t.firstChild :
 				typeof before == "number" ? t.childNodes[
 					before < 0 ? t.childNodes.length - before - 2 : before
 				] : before) || null
 			)
-			e.append_hook && e.append_hook()
+			child.append_hook && child.append_hook()
 			//"child_hook" in t && t.child_hook()
 		}
 		return t
 	}
 
-	proto.after = function(e, before) {
-		proto.append.call(e.parentNode, this, before ? e : e.nextSibling)
-		return this
-	}
-
-	proto.to = function(e, before) {
+	proto.after = function(silbing, before) {
 		/*
 		* call append from proto so it works with DocumentFragment
 		*/
-		proto.append.call(e, this, before)
+		proto.append.call(silbing.parentNode, this, before ? silbing : silbing.nextSibling)
+		return this
+	}
+
+	proto.to = function(parent, before) {
+		proto.append.call(parent, this, before)
 		return this
 	}
 
@@ -149,15 +149,15 @@
 		return t
 	}
 
-	proto.toggleClass = function(name, s) {
-		if (arguments.length == 1) s = !this.hasClass(name)
-		this[ s ? "addClass" : "rmClass" ](name)
-		return s
+	proto.toggleClass = function(name, force) {
+		if (arguments.length == 1) force = !this.hasClass(name)
+		this[ force ? "addClass" : "rmClass" ](name)
+		return force
 	}
 
 	proto.empty = function() {
-		var t = this, n
-		while (n = t.firstChild) t.kill.call(n)
+		var t = this, node
+		while (node = t.firstChild) t.kill.call(node)
 		return t
 	}
 
@@ -180,19 +180,21 @@
 		return this
 	}
 
-	proto.set = function(args) {
-		var t = this, k = typeof args, v
+	proto.set = function(args, val) {
+		var t = this
+		, key = typeof args
+
 		if (args) {
-			if (k == "string" || k == "number" || args.nodeType || "length" in args) t.append(args)
-			else for (k in args)
+			if (key == "string" || key == "number" || args.nodeType || "length" in args) t.append(args)
+			else for (key in args)
 			/** hasOwnProperty
 			if (args.hasOwnProperty(arg))
 			//*/
 			{
-				v = args[k]
+				val = args[key]
 				// El uses class
-				if (k == "class") t.addClass(v)
-				else if (typeof v == "string") {
+				if (key == "class") t.addClass(val)
+				else if (typeof val == "string") {
 					/*
 					* Note: IE5-7 doesn't set styles and removes events when you try to set them.
 					*
@@ -200,7 +202,7 @@
 					* will cause a re-selection of the first option instead of just giving focus.
 					* http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
 					*/
-					t.setAttribute(k, v)
+					t.setAttribute(key, val)
 
 					/*
 					* there are bug in IE<9 where changed 'name' param not accepted on form submit
@@ -213,13 +215,13 @@
 					* http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 					*/
 
-					if (k == "name" && "\v" == "v") {
-						t.mergeAttributes(doc.createElement("<INPUT name='" + k + "'/>"), false)
+					if (key == "name" && "\v" == "v") {
+						t.mergeAttributes(doc.createElement("<INPUT name='" + key + "'/>"), false)
 					}
 
 				}
-				else if (!v) t.removeAttribute(k)
-				else t[k] = v
+				else if (!val) t.removeAttribute(key)
+				else t[key] = val
 			}
 		}
 		return t
@@ -279,12 +281,9 @@
 		} : proto._find
 
 
-	function extend(e, p, k) {
-		if (e) {
-			p = El[protoStr]
-			for (k in p) e[k] = p[k]
-		}
-		return e
+	function extend(node, key) {
+		if (node) for (key in proto) node[key] = proto[key]
+		return node
 	}
 
 

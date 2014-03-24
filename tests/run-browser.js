@@ -5,7 +5,7 @@ require("../")
 
 function getString(node) {
 	if ('outerHTML' in node)
-		return node.outerHTML.toLowerCase().trim();
+		return node.outerHTML.toLowerCase().replace(/>[\n\r]+</g, "><").trim();
 
 	var div = document.createElement("div");
 	div.appendChild(node.cloneNode(true));
@@ -89,6 +89,7 @@ describe("El").
 		equal(el.innerHTML, "").
 
 	it ("set childs").
+		equal(getString(el.to(document.body)), "<div></div>").
 		equal(getString(el.append(h2)), "<div><h2></h2></div>").
 		equal(getString(el.append(h1, h2)), "<div><h1></h1><h2></h2></div>").
 		equal(getString(h4.after(h2)), "<h4></h4>").
@@ -109,7 +110,6 @@ describe("El").
 		     				]).
 
 	it ("find childs").
-
 		equal(el.find("#id2"), select).
 		equal(el.find(".cl2"), select).
 		equal(el.find("#id2.cl2"), select).
@@ -170,7 +170,6 @@ describe("El").
 
 		equal(el.className, "").
 
-
 		equal(el.toggleClass("c1"), true).
 		equal(el.hasClass("c1"), true).
 		equal(el.toggleClass("c1", true), true).
@@ -179,6 +178,7 @@ describe("El").
 		equal(el.hasClass("c1"), false).
 		equal(el.toggleClass("c1", false), false).
 		equal(el.hasClass("c1"), false).
+
 		equal(el.className, "").
 
 
