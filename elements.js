@@ -2,8 +2,8 @@
 
 
 /*
-* @version    0.1.17
-* @date       2014-03-24
+* @version    0.1.18
+* @date       2014-03-25
 * @stability  1 - Experimental
 * @author     Lauri Rooden <lauri@rooden.ee>
 * @license    MIT License
@@ -235,9 +235,11 @@
 	* Otherwise, innerText results in an empty string.
 	*
 	* textContent is suported from IE9
+	*
+	* Opera 9-10 have Node.text, Node.textContent
 	*/
 
-	proto.text = function(newText) {
+	proto.txt = function(newText) {
 		var t = this
 		, attr = "textContent" in t ? "textContent" : "innerText"
 		return arguments.length ? (t[attr] = newText) : t[attr]

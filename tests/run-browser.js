@@ -131,10 +131,11 @@ describe("El").
 
 	it ("supports boolean attributes").
 		equal(getString(El("input:selected")), '<input selected="selected">').
-	it ("has text() method").
-		equal(el.text(), "").
-		equal(el.text("hello"), "hello").
-		equal(el.text(), "hello").
+
+	it ("has txt() method").
+		equal(el.txt(), "").
+		equal(el.txt("hello"), "hello").
+		equal(el.txt(), "hello").
 
 
 	it ("has class methods").
