@@ -8,8 +8,8 @@
 [GitHub repo]: https://github.com/litejs/elements-lite
 
 
-    @version    0.1.17
-    @date       2014-03-24
+    @version    0.1.18
+    @date       2014-04-29
     @stability  1 - Experimental
 
 

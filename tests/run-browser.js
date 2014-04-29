@@ -47,8 +47,8 @@ describe("El").
 		anyOf(getString(El("p#123")),	[ '<p id="123"></p>'
 						, '<p id=123></p>'
 						]).
-		anyOf(getString(El(".c1")),	[ '<div class="c1"></div>'
-						, '<div class=c1></div>'
+		anyOf(getString(El(".c-1")),	[ '<div class="c-1"></div>'
+						, '<div class=c-1></div>'
 						]).
 		anyOf(getString(El("div.c1")),	[ '<div class="c1"></div>'
 						, '<div class=c1></div>'

@@ -3,7 +3,7 @@
 
 /*
 * @version    0.1.18
-* @date       2014-03-25
+* @date       2014-04-29
 * @stability  1 - Experimental
 * @author     Lauri Rooden <lauri@rooden.ee>
 * @license    MIT License
@@ -49,7 +49,7 @@
 
 		el = (elCache[name] || (elCache[name] = doc.createElement(name))).cloneNode(true).set(pre)
 
-		return fnCache[name] && fnCache[name](el, args) || el.set(args)
+		return fnCache[name] && fnCache[name].call(el, args) || el.set(args)
 	}
 
 
@@ -100,7 +100,7 @@
 					, i = 0
 					, fragment = doc.createDocumentFragment();
 					i < len
-					; ) t.append.call(fragment, child[i++]);
+					; ) proto.append.call(fragment, child[i++]);
 				child = fragment
 			}
 

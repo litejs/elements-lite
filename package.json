@@ -26,6 +26,7 @@
     "testman": "*",
     "buildman": "*",
     "browser-upgrade-lite": "*",
+    "functional-lite": "*",
     "dom-lite": "*"
   },
   "buildman": {
