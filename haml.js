@@ -2,7 +2,7 @@
 
 
 /*
-* @version  0.2.0
+* @version  0.2.1
 * @date     2014-05-15
 * @author   Lauri Rooden <lauri@rooden.ee>
 * @license  MIT License
@@ -135,15 +135,15 @@
 	}
 
 	var attrMap = {
-		text: "textContent" in doc ? "textContent" : "innerText",
-		html: "innerHTML",
-		if: function(node, data, bind) {
+		"text": "textContent" in doc ? "textContent" : "innerText",
+		"html": "innerHTML",
+		"if": function(node, data, bind) {
 			console.log("if", arguments)
 			var la = getLa(node)
 			var arr = data && data[bind]
 			if (arr) node.empty().append( Fn(bind)(data) && arr )
 		},
-		each: function(node, data, bind) {
+		"each": function(node, data, bind) {
 			var la = getLa(node)
 			var arr = data && data[bind]
 			if (arr) node.empty().append(arr.map(function(obj){
