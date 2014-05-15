@@ -2,6 +2,7 @@ global.Event = global.Event || {}
 
 require("browser-upgrade-lite")
 require("../")
+require("../haml")
 
 function getString(node) {
 	if ('outerHTML' in node)
@@ -183,6 +184,26 @@ describe("El").
 		equal(el.className, "").
 
 
+
+describe( "Haml" ).
+	it ("supports haml").
+		equal(getString(El.haml("a\n b\n  i")), '<a><b><i></i></b></a>').
+		equal(getString(El.haml("a \n b\n  i")), '<a><b><i></i></b></a>').
+		equal(getString(El.haml("a\n b\n  i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.haml("a\n b \n  i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.haml("a\n b\n  i link>to")), '<a><b><i>link>to</i></b></a>').
+		equal(getString(El.haml("a[href='#a>b']\n b.bold \n  i#ital link")), '<a href="#a>b"><b class="bold"><i id="ital">link</i></b></a>').
+	it ("supports block expansion").
+		equal(getString(El.haml("a>b>i")), '<a><b><i></i></b></a>').
+		equal(getString(El.haml("a > b>i")), '<a><b><i></i></b></a>').
+		equal(getString(El.haml("a>b>i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.haml("a>b > i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.haml("a>b>i link>to")), '<a><b><i>link>to</i></b></a>').
+		equal(getString(El.haml("a[href='#a>b']>b.bold > i#ital link")), '<a href="#a>b"><b class="bold"><i id="ital">link</i></b></a>').
+	it ("supports templates").
+		equal(getString(El.haml(":template t1\n .temp1 t123\nt1")), '<div class="temp1">t123</div>').
+		equal(getString(El.haml(":template t2\n .temp2>b t123\nt2")), '<div class="temp2"><b>t123</b></div>').
+		equal(getString(El.haml(":template t3\n .temp3\n  b t123\nt3")), '<div class="temp3"><b>t123</b></div>').
 done()
 
 

@@ -25,6 +25,8 @@
   a#button1.link1.link2[title='A Link'][href="#A"] = A Link
   h3
    .div DIV
+     .ok =if:true
+   :same plain text
 
 :template li-row
  li.row
@@ -32,12 +34,12 @@
 :template ul2
 	.list
 		.begin
-		ul.list \=for user in users
+		ul.list =each:users
 			li =text\:Hello {name|lower}
+				span.rgt>b stop
 			.input =text:Hello <b>{name|upper}</b>
 			.input =html:Hello <b>{name|upper}</b>
 			input =value:Hello {name|upper}
-				span.rgt>b stop
 		.end \= Static text
 		.foot \> Static text
 .index
@@ -45,6 +47,13 @@
 <script>
 
 /*
+{% for i = 3; --i > 0; %}
+{% for product in products take:5 %}
+{% for product in products skip:5 %}
+{% for item in ["a", "b", "c"] %}
+{% for attr in deeper.not_found %}
+{% for attr in deeper.object %}
+
 input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
 */
 
@@ -61,54 +70,9 @@ var lang = navigator.language || navigator.userLanguage;
    </ul>
 */
 
-function i18n() {
-	i18n.current = i18n.en;
-}
 
-i18n.en = {
-	date: "%a, %d %b %Y %H:%M:%S %z",
-	name: "Name {date|lang}"
-}
 
-i18n.et = {
-	date: "%Y %H:%M:%S %z",
-	name: "Nimi {date|lang:'et'}"
-}
-
-Date.prototype.lang = function(lng) {
-	return this.format( (i18n[lng]||i18n.en).date )
-}
-
-String.prototype.lang = function(lng) {
-	var str = _lng.current[lng] || _lng.main[lng] || lng
-	return str
-}
-
-El.prototype.render = function(data) {
-	var attr, bind, lang
-	, node = this
-	, attrMap = {
-		text: "textContent" in node ? "textContent" : "innerText",
-		html: "innerHTML"
-	}
-
-	if (bind = node.getAttribute("data-bind")) {
-		if (attr = bind.match(/(\w+)\:/)) {
-			bind = bind.slice( attr[0].length )
-			attr = attrMap[attr[1]] || attr[1]
-		}
-		lang = node.getAttribute("lang")
-		node[ attr || attrMap.text ] = (i18n[ lang || "en"][bind] || bind).format(data)
-	}
-	console.log("look", node)
-
-	for (node = node.firstChild; node; node = node.nextSibling) {
-		if (node.nodeType == 1) node.render(data)
-	}
-	return this
-}
-
-El.render("index")
+El.include("index")
 
 var el = El("ul.test").to(document.body)
 
@@ -142,6 +106,12 @@ el7.append([
 	" " + (el.find(".li-4") === el4),
 	" " + (el._find(".li-4") === el4)
 ])
+
+var template1 = El("ul2").to(document.body)
+
+setInterval(function(){
+	//template1.render({users:[{name:"u"+new Date}, {name:"u2"}]})
+}, 400)
 
 </script>
 

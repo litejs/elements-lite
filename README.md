@@ -4,12 +4,10 @@
 [4]: https://coveralls.io/r/litejs/elements-lite
 [7]: https://ci.testling.com/litejs/elements-lite.png
 [8]: https://ci.testling.com/litejs/elements-lite
-[npm package]: https://npmjs.org/package/elements-lite
-[GitHub repo]: https://github.com/litejs/elements-lite
 
 
-    @version    0.1.18
-    @date       2014-04-29
+    @version    0.2.0
+    @date       2014-05-15
     @stability  1 - Experimental
 
 
@@ -40,6 +38,80 @@ El(".custom", "test").to(document.body)
 ```
 
 
+### Templates
+
+It is a template engine inspired by Haml and implemented with JavaScript for browser.
+
+
+#### Tags
+
+By default, text at the start of a line (or after only white space) represents an html tag. 
+Indented tags are nested, creating the tree like structure of html.
+
+
+```html
+ul
+  li Item A
+  li Item B
+```
+
+becomes
+
+```html
+<ul>
+  <li>Item A</li>
+  <li>Item B</li>
+</ul>
+```
+
+From CSS Class selectors, ID selectors, Pseudo-classes selectors
+and Attribute selectors are supported.
+
+```html
+a#123.link.bold[href="#A"][title=go] link
+button:disabled
+```
+
+becomes
+
+```html
+<a id="123" class="link bold" href="#A" title="go">link</a>
+<button disabled="disabled"></button>
+```
+
+
+To save space you can use an inline syntax for nested tags.
+
+```html
+a>i text
+```
+
+becomes
+
+```html
+<a><i>text</i></a>
+```
+
+#### Inline templates
+
+```html
+ul.list
+  :template my-row
+    li.my-row > b row
+  my-row
+  my-row
+```
+
+becomes
+
+```html
+<ul class="list">
+  <li class="my-row"><b>row</b></li>
+  <li class="my-row"><b>row</b></li>
+</ul>
+```
+
+
 
 Browser Support
 ---------------
@@ -51,14 +123,14 @@ Browser Support
 External links
 --------------
 
--   [GitHub repo][]
--   [npm package][]
+-   [Source-code on Github](https://github.com/litejs/elements-lite)
+-   [Package on npm](https://npmjs.org/package/elements-lite)
 
 
 
 ### Licence
 
-Copyright (c) 2012 Lauri Rooden &lt;lauri@rooden.ee&gt;  
+Copyright (c) 2012, 2014 Lauri Rooden &lt;lauri@rooden.ee&gt;  
 [The MIT License](http://lauri.rooden.ee/mit-license.txt)
 
 
