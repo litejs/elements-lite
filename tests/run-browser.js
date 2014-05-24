@@ -1,6 +1,7 @@
 global.Event = global.Event || {}
 
 require("browser-upgrade-lite")
+require("liquid-filters-lite")
 require("functional-lite")
 require("../")
 require("../haml")
@@ -14,8 +15,9 @@ function getString(node) {
 	return div.innerHTML;
 }
 
+i18n.setLang("en")
 
-var el, h1, h2, h3, h4, select
+var el, h1, h2, h3, h4, select, t1
 
 require("testman").
 
@@ -84,6 +86,17 @@ describe("El").
 			, '<a title="link to site" href="http://example.com/"></a>'
 			]).
 
+	it ("shoult set attributes").
+		equal(el.set({title:"set title"}), el).
+		equal(el.title, "set title").
+		equal(el.set({title:"change title", name:"new name"}), el).
+		equal(el.title, "change title").
+		equal(el.name, "new name").
+		equal(el.set({title: null}), el).
+		equal(el.set({name: null}), el).
+		ok(!el.title).
+		ok(!el.name).
+
 	it ("has kill() and empty() methods").
 		equal(select.kill(), select).
 		equal(h2.innerHTML, "").
@@ -110,6 +123,8 @@ describe("El").
 						, '<select class=cl2 id=id2 disabled></select>'
 						, '<select id=id2 class=cl2 disabled></select>'
 		     				]).
+	it ("should get element by id").
+		equal(El.get("id2"), select).
 
 	it ("find childs").
 		equal(el.find("#id2"), select).
@@ -199,6 +214,7 @@ describe( "Haml" ).
 			, '<a href="#a&gt;b"><b class="bold"><i id="ital">link</i></b></a>'
 			, '<a href="#a%3Eb"><b class="bold"><i id="ital">link</i></b></a>'
 			]).
+
 	it ("supports block expansion").
 		equal(getString(El.haml("a>b>i")), '<a><b><i></i></b></a>').
 		equal(getString(El.haml("a > b>i")), '<a><b><i></i></b></a>').
@@ -211,6 +227,7 @@ describe( "Haml" ).
 			, '<a href="#a&gt;b"><b class="bold"><i id="ital">link</i></b></a>'
 			, '<a href="#a%3Eb"><b class="bold"><i id="ital">link</i></b></a>'
 			]).
+
 	it ("supports templates").
 		anyOf(getString(El.haml(":template t1\n .temp1 t123\nt1")),
 			[ '<div class=temp1>t123</div>'
@@ -224,6 +241,12 @@ describe( "Haml" ).
 			[ '<div class=temp3><b>t123</b></div>'
 			, '<div class="temp3"><b>t123</b></div>'
 			]).
+
+	it ( "should render data to elements" ).
+		equal(getString(t1 = El.haml("a>b>i =text:hello {name}")), '<a><b><i data-bind="text:hello {name}"></i></b></a>').
+		equal(getString(t1.render({name:"world"})), '<a><b><i data-bind="text:hello {name}">hello world</i></b></a>').
+		equal(getString(t1.render({name:"moon"})), '<a><b><i data-bind="text:hello {name}">hello moon</i></b></a>').
+
 done()
 
 

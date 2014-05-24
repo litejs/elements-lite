@@ -2,8 +2,8 @@
 
 
 /*
-* @version  0.2.1
-* @date     2014-05-15
+* @version  0.2.2
+* @date     2014-05-24
 * @author   Lauri Rooden <lauri@rooden.ee>
 * @license  MIT License
 */
@@ -161,7 +161,7 @@
 		//console.log("render", data, node)
 
 		if (bind = node.getAttribute("data-bind")) {
-			lang = node.getAttribute("lang") || navigator.language || navigator.userLanguage;
+			lang = node.getAttribute("lang") || lang
 
 			if (attr = bind.match(/(\w+)\:/)) {
 				bind = bind.slice( attr[0].length )
@@ -173,7 +173,7 @@
 				return node
 			}
 			else {
-				node[ attr || attrMap.text ] = i18n(bind).format(data)
+				node[ attr || attrMap.text ] = i18n(bind, lang).format(data)
 			}
 		}
 

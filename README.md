@@ -6,8 +6,8 @@
 [8]: https://ci.testling.com/litejs/elements-lite
 
 
-    @version    0.2.1
-    @date       2014-05-15
+    @version    0.2.2
+    @date       2014-05-24
     @stability  1 - Experimental
 
 

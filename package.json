@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "stability": 1,
   "license": "MIT",
   "author": "Lauri Rooden <lauri@rooden.ee>",
@@ -26,6 +26,7 @@
     "testman": "*",
     "buildman": "*",
     "browser-upgrade-lite": "*",
+    "liquid-filters-lite": "*",
     "functional-lite": "*",
     "dom-lite": "*"
   },

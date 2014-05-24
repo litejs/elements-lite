@@ -1,25 +1,44 @@
 
-function i18n(text, lang) {
-	lang = i18n.getLang(lang)
-	return (i18n[lang][text] || text)
-}
 
 
-i18n.getLang = function(lang) {
-	lang = (lang||"").toLowerCase()
-	return i18n[lang] || ((lang = lang.split("-")[0]) && i18n[lang]) ? lang : i18n.current
-}
+/*
+* @version    0.2.2
+* @date       2014-05-24
+* @stability  1 - Experimental
+* @author     Lauri Rooden <lauri@rooden.ee>
+* @license    MIT License
+*/
 
-i18n.setLang = function(lang) {
-	lang = i18n.getLang(lang)
-	if (i18n.current != lang) {
-		i18n.current = lang
+
+
+
+
+
+!function(root) {
+	var current;
+
+	function i18n(text, lang) {
+		return (i18n[lang ? getLang(lang) : current][text] || text)
 	}
-	i18n[lang] = i18n[lang] || {}
-	return lang
-}
 
-i18n.main = i18n.current = "en"
+	function getLang(lang) {
+		if (!lang) return current
+		lang = (lang||"").toLowerCase()
+		return i18n[lang] ? lang : (lang = lang.split("-")[0]), i18n[lang] ? lang : current
+	}
+
+	function setLang(lang) {
+		lang = i18n.getLang(lang)
+		if (current != (current = lang)) {
+			i18n[lang] = i18n[lang] || {}
+		}
+		return lang
+	}
+
+	i18n.getLang = getLang
+	i18n.setLang = setLang
+
+//i18n.main = i18n.current = "en"
 
 i18n.en = {
 	date: "%a, %d %b %Y %H:%M:%S %z",
@@ -40,3 +59,6 @@ Date.prototype.lang = function(lang) {
 String.prototype.lang = function(lang) {
 	return i18n(this, lang)
 }
+	root.i18n = i18n
+}(this)
+
