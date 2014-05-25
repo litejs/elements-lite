@@ -18,7 +18,7 @@ function getString(node) {
 
 i18n.setLang("en")
 
-var el, h1, h2, h3, h4, select, t1
+var el, h1, h2, h3, h4, input, select, t1
 
 require("testman").
 
@@ -27,6 +27,7 @@ describe("El").
 		run(function(){
 			el = El("div")
 			select = El("select#id2.cl2:disabled")
+			input = El("input")
 			h1 = El("h1")
 			h2 = El("h2")
 			h3 = El("h3")
@@ -88,15 +89,15 @@ describe("El").
 			]).
 
 	it ("shoult set attributes").
-		equal(select.set({title:"set title"}), select).
-		equal(select.title, "set title").
-		equal(select.set({title:"change title", name:"new name"}), select).
-		equal(select.title, "change title").
-		equal(select.name, "new name").
-		equal(select.set({title: null}), select).
-		equal(select.set({name: null}), select).
-		ok(!select.title).
-		ok(!select.name).
+		equal(input.set({id: "set_id", title:"set title"}), input).
+		equal(input.id, "set_id").
+		equal(input.title, "set title").
+		equal(input.set({title:"change title", name:"new name", id: "new_id"}), input).
+		equal(input.title, "change title").
+		equal(input.name, "new name").
+		equal(input.id, "new_id").
+		equal(input.set({title: null}), input).
+		ok(!input.title).
 
 	it ("has kill() and empty() methods").
 		equal(select.kill(), select).

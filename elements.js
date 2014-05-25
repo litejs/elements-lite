@@ -180,49 +180,49 @@
 		return this
 	}
 
-	proto.set = function(args, val) {
-		var t = this
+	proto.set = function(args) {
+		var val
+		, t = this
 		, key = typeof args
 
-		if (args) {
-			if (key == "string" || key == "number" || args.nodeType || "length" in args) t.append(args)
-			else for (key in args)
-			/** hasOwnProperty
-			if (args.hasOwnProperty(arg))
-			//*/
-			{
-				val = args[key]
-				// El uses class
-				if (key == "class") t.addClass(val)
-				else if (typeof val == "string") {
-					/*
-					* Note: IE5-7 doesn't set styles and removes events when you try to set them.
-					*
-					* in IE6, a label with a for attribute linked to a select list
-					* will cause a re-selection of the first option instead of just giving focus.
-					* http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
-					*/
-					t.setAttribute(key, val)
+		if (!args) return t
+		if (key == "string" || key == "number" || args.nodeType || "length" in args) t.append(args)
+		else for (key in args)
+		/** hasOwnProperty
+		if (args.hasOwnProperty(arg))
+		//*/
+		{
+			val = args[key]
+			// El uses class
+			if (key == "class") t.addClass(val)
+			else if (!val) t.removeAttribute(key)
+			else if (typeof val == "string") {
+				/*
+				* Note: IE5-7 doesn't set styles and removes events when you try to set them.
+				*
+				* in IE6, a label with a for attribute linked to a select list
+				* will cause a re-selection of the first option instead of just giving focus.
+				* http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
+				*/
+				t.setAttribute(key, val)
 
-					/*
-					* there are bug in IE<9 where changed 'name' param not accepted on form submit
-					* The JScript engine used in IE doesn't recognize vertical tabulation character
-					* oldIE = "\v" == "v"
-					* 
-					* IE8 and below also support document.createElement('<P>')
-					*
-					* http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
-					* http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
-					*/
+				/*
+				* there are bug in IE<9 where changed 'name' param not accepted on form submit
+				* The JScript engine used in IE doesn't recognize vertical tabulation character
+				* oldIE = "\v" == "v"
+				* 
+				* IE8 and below also support document.createElement('<P>')
+				*
+				* http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
+				* http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
+				*/
 
-					if (key == "name" && "\v" == "v") {
-						t.mergeAttributes(doc.createElement("<INPUT name='" + key + "'/>"), false)
-					}
-
+				if ((key == "id" || key == "name") && "\v" == "v") {
+					t.mergeAttributes(doc.createElement('<INPUT '+key+'="' + val + '"/>'), false)
 				}
-				else if (!val) t.removeAttribute(key)
-				else t[key] = val
+
 			}
+			else t[key] = val
 		}
 		return t
 	}
