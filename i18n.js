@@ -53,7 +53,7 @@ i18n.et = {
 //i18n.setLang(navigator.language || navigator.userLanguage)
 
 Date.prototype.lang = function(lang) {
-	return this.format( i18n("date") )
+	return this.format( i18n("date", lang) )
 }
 
 String.prototype.lang = function(lang) {

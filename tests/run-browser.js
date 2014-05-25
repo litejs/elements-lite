@@ -1,4 +1,5 @@
 global.Event = global.Event || {}
+global.i18n = require("../i18n.js").i18n
 
 require("browser-upgrade-lite")
 require("liquid-filters-lite")
@@ -87,15 +88,15 @@ describe("El").
 			]).
 
 	it ("shoult set attributes").
-		equal(el.set({title:"set title"}), el).
-		equal(el.title, "set title").
-		equal(el.set({title:"change title", name:"new name"}), el).
-		equal(el.title, "change title").
-		equal(el.name, "new name").
-		equal(el.set({title: null}), el).
-		equal(el.set({name: null}), el).
-		ok(!el.title).
-		ok(!el.name).
+		equal(select.set({title:"set title"}), select).
+		equal(select.title, "set title").
+		equal(select.set({title:"change title", name:"new name"}), select).
+		equal(select.title, "change title").
+		equal(select.name, "new name").
+		equal(select.set({title: null}), select).
+		equal(select.set({name: null}), select).
+		ok(!select.title).
+		ok(!select.name).
 
 	it ("has kill() and empty() methods").
 		equal(select.kill(), select).
