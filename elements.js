@@ -2,8 +2,8 @@
 
 
 /*
-* @version    0.2.2
-* @date       2014-05-24
+* @version    0.2.3
+* @date       2014-06-02
 * @stability  1 - Experimental
 * @author     Lauri Rooden <lauri@rooden.ee>
 * @license    MIT License
@@ -99,8 +99,7 @@
 					var len = child.length
 					, i = 0
 					, fragment = doc.createDocumentFragment();
-					i < len
-					; ) proto.append.call(fragment, child[i++]);
+					i < len; ) proto.append.call(fragment, child[i++]);
 				child = fragment
 			}
 
@@ -110,7 +109,7 @@
 					before < 0 ? t.childNodes.length - before - 2 : before
 				] : before) || null
 			)
-			child.append_hook && child.append_hook()
+			if (child.append_hook) child.append_hook()
 			//"child_hook" in t && t.child_hook()
 		}
 		return t
@@ -139,7 +138,7 @@
 
 	proto.addClass = function(name) {
 		var t = this
-		t.className += t.className == "" ? name : t.hasClass(name) ? "" : " " + name
+		t.className += !t.className ? name : t.hasClass(name) ? "" : " " + name
 		return t
 	}
 
@@ -163,10 +162,10 @@
 
 	proto.kill = function() {
 		var t = this
-		t.parentNode && t.parentNode.removeChild(t)
-		Event.removeAll && Event.removeAll(t)
-		t.kill_hook && t.kill_hook()
-		t.empty && t.empty()
+		if (t.parentNode) t.parentNode.removeChild(t)
+		if (Event.removeAll) Event.removeAll(t)
+		if (t.kill_hook) t.kill_hook()
+		if (t.empty) t.empty()
 		return t
 	}
 
@@ -331,6 +330,8 @@
 	root.El = El
 
 }(window, document, "prototype")
+
+
 
 
 

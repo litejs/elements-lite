@@ -2,8 +2,8 @@
 
 
 /*
-* @version  0.2.2
-* @date     2014-05-24
+* @version  0.2.3
+* @date     2014-06-02
 * @author   Lauri Rooden <lauri@rooden.ee>
 * @license  MIT License
 */
@@ -67,18 +67,14 @@
 		return t
 	}
 
-	template.prototype = {
-		cloneNode: This,
-		set: This,
-		done: function() {
-			var t = this
+	template.prototype.done = function() {
+		var t = this
 
-			El.cache(t.name, t.el.removeChild(t.el.firstChild), render)
+		El.cache(t.name, t.el.removeChild(t.el.firstChild), render)
 
-			t.el.plugin = null
+		t.el.plugin = null
 
-			return t.parent
-		}
+		return t.parent
 	}
 
 	var ifFn = template.extend({

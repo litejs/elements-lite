@@ -249,6 +249,11 @@ describe( "Haml" ).
 		equal(getString(t1.render({name:"world"})), '<a><b><i data-bind="text:hello {name}">hello world</i></b></a>').
 		equal(getString(t1.render({name:"moon"})), '<a><b><i data-bind="text:hello {name}">hello moon</i></b></a>').
 
+	it ( "should show set DOM propperty when plugin not found" ).
+		equal(getString(t1 = El.haml("a =unknown_plugin:hello {name}")), '<a data-bind="unknown_plugin:hello {name}"></a>').
+		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:hello {name}" unknown_plugin="hello world"></a>').
+		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:hello {name}" unknown_plugin="hello moon"></a>').
+
 done()
 
 
