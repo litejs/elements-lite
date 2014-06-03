@@ -16,8 +16,8 @@
 <script src="../../date-format-lite/date-format.js"></script>
 <script src="../../liquid-filters-lite/liquid-filters-lite.js"></script>
 <script src="../elements.js"></script>
-<script src="../haml.js"></script>
-<script src="../i18n.js"></script>
+<script src="../lib/haml.js"></script>
+<script src="../lib/i18n.js"></script>
 <script id="index" type="text/haml">
 :template test
  .test
@@ -31,15 +31,18 @@
 :template li-row
  li.row
 
+:template ul3
+	ul.ul3
+
 :template ul2
 	.list
 		.begin
 		ul.list =each:users
-			li =text\:Hello {name|lower}
-				span.rgt>b stop
-			.input =text:Hello <b>{name|upper}</b>
-			.input =html:Hello <b>{name|upper}</b>
-			input =value:Hello {name|upper}
+			li
+				ul3
+				.input =txt:Hello <b>{name|upper}</b>
+				.input =html:Hello <b>{name|upper}</b>
+				input =value:Hello {name|upper}
 		.end \= Static text
 		.foot \> Static text
 .index
@@ -70,9 +73,14 @@ var lang = navigator.language || navigator.userLanguage;
    </ul>
 */
 
+i18n.setLang("en")
 
 
 El.include("index")
+
+El.cache.fn.ul3 = function(){
+	this.txt("kala")
+}
 
 var el = El("ul.test").to(document.body)
 
@@ -108,10 +116,17 @@ el7.append([
 ])
 
 var template1 = El("ul2").to(document.body)
+, users = [{name:"u"+new Date}, {name:"u2"}]
 
+/*/
 setInterval(function(){
-	//template1.render({users:[{name:"u"+new Date}, {name:"u2"}]})
-}, 400)
+	if (users.length > 2) users.length = 2
+	else users.push({name:"u3"+new Date})
+	template1.render({users:users})
+}, 1400)
+//*/
+
+	template1.render({users:users})
 
 </script>
 

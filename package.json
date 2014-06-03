@@ -31,9 +31,9 @@
     "dom-lite": "*"
   },
   "buildman": {
-    "min.js": "elements.js",
-    "haml-min.js": "haml.js",
-    "responsive-min.js": "responsive.js"
+    "dist/elements-min.js": "elements.js",
+    "dist/haml-min.js": "lib/haml.js",
+    "dist/responsive-min.js": "lib/responsive.js"
   },
   "testling": {
     "files": "tests/run-browser.js",

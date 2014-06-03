@@ -1,0 +1,13 @@
+{ "asi": true
+, "boss": true
+, "unused": true
+, "maxparams": 6
+, "maxdepth": 6
+, "maxstatements": 30
+, "maxcomplexity": 10
+, "maxerr": 1000
+, "laxcomma": true
+, "quotmark": "double"
+, "indent": 1
+}
+
