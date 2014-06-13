@@ -18,6 +18,8 @@
 <script src="../elements.js"></script>
 <script src="../lib/haml.js"></script>
 <script src="../lib/i18n.js"></script>
+<script src="../lib/form-to-json.js"></script>
+<script src="../lib/json-to-form.js"></script>
 <script id="index" type="text/haml">
 :template test
  .test
@@ -33,6 +35,24 @@
 
 :template ul3
 	ul.ul3
+
+:template form-test
+ form[action="javascript:"]
+  label
+   b R1
+   input[type=radio][name=r][value=1]
+  label
+   b R2
+   input[type=radio][name=r][value=2]
+  label
+   b Arr
+   input[name="map[key][]"]
+   input[name="map[key][]"]
+  label
+   b Map
+   input[name="map[a]"]
+   input[name="map[b]"]
+  input[type=submit]
 
 :template ul2
 	.list
@@ -128,6 +148,11 @@ setInterval(function(){
 
 	template1.render({users:users})
 
+var form = El("form-test").to(el)
+form.on("submit", function(){
+	console.log("data", JSON.serializeForm(this))
+	return false
+})
 </script>
 
 <div class=test1>
