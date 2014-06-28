@@ -2,13 +2,12 @@
 
 
 /*
-* @version    0.2.3
-* @date       2014-06-03
+* @version    0.2.4
+* @date       2014-06-28
 * @stability  1 - Experimental
 * @author     Lauri Rooden <lauri@rooden.ee>
 * @license    MIT License
 */
-
 
 
 
@@ -23,12 +22,10 @@
 	, proto = (root.HTMLElement || root.Element || El)[protoStr]
 	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\.|.)*?\4|[-\w]+)])?]?/g
 
-
 	/*
 	* Examples:
 	*   - El("input#123.nice[type=checkbox]:checked:disabled[data-lang=en]")
 	*/
-
 
 	function El(name, args) {
 		var el
@@ -42,16 +39,12 @@
 			return ""
 		}) || "div"
 
-		/*
-		* NOTE: IE’s cloneNode operation consolidates the two text nodes together as one
-		* http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
-		*/
-
+		// NOTE: IE’s cloneNode operation consolidates the two text nodes together as one
+		// http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
 		el = (elCache[name] || (elCache[name] = doc.createElement(name))).cloneNode(true).set(pre)
 
 		return fnCache[name] && fnCache[name].call(el, args) || el.set(args)
 	}
-
 
 
 	/* TODO: Extend El api
@@ -73,8 +66,6 @@
 	* returned elements.
 	*/
 
-
-
 	/*
 	* ### element.append( content, [ before ] ) -> element
 	*
@@ -86,15 +77,12 @@
 	*/
 
 	proto.append = function(child, before) {
-		var t = this
+		var el = this
 		if (child) {
 			if (typeof child == "string" || typeof child == "number") child = El.text(child)
 			else if ( !("nodeType" in child) && "length" in child ) {
-				/*
-				* document.createDocumentFragment is unsupported in IE5.5
-				* fragment = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
-				*/
-
+				// document.createDocumentFragment is unsupported in IE5.5
+				// fragment = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
 				for (
 					var len = child.length
 					, i = 0
@@ -103,22 +91,20 @@
 				child = fragment
 			}
 
-			if (child.nodeType) t.insertBefore(child,
-				(before === true ? t.firstChild :
-				typeof before == "number" ? t.childNodes[
-					before < 0 ? t.childNodes.length - before - 2 : before
+			if (child.nodeType) el.insertBefore(child,
+				(before === true ? el.firstChild :
+				typeof before == "number" ? el.childNodes[
+					before < 0 ? el.childNodes.length - before - 2 : before
 				] : before) || null
 			)
 			if (child.append_hook) child.append_hook()
-			//"child_hook" in t && t.child_hook()
+			//"child_hook" in el && el.child_hook()
 		}
-		return t
+		return el
 	}
 
 	proto.after = function(silbing, before) {
-		/*
-		* call append from proto so it works with DocumentFragment
-		*/
+		// call append from proto so it works with DocumentFragment
 		proto.append.call(silbing.parentNode, this, before ? silbing : silbing.nextSibling)
 		return this
 	}
@@ -129,23 +115,21 @@
 	}
 
 	proto.hasClass = function(name) {
-		/*
-		* http://jsperf.com/regexp-indexof-perf/32
-		* return (" "+this.className+" ").indexOf(" "+name+" ") > -1
-		*/
+		// http://jsperf.com/regexp-indexof-perf/32
+		// return (" "+this.className+" ").indexOf(" "+name+" ") > -1
 		return RegExp("\\b" + name + "\\b").test(this.className)
 	}
 
 	proto.addClass = function(name) {
-		var t = this
-		t.className += !t.className ? name : t.hasClass(name) ? "" : " " + name
-		return t
+		var el = this
+		el.className += !el.className ? name : el.hasClass(name) ? "" : " " + name
+		return el
 	}
 
 	proto.rmClass = function(name) {
-		var t = this
-		t.className = (" "+t.className+" ").replace(" "+name+" "," ").trim()
-		return t
+		var el = this
+		el.className = (" "+el.className+" ").replace(" "+name+" "," ").trim()
+		return el
 	}
 
 	proto.toggleClass = function(name, force) {
@@ -155,18 +139,17 @@
 	}
 
 	proto.empty = function() {
-		var t = this, node
-		while (node = t.firstChild) t.kill.call(node)
-		return t
+		for (var node, el = this; node = el.firstChild; ) el.kill.call(node)
+		return el
 	}
 
 	proto.kill = function() {
-		var t = this
-		if (t.parentNode) t.parentNode.removeChild(t)
-		if (Event.removeAll) Event.removeAll(t)
-		if (t.kill_hook) t.kill_hook()
-		if (t.empty) t.empty()
-		return t
+		var el = this
+		if (el.parentNode) el.parentNode.removeChild(el)
+		if (Event.removeAll) Event.removeAll(el)
+		if (el.kill_hook) el.kill_hook()
+		if (el.empty) el.empty()
+		return el
 	}
 
 	proto.on = function(ev, fn) {
@@ -181,11 +164,11 @@
 
 	proto.set = function(args) {
 		var val
-		, t = this
+		, el = this
 		, key = typeof args
 
-		if (!args) return t
-		if (key == "string" || key == "number" || args.nodeType || "length" in args) t.append(args)
+		if (!args) return el
+		if (key == "string" || key == "number" || args.nodeType || "length" in args) el.append(args)
 		else for (key in args)
 		/** hasOwnProperty
 		if (args.hasOwnProperty(arg))
@@ -193,63 +176,52 @@
 		{
 			val = args[key]
 			// El uses class
-			if (key == "class") t.addClass(val)
-			else if (!val) t.removeAttribute(key)
+			if (key == "class") el.addClass(val)
+			else if (!val) el.removeAttribute(key)
 			else if (typeof val == "string") {
-				/*
-				* Note: IE5-7 doesn't set styles and removes events when you try to set them.
-				*
-				* in IE6, a label with a for attribute linked to a select list
-				* will cause a re-selection of the first option instead of just giving focus.
-				* http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
-				*/
-				t.setAttribute(key, val)
+				// Note: IE5-7 doesn't set styles and removes events when you try to set them.
+				//
+				// in IE6, a label with a for attribute linked to a select list
+				// will cause a re-selection of the first option instead of just giving focus.
+				// http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
+				el.setAttribute(key, val)
 
-				/*
-				* there are bug in IE<9 where changed 'name' param not accepted on form submit
-				* The JScript engine used in IE doesn't recognize vertical tabulation character
-				* oldIE = "\v" == "v"
-				* 
-				* IE8 and below also support document.createElement('<P>')
-				*
-				* http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
-				* http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
-				*/
+				// there are bug in IE<9 where changed 'name' param not accepted on form submit
+				// The JScript engine used in IE doesn't recognize vertical tabulation character
+				// oldIE = "\v" == "v"
+				//
+				// IE8 and below also support document.createElement('<P>')
+				//
+				// http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
+				// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 
 				if ((key == "id" || key == "name") && "\v" == "v") {
-					t.mergeAttributes(doc.createElement('<INPUT '+key+'="' + val + '"/>'), false)
+					el.mergeAttributes(doc.createElement('<INPUT '+key+'="' + val + '"/>'), false)
 				}
-
-			}
-			else t[key] = val
+			} else el[key] = val
 		}
-		return t
+		return el
 	}
 
-
-	/*
-	* In Safari 2.x, innerText functions properly only 
-	* if an element is neither hidden (via style.display == "none") 
-	* nor orphaned from the document. 
-	* Otherwise, innerText results in an empty string.
-	*
-	* textContent is suported from IE9
-	*
-	* Opera 9-10 have Node.text, Node.textContent
-	*/
+	// In Safari 2.x, innerText functions properly only
+	// if an element is neither hidden (via style.display == "none")
+	// nor orphaned from the document.
+	// Otherwise, innerText results in an empty string.
+	//
+	// textContent is suported from IE9
+	//
+	// Opera 9-10 have Node.text, Node.textContent
 
 	proto.txt = function(newText) {
-		var t = this
-		, attr = "textContent" in t ? "textContent" : "innerText"
-		return arguments.length ? (t[attr] = newText) : t[attr]
+		var el = this
+		, attr = "textContent" in el ? "textContent" : "innerText"
+		return arguments.length ? (el[attr] = newText) : el[attr]
 	}
 
-	/*
-	* Expose slow find for testing
-	*
-	* TODO: look another way
-	* http://ajaxian.com/archives/creating-a-queryselector-for-ie-that-runs-at-native-speed
-	*/
+	// Expose slow find for testing
+	//
+	// TODO: look another way
+	// http://ajaxian.com/archives/creating-a-queryselector-for-ie-that-runs-at-native-speed
 
 	proto._find = function(sel) {
 		var el
@@ -275,9 +247,7 @@
 
 	proto.find = doc.querySelector ?
 		function(sel) {
-			/*
-			* Note: IE8 don't support :disabled
-			*/
+			// Note: IE8 don't support :disabled
 			return this.querySelector(sel)
 		} : proto._find
 
@@ -288,28 +258,21 @@
 	}
 
 
-
+	// IE 6-7
 	if (proto === El[protoStr]) {
-		/*
-		* IE 6-7
-		*/
-
 		var create = doc.createElement
 		doc.createElement = function(name) {return extend(create(name))}
 
 		extend(doc.body)
 
-		/*
-		* Remove background image flickers on hover in IE6
-		*
-		* You could also use CSS
-		* html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
-		*/
+		// Remove background image flickers on hover in IE6
+		//
+		// You could also use CSS
+		// html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
 		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
 
 	El[protoStr] = proto
-
 
 	El.get = function(id) {
 		if (typeof id == "string") id = doc.getElementById(id)
@@ -328,10 +291,6 @@
 		return doc.createTextNode(str)
 	}
 	root.El = El
-
 }(window, document, "prototype")
-
-
-
 
 
