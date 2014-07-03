@@ -2,8 +2,8 @@
 
 
 /*
-* @version    0.2.4
-* @date       2014-06-28
+* @version    0.2.5
+* @date       2014-07-03
 * @stability  1 - Experimental
 * @author     Lauri Rooden <lauri@rooden.ee>
 * @license    MIT License
@@ -223,33 +223,63 @@
 	// TODO: look another way
 	// http://ajaxian.com/archives/creating-a-queryselector-for-ie-that-runs-at-native-speed
 
-	proto._find = function(sel) {
+	function findEl(node, sel, first) {
 		var el
 		, i = 0
+		, out = []
 		, rules = ["_"]
 		, tag = sel.replace(elRe, function(_, o, s, v) {
-				rules.push(
-					o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" :
-					o == "#" ? "_.id=='"+s+"'" :
-					"_.getAttribute('"+s+"')"+(v?"=='"+v+"'":"")
-				)
-				return ""
-			}) || "*"
-		, els = this.getElementsByTagName(tag)
+			rules.push(
+				o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" :
+				o == "#" ? "_.id=='"+s+"'" :
+				"_.getAttribute('"+s+"')"+(v?"=='"+v+"'":"")
+			)
+			return ""
+		}) || "*"
+		, els = node.getElementsByTagName(tag)
 		, fn = Function("_", "return " + rules.join("&&"))
 
-		while (el = els[i++]) {
-			if (fn(el)) {
-				return el.to ? el : extend(el)
-			}
+		for (; el = els[i++]; ) if (fn(el)) {
+			if (first) return el
+			out.push(el)
 		}
+		return first ? null : out
 	}
 
 	proto.find = doc.querySelector ?
 		function(sel) {
 			// Note: IE8 don't support :disabled
 			return this.querySelector(sel)
-		} : proto._find
+		} :
+		function(sel) {
+			return findEl(this, sel, true)
+		}
+
+	proto.findAll = doc.querySelectorAll ?
+		function(sel) {
+			return new ElAll(this.querySelectorAll(sel))
+		} :
+		function(sel) {
+			return new ElAll(findEl(this, sel))
+		}
+
+	function ElAll(nodes) {
+		this._nodes = nodes
+	}
+
+	ElAll.prototype = Object.keys(proto).reduce(function(memo, key) {
+		memo[key] = function() {
+			var elAll = this
+			, nodes = elAll._nodes
+			, i = 0
+			, len = nodes.length
+			for (; i < len; ) {
+				proto[key].apply(nodes[i++], arguments)
+			}
+			return elAll
+		}
+		return memo
+	}, {})
 
 
 	function extend(node, key) {
