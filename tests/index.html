@@ -128,15 +128,12 @@ var el7 = El("li", 7).to(el)
 
 el7.append([
 	" " + (el.find("[data-id=li-123]") === el3),
-	" " + (el._find("[data-id=li-123]") === el3),
 	" " + (el.find("#el-4") === el4),
-	" " + (el._find("#el-4") === el4),
-	" " + (el.find(".li-4") === el4),
-	" " + (el._find(".li-4") === el4)
+	" " + (el.find(".li-4") === el4)
 ])
 
 var template1 = El("ul2").to(document.body)
-, users = [{name:"u"+new Date}, {name:"u2"}]
+, users = [{i:1, name:"u"+new Date}, {i:2, name:"u2"}]
 
 /*/
 setInterval(function(){
