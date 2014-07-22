@@ -293,6 +293,7 @@
 		var create = doc.createElement
 		doc.createElement = function(name) {return extend(create(name))}
 
+		// NOTE: document.body will not get extended with later added extensions, eg. template render
 		extend(doc.body)
 
 		// Remove background image flickers on hover in IE6

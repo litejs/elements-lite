@@ -245,14 +245,14 @@ describe( "Haml" ).
 			]).
 
 	it ( "should render data to elements" ).
-		equal(getString(t1 = El.haml("a>b>i =txt:hello {name}")), '<a><b><i data-bind="txt:hello {name}"></i></b></a>').
-		equal(getString(t1.render({name:"world"})), '<a><b><i data-bind="txt:hello {name}">hello world</i></b></a>').
-		equal(getString(t1.render({name:"moon"})), '<a><b><i data-bind="txt:hello {name}">hello moon</i></b></a>').
+		equal(getString(t1 = El.haml("a>b>i =txt:'hello {name}'")), '<a><b><i data-bind="txt:\'hello {name}\'"></i></b></a>').
+		equal(getString(t1.render({name:"world"})), '<a><b><i data-bind="txt:\'hello {name}\'">hello world</i></b></a>').
+		equal(getString(t1.render({name:"moon"})), '<a><b><i data-bind="txt:\'hello {name}\'">hello moon</i></b></a>').
 
 	it ( "should show set DOM propperty when plugin not found" ).
-		equal(getString(t1 = El.haml("a =unknown_plugin:hello {name}")), '<a data-bind="unknown_plugin:hello {name}"></a>').
-		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:hello {name}" unknown_plugin="hello world"></a>').
-		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:hello {name}" unknown_plugin="hello moon"></a>').
+		equal(getString(t1 = El.haml("a =unknown_plugin:\'hello {name}\'")), '<a data-bind="unknown_plugin:\'hello {name}\'"></a>').
+		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello world"></a>').
+		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello moon"></a>').
 
 done()
 

@@ -56,7 +56,8 @@
 
 :template ul2
 	.list
-		.begin
+		.begin each:["a", "b", "c"]
+			.row
 		ul.list =each:users
 			li
 				ul3
