@@ -3,7 +3,7 @@
 
 /*
 * @version    0.2.5
-* @date       2014-07-03
+* @date       2014-07-22
 * @stability  1 - Experimental
 * @author     Lauri Rooden <lauri@rooden.ee>
 * @license    MIT License
