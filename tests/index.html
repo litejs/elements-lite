@@ -60,9 +60,9 @@
 		ul.list =each:users
 			li
 				ul3
-				.input =txt:Hello <b>{name|upper}</b>
-				.input =html:Hello <b>{name|upper}</b>
-				input =value:Hello {name|upper}
+				.input =txt:"Hello <b>{name|upper}</b>"; title:name; class: "my-class", "i>1"
+				.input =html:"Hello <b>{name|upper}</b>"
+				input =value:"Hello {name|upper}"
 		.end \= Static text
 		.foot \> Static text
 .index
@@ -133,7 +133,7 @@ el7.append([
 ])
 
 var template1 = El("ul2").to(document.body)
-, users = [{i:1, name:"u"+new Date}, {i:2, name:"u2"}]
+, users2 = [{i:1, name:"u"+new Date}, {i:2, name:"u2"}]
 
 /*/
 setInterval(function(){
@@ -143,7 +143,7 @@ setInterval(function(){
 }, 1400)
 //*/
 
-	template1.render({users:users})
+	template1.render({users:users2})
 
 var form = El("form-test").to(el)
 form.on("submit", function(){
