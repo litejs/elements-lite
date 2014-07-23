@@ -21,6 +21,7 @@
 	, fnCache = {}
 	, proto = (root.HTMLElement || root.Element || El)[protoStr]
 	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\.|.)*?\4|[-\w]+)])?]?/g
+	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\.|.)*?\3|[-,\s\w])*))?/g
 
 	/*
 	* Examples:
@@ -203,6 +204,43 @@
 		return el
 	}
 
+	// Use node initial content as template
+	function getTemplate(node) {
+		var child, template = node._template
+		if (!template) {
+			node._template = template = []
+			for (; child = node.firstChild;) {
+				template.push(child);
+				node.removeChild(child)
+			}
+		}
+		return template
+	}
+
+	function render(data, skipSelf) {
+		var bind, fn, lang
+		, node = this
+
+		if (bind = !skipSelf && node.getAttribute("data-bind")) {
+			lang = node.getAttribute("lang") || lang
+			// i18n(bind, lang).format(data)
+			// document.documentElement.lang
+			// document.getElementsByTagName('html')[0].getAttribute('lang')
+
+			fn = "n d p->d&&(" + bind.replace(renderRe, "(p['$1']?p['$1'](n,d,$2):(n['$1']=$2.format(d))),") + "true)"
+
+			fn.fn("d")(node, data, El.bindings)
+			return node
+		}
+
+		for (node = node.firstChild; node; node = node.nextSibling) {
+			if (node.nodeType == 1) render.call(node, data)
+		}
+		return this
+	}
+
+	proto.render = render
+
 	// In Safari 2.x, innerText functions properly only
 	// if an element is neither hidden (via style.display == "none")
 	// nor orphaned from the document.
@@ -321,6 +359,34 @@
 	El.text = function(str) {
 		return doc.createTextNode(str)
 	}
+
+	El.bindings = {
+		"txt": function(node, data, text) {
+			node.txt(text.format(data))
+		},
+		"class": function(node, data, name, fn) {
+			node.toggleClass(name, fn.fn("_")(data))
+		},
+		"html": function(node, data, html) {
+			node.innerHTML = html.format(data)
+		},
+		"with": function(node, data, scope) {
+			render.call(node, scope, true)
+		},
+		"if": function(node, data, fn) {
+			var template = getTemplate(node)
+			node.empty().append( fn.fn("_")(data) && template )
+		},
+		"each": function(node, data, arr) {
+			var template = getTemplate(node)
+			if (arr) node.empty().append(arr.map(function(obj) {
+				return template.map(function(el) {
+					return render.call(el.cloneNode(true), obj)
+				})
+			}))
+		}
+	}
+
 	root.El = El
 }(window, document, "prototype")
 
