@@ -2,18 +2,17 @@
 
 
 /*
-* @version    0.2.5
-* @date       2014-07-22
-* @stability  1 - Experimental
-* @author     Lauri Rooden <lauri@rooden.ee>
-* @license    MIT License
-*/
+ * @version    0.2.5
+ * @date       2014-07-23
+ * @stability  1 - Experimental
+ * @author     Lauri Rooden <lauri@rooden.ee>
+ * @license    MIT License
+ */
 
 
 
-/* TODO: find ways for automated testing
-* http://www.browserscope.org/user/tests/howto
-*/
+// TODO: find ways for automated testing
+// http://www.browserscope.org/user/tests/howto
 
 
 !function(root, doc, protoStr) {
@@ -24,9 +23,9 @@
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\.|.)*?\3|[-,\s\w])*))?/g
 
 	/*
-	* Examples:
-	*   - El("input#123.nice[type=checkbox]:checked:disabled[data-lang=en]")
-	*/
+	 * Examples:
+	 *   - El("input#123.nice[type=checkbox]:checked:disabled[data-lang=en]")
+	 */
 
 	function El(name, args) {
 		var el
@@ -48,38 +47,34 @@
 	}
 
 
-	/* TODO: Extend El api
-	* add El.siblings( [selector ] )
-	* add El.children( [selector ] )
-	* add El.invoke
-	* https://github.com/WebReflection/dom4#dom4
-	*/
+	// TODO: Extend El api
+	// add El.siblings( [selector ] )
+	// add El.children( [selector ] )
+	// add El.invoke
+	// https://github.com/WebReflection/dom4#dom4
 
-	/*
-	* How elements.js extends the DOM
-	* -------------------------------
-	*
-	* All DOM extensions on the element are available by default.
-	*
-	* In browsers that does not support adding methods to prototype of native objects
-	* such as HTMLElement or Element, document.createElement will be overrided
-	* to extend created elements. El.get() and element.find will extend
-	* returned elements.
-	*/
+	//
+	// How elements.js extends the DOM
+	// -------------------------------
+	//
+	// All DOM extensions on the element are available by default.
+	//
+	// In browsers that does not support adding methods to prototype of native objects
+	// such as HTMLElement or Element, document.createElement will be overrided
+	// to extend created elements. El.get() and element.find will extend
+	// returned elements.
 
-	/*
-	* ### element.append( content, [ before ] ) -> element
-	*
-	* - **content** `element || Array || String || Number`
-	* - **before** `optional`
-	*     - true - Insert content to the beginning of element
-	*     - element - Insert content before specified element
-	*     - Number - Insert content before nth child
-	*/
+	// ### element.append( content, [ before ] ) -> element
+	//
+	// - **content** `element || Array || String || Number`
+	// - **before** `optional`
+	//     - true - Insert content to the beginning of element
+	//     - element - Insert content before specified element
+	//     - Number - Insert content before nth child
 
-	proto.append = function(child, before) {
-		var el = this
-		if (child) {
+	function append(child, before) {
+	       var el = this
+	       if (child) {
 			if (typeof child == "string" || typeof child == "number") child = El.text(child)
 			else if ( !("nodeType" in child) && "length" in child ) {
 				// document.createDocumentFragment is unsupported in IE5.5
@@ -88,7 +83,7 @@
 					var len = child.length
 					, i = 0
 					, fragment = doc.createDocumentFragment();
-					i < len; ) proto.append.call(fragment, child[i++]);
+					i < len; ) append.call(fragment, child[i++]);
 				child = fragment
 			}
 
@@ -103,15 +98,16 @@
 		}
 		return el
 	}
+	proto.append = append
 
 	proto.after = function(silbing, before) {
 		// call append from proto so it works with DocumentFragment
-		proto.append.call(silbing.parentNode, this, before ? silbing : silbing.nextSibling)
+		append.call(silbing.parentNode, this, before ? silbing : silbing.nextSibling)
 		return this
 	}
 
 	proto.to = function(parent, before) {
-		proto.append.call(parent, this, before)
+		append.call(parent, this, before)
 		return this
 	}
 
@@ -140,11 +136,11 @@
 	}
 
 	proto.empty = function() {
-		for (var node, el = this; node = el.firstChild; ) el.kill.call(node)
+		for (var node, el = this; node = el.firstChild; ) kill.call(node)
 		return el
 	}
 
-	proto.kill = function() {
+	function kill() {
 		var el = this
 		if (el.parentNode) el.parentNode.removeChild(el)
 		if (Event.removeAll) Event.removeAll(el)
@@ -152,6 +148,7 @@
 		if (el.empty) el.empty()
 		return el
 	}
+	proto.kill = kill
 
 	proto.on = function(ev, fn) {
 		Event.add(this, ev, fn)
@@ -169,7 +166,7 @@
 		, key = typeof args
 
 		if (!args) return el
-		if (key == "string" || key == "number" || args.nodeType || "length" in args) el.append(args)
+		if (key == "string" || key == "number" || args.nodeType || "length" in args) append.call(el, args)
 		else for (key in args)
 		/** hasOwnProperty
 		if (args.hasOwnProperty(arg))
@@ -340,6 +337,7 @@
 		// html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
 		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
+	root.El = El
 
 	El[protoStr] = proto
 
@@ -348,14 +346,17 @@
 		return id && id.to ? id : extend(id)
 	}
 
-	El.cache = function(name, el, custom) {
+	function elCacheFn(name, el, custom) {
 		elCache[name] = typeof el == "string" ? El(el) : el
 		if (custom) {
 			fnCache[name] = custom
 		}
 	}
-	El.cache.el = elCache
-	El.cache.fn = fnCache
+
+	elCacheFn.el = elCache
+	elCacheFn.fn = fnCache
+	El.cache = elCacheFn
+
 	El.text = function(str) {
 		return doc.createTextNode(str)
 	}
@@ -387,7 +388,6 @@
 		}
 	}
 
-	root.El = El
 }(window, document, "prototype")
 
 
