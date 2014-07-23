@@ -2,7 +2,7 @@
 
 
 /*
- * @version    0.2.5
+ * @version    0.3.0
  * @date       2014-07-23
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
@@ -93,15 +93,15 @@
 					before < 0 ? el.childNodes.length - before - 2 : before
 				] : before) || null
 			)
-			if (child.append_hook) child.append_hook()
-			//"child_hook" in el && el.child_hook()
+			if (child.appendHook) child.appendHook()
+			//"childHook" in el && el.childHook()
 		}
 		return el
 	}
 	proto.append = append
 
 	proto.after = function(silbing, before) {
-		// call append from proto so it works with DocumentFragment
+		// call append so it works with DocumentFragment
 		append.call(silbing.parentNode, this, before ? silbing : silbing.nextSibling)
 		return this
 	}
@@ -144,7 +144,7 @@
 		var el = this
 		if (el.parentNode) el.parentNode.removeChild(el)
 		if (Event.removeAll) Event.removeAll(el)
-		if (el.kill_hook) el.kill_hook()
+		if (el.killHook) el.killHook()
 		if (el.empty) el.empty()
 		return el
 	}
@@ -203,7 +203,8 @@
 
 	// Use node initial content as template
 	function getTemplate(node) {
-		var child, template = node._template
+		var child
+		, template = node._template
 		if (!template) {
 			node._template = template = []
 			for (; child = node.firstChild;) {
@@ -353,8 +354,8 @@
 		}
 	}
 
-	elCacheFn.el = elCache
-	elCacheFn.fn = fnCache
+	elCacheFn._el = elCache
+	elCacheFn._fn = fnCache
 	El.cache = elCacheFn
 
 	El.text = function(str) {
