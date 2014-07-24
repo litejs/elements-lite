@@ -3,7 +3,7 @@
 
 /*
  * @version    0.3.0
- * @date       2014-07-23
+ * @date       2014-07-24
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -39,7 +39,7 @@
 			return ""
 		}) || "div"
 
-		// NOTE: IE’s cloneNode operation consolidates the two text nodes together as one
+		// NOTE: IE-s cloneNode consolidates the two text nodes together as one
 		// http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
 		el = (elCache[name] || (elCache[name] = doc.createElement(name))).cloneNode(true).set(pre)
 
@@ -111,27 +111,30 @@
 		return this
 	}
 
-	proto.hasClass = function(name) {
+	function hasClass(name) {
 		// http://jsperf.com/regexp-indexof-perf/32
 		// return (" "+this.className+" ").indexOf(" "+name+" ") > -1
 		return RegExp("\\b" + name + "\\b").test(this.className)
 	}
+	proto.hasClass = hasClass
 
-	proto.addClass = function(name) {
+	function addClass(name) {
 		var el = this
-		el.className += !el.className ? name : el.hasClass(name) ? "" : " " + name
+		el.className += !el.className ? name : hasClass.call(el, name) ? "" : " " + name
 		return el
 	}
+	proto.addClass = addClass
 
-	proto.rmClass = function(name) {
+	function rmClass(name) {
 		var el = this
 		el.className = (" "+el.className+" ").replace(" "+name+" "," ").trim()
 		return el
 	}
+	proto.rmClass = rmClass
 
 	proto.toggleClass = function(name, force) {
-		if (arguments.length == 1) force = !this.hasClass(name)
-		this[ force ? "addClass" : "rmClass" ](name)
+		if (arguments.length == 1) force = !hasClass.call(this, name)
+		;( force ? addClass : rmClass ).call(this, name)
 		return force
 	}
 
@@ -167,14 +170,10 @@
 
 		if (!args) return el
 		if (key == "string" || key == "number" || args.nodeType || "length" in args) append.call(el, args)
-		else for (key in args)
-		/** hasOwnProperty
-		if (args.hasOwnProperty(arg))
-		//*/
-		{
+		else for (key in args) {
 			val = args[key]
 			// El uses class
-			if (key == "class") el.addClass(val)
+			if (key == "class") addClass.call(el, val)
 			else if (!val) el.removeAttribute(key)
 			else if (typeof val == "string") {
 				// Note: IE5-7 doesn't set styles and removes events when you try to set them.
@@ -199,20 +198,6 @@
 			} else el[key] = val
 		}
 		return el
-	}
-
-	// Use node initial content as template
-	function getTemplate(node) {
-		var child
-		, template = node._template
-		if (!template) {
-			node._template = template = []
-			for (; child = node.firstChild;) {
-				template.push(child);
-				node.removeChild(child)
-			}
-		}
-		return template
 	}
 
 	function render(data, skipSelf) {
@@ -254,9 +239,7 @@
 		return arguments.length ? (el[attr] = newText) : el[attr]
 	}
 
-	// Expose slow find for testing
-	//
-	// TODO: look another way
+	// NOTE: fast selectors for IE
 	// http://ajaxian.com/archives/creating-a-queryselector-for-ie-that-runs-at-native-speed
 
 	function findEl(node, sel, first) {
@@ -273,7 +256,7 @@
 			return ""
 		}) || "*"
 		, els = node.getElementsByTagName(tag)
-		, fn = Function("_", "return " + rules.join("&&"))
+		, fn = Fn(rules.join("&&"))
 
 		for (; el = els[i++]; ) if (fn(el)) {
 			if (first) return el
@@ -282,16 +265,13 @@
 		return first ? null : out
 	}
 
-	proto.find = doc.querySelector ?
-		function(sel) {
-			// Note: IE8 don't support :disabled
-			return this.querySelector(sel)
-		} :
-		function(sel) {
-			return findEl(this, sel, true)
-		}
+	// Note: IE8 don't support :disabled
+	// TODO: test with IE, should it be proto.querySelector or body.querySelector
+	proto.find = proto.querySelector || function(sel) {
+		return findEl(this, sel, true)
+	}
 
-	proto.findAll = doc.querySelectorAll ?
+	proto.findAll = proto.querySelectorAll ?
 		function(sel) {
 			return new ElAll(this.querySelectorAll(sel))
 		} :
@@ -329,7 +309,7 @@
 		var create = doc.createElement
 		doc.createElement = function(name) {return extend(create(name))}
 
-		// NOTE: document.body will not get extended with later added extensions, eg. template render
+		// NOTE: document.body will not get extended with later added extensions
 		extend(doc.body)
 
 		// Remove background image flickers on hover in IE6
@@ -360,6 +340,20 @@
 
 	El.text = function(str) {
 		return doc.createTextNode(str)
+	}
+
+	// Use node initial content as template
+	function getTemplate(node) {
+		var child
+		, template = node._template
+		if (!template) {
+			node._template = template = []
+			for (; child = node.firstChild;) {
+				template.push(child);
+				node.removeChild(child)
+			}
+		}
+		return template
 	}
 
 	El.bindings = {
