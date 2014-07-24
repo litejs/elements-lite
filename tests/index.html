@@ -23,12 +23,16 @@
 <script id="index" type="text/haml">
 :template test
  .test
-  a#button1.link1.link2[title=Link][href="#A link"] > b.bold1 > i.ital1 A Link
-  a#button1.link1.link2[title='A Link'][href="#A"] = A Link
+  a#button1.link1.link2[title=Link][href="#A link 1"] > b.bold1 > i.ital1 A Link 2
+  a#button1.link1.link2[title='A Link 3'][href="#A"] A Link 4
   h3
    .div DIV
-     .ok =if:true
-   :same plain text
+     .ok =if:"false"
+       :text This text will not be visible
+     .ok =if:"true"
+       :text This text will be visible
+   :same undefined plugin
+   :text plain text
 
 :template li-row
  li.row

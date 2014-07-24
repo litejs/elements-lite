@@ -21,6 +21,35 @@
 	, proto = (root.HTMLElement || root.Element || El)[protoStr]
 	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\.|.)*?\4|[-\w]+)])?]?/g
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\.|.)*?\3|[-,\s\w])*))?/g
+	, bindings = El.bindings = {
+		"txt": function(node, data, text) {
+			node.txt(text.format(data))
+		},
+		"class": function(node, data, name, fn) {
+			node.toggleClass(name, fn.fn("_")(data))
+		},
+		"html": function(node, data, html) {
+			node.innerHTML = html.format(data)
+		},
+		/**
+		"with": function(node, data, scope) {
+			render.call(node, scope, true)
+		},
+		"if": function(node, data, fn) {
+			var childs = getChilds(node)
+			node.empty().append( fn.fn("_")(data) && childs )
+		},
+		//*/
+		"each": function(node, data, arr) {
+			var childs = getChilds(node)
+			if (arr) node.empty().append(arr.map(function(obj) {
+				return childs.map(function(el) {
+					return render.call(el.cloneNode(true), obj)
+				})
+			}))
+		}
+	}
+
 
 	/*
 	 * Examples:
@@ -134,8 +163,7 @@
 
 	proto.toggleClass = function(name, force) {
 		if (arguments.length == 1) force = !hasClass.call(this, name)
-		;( force ? addClass : rmClass ).call(this, name)
-		return force
+		return ( force ? addClass : rmClass ).call(this, name), force
 	}
 
 	proto.empty = function() {
@@ -200,6 +228,20 @@
 		return el
 	}
 
+	// Save node initial content for later use
+	function getChilds(node) {
+		var child
+		, childs = node._childs
+		if (!childs) {
+			node._childs = childs = []
+			for (; child = node.firstChild;) {
+				childs.push(child);
+				node.removeChild(child)
+			}
+		}
+		return childs
+	}
+
 	function render(data, skipSelf) {
 		var bind, fn, lang
 		, node = this
@@ -212,7 +254,7 @@
 
 			fn = "n d p->d&&(" + bind.replace(renderRe, "(p['$1']?p['$1'](n,d,$2):(n['$1']=$2.format(d))),") + "true)"
 
-			fn.fn("d")(node, data, El.bindings)
+			fn.fn("d")(node, data, bindings)
 			return node
 		}
 
@@ -340,47 +382,6 @@
 
 	El.text = function(str) {
 		return doc.createTextNode(str)
-	}
-
-	// Use node initial content as template
-	function getTemplate(node) {
-		var child
-		, template = node._template
-		if (!template) {
-			node._template = template = []
-			for (; child = node.firstChild;) {
-				template.push(child);
-				node.removeChild(child)
-			}
-		}
-		return template
-	}
-
-	El.bindings = {
-		"txt": function(node, data, text) {
-			node.txt(text.format(data))
-		},
-		"class": function(node, data, name, fn) {
-			node.toggleClass(name, fn.fn("_")(data))
-		},
-		"html": function(node, data, html) {
-			node.innerHTML = html.format(data)
-		},
-		"with": function(node, data, scope) {
-			render.call(node, scope, true)
-		},
-		"if": function(node, data, fn) {
-			var template = getTemplate(node)
-			node.empty().append( fn.fn("_")(data) && template )
-		},
-		"each": function(node, data, arr) {
-			var template = getTemplate(node)
-			if (arr) node.empty().append(arr.map(function(obj) {
-				return template.map(function(el) {
-					return render.call(el.cloneNode(true), obj)
-				})
-			}))
-		}
 	}
 
 }(window, document, "prototype")
