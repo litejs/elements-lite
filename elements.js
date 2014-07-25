@@ -3,7 +3,7 @@
 
 /*
  * @version    0.3.0
- * @date       2014-07-24
+ * @date       2014-07-25
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -47,6 +47,7 @@
 					return render.call(el.cloneNode(true), obj)
 				})
 			}))
+			return node
 		}
 	}
 
@@ -250,10 +251,9 @@
 			// document.documentElement.lang
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
 
-			fn = "n d p->d&&(" + bind.replace(renderRe, "(p['$1']?p['$1'](n,d,$2):(n['$1']=$2.format(d))),") + "true)"
+			fn = "n d p r->d&&(" + bind.replace(renderRe, "(p['$1']?(r=p['$1'](n,d,$2)||r):(n['$1']=$2.format(d))),") + "r)"
 
-			fn.fn("d")(node, data, bindings)
-			return node
+			if (fn.fn("d")(node, data, bindings)) return node
 		}
 
 		for (node = node.firstChild; node; node = node.nextSibling) {
