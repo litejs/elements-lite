@@ -62,7 +62,7 @@
 		, pre = {}
 		name = name.replace(elRe, function(_, op, key, val, quotation) {
 			pre[
-				op == "." ? (op = "className", (pre[op] && (key = pre[op]+" "+key)), op) :
+				op == "." ? (op = "class", (pre[op] && (key = pre[op]+" "+key)), op) :
 				op == "#" ? "id" :
 				key
 			] = (quotation ? val.slice(1, -1): val) || key
@@ -201,7 +201,9 @@
 		if (key == "string" || key == "number" || args.nodeType || "length" in args) append.call(el, args)
 		else for (key in args) {
 			val = args[key]
-			if (!val) el.removeAttribute(key)
+			// El uses class
+			if (key == "class") addClass.call(el, val)
+			else if (!val) el.removeAttribute(key)
 			else if (typeof val == "string") {
 				// Note: IE5-7 doesn't set styles and removes events when you try to set them.
 				//
