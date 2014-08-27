@@ -2,8 +2,8 @@
 
 
 /*
- * @version    0.3.0
- * @date       2014-07-25
+ * @version    0.3.1
+ * @date       2014-08-27
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -255,7 +255,7 @@
 
 			fn = "n d p r->d&&(" + bind.replace(renderRe, "(p['$1']?(r=p['$1'](n,d,$2)||r):(n['$1']=$2.format(d))),") + "r)"
 
-			if (fn.fn("d")(node, data, bindings)) return node
+			if (fn.fn()(node, data, bindings)) return node
 		}
 
 		for (node = node.firstChild; node; node = node.nextSibling) {
