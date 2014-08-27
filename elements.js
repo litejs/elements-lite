@@ -309,7 +309,7 @@
 
 	// Note: IE8 don't support :disabled
 	// TODO: test with IE, should it be proto.querySelector or body.querySelector
-	proto.find = proto.querySelector || function(sel) {
+	proto.find = "\v" !== "v" && proto.querySelector || function(sel) {
 		return findEl(this, sel, true)
 	}
 
