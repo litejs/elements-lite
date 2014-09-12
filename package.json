@@ -11,7 +11,7 @@
     "DOM",
     "litejs"
   ],
-  "main": "elements.js",
+  "main": "index.js",
   "readmeFilename": "README.md",
   "scripts": {
     "build": "node node_modules/buildman/index.js --all",
@@ -31,7 +31,7 @@
     "dom-lite": "*"
   },
   "buildman": {
-    "dist/elements-min.js": "elements.js",
+    "dist/index-min.js": "index.js",
     "dist/responsive-min.js": "lib/responsive.js"
   },
   "testling": {
