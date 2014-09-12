@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "stability": 1,
   "license": "MIT",
   "author": "Lauri Rooden <lauri@rooden.ee>",
@@ -32,7 +32,6 @@
   },
   "buildman": {
     "dist/elements-min.js": "elements.js",
-    "dist/haml-min.js": "lib/haml.js",
     "dist/responsive-min.js": "lib/responsive.js"
   },
   "testling": {

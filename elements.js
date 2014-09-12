@@ -1,9 +1,9 @@
 
 
 
-/*
- * @version    0.3.1
- * @date       2014-08-27
+/**
+ * @version    0.3.2
+ * @date       2014-09-12
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -15,11 +15,12 @@
 // http://www.browserscope.org/user/tests/howto
 
 
-!function(root, doc, protoStr) {
+!function(window, doc, protoStr) {
 	var elCache = {}
 	, fnCache = {}
-	, proto = (root.HTMLElement || root.Element || El)[protoStr]
+	, proto = (window.HTMLElement || window.Element || El)[protoStr]
 	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\.|.)*?\4|[-\w]+)])?]?/g
+	, tplRe = /^([ \t]*)(\:?)((?:(["'\/])(?:\\.|.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\.|.)*?\3|[-,\s\w])*))?/g
 	, bindings = El.bindings = {
 		"txt": function(node, data, text) {
@@ -247,8 +248,14 @@
 		var bind, fn, lang
 		, node = this
 
+		if (bind = !skipSelf && node.getAttribute("data-call")) {
+			console.log("node", node, bind)
+			fnCache[bind].call(node)
+		}
 		if (bind = !skipSelf && node.getAttribute("data-bind")) {
 			lang = node.getAttribute("lang") || lang
+			// HACK: allow .el ={name} short syntax
+			if (bind.charAt(0) == "{") bind='txt:"' + bind.replace(/"/g, '\\"') + '"'
 			// i18n(bind, lang).format(data)
 			// document.documentElement.lang
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
@@ -360,7 +367,7 @@
 		// html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
 		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
-	root.El = El
+	window.El = El
 
 	El[protoStr] = proto
 
@@ -372,6 +379,7 @@
 	function elCacheFn(name, el, custom) {
 		elCache[name] = typeof el == "string" ? El(el) : el
 		if (custom) {
+			if (custom != render) el.setAttribute("data-call", name)
 			fnCache[name] = custom
 		}
 	}
@@ -384,6 +392,91 @@
 		return doc.createTextNode(str)
 	}
 
+
+	function tpl(str) {
+		var root = document.createDocumentFragment()
+		, parent = root
+		, stack = [-1]
+
+		function work(all, indent, plugin, name, q, text) {
+			for (var i = indent.length; i <= stack[0]; ) {
+				stack.shift()
+				parent = (parent.plugin) ? parent.plugin.done() : parent.parentNode
+			}
+
+			if (plugin) {
+				if (tpl.plugins[name]) {
+					parent = (new tpl.plugins[name](parent, text)).el
+					stack.unshift(i)
+				} else {
+					parent.append(El.text( name == "text" ? text : all ))
+				}
+			} else {
+				if (name) {
+					parent = El(name).to(parent)
+					stack.unshift(i)
+				}
+				if (text) {
+					if (text.charAt(0) == ">") {
+						(indent +" "+ text.slice(1)).replace(tplRe, work)
+					} else if (text.charAt(0) == "=") {
+						parent.set({"data-bind": text.slice(1)})
+					} else {
+						parent.append(text.replace(/\\([=>:])/g, "$1"))
+					}
+				}
+			}
+		}
+		str.replace(tplRe, work)
+		stack = root.childNodes
+		if (stack.length == 1) return stack[0]
+
+		for (var arr = [], i = stack.length; i--;) arr[i] = stack[i]
+		return arr
+	}
+
+	function template(parent, name) {
+		var t = this
+		t.name = name
+		t.parent = parent
+		t.el = El("div")
+		t.el.plugin = t
+		return t
+	}
+
+	template.prototype.done = function() {
+		var t = this
+
+		El.cache(t.name, t.el.removeChild(t.el.firstChild), render)
+
+		t.el.plugin = null
+
+		return t.parent
+	}
+
+	tpl.plugins = {
+		/*
+		 * - Declaration
+		 * mixin list
+		 *
+		 * mixin link(href, name)
+		 *   a(class!=attributes.class, href=href)= name
+		 *
+		 * +link('/foo', 'foo')(class="btn")
+		 *
+		 * :include
+		 * :doctype
+		 * - http://stackoverflow.com/questions/8227612/how-to-create-document-objects-with-javascript
+		 */
+		"template": template
+	}
+
+	El.tpl = tpl
+	El.include = function(id, data, parent) {
+		var src = El.get(id)
+		new template(null, id).el.append( El.tpl(src.innerHTML) ).plugin.done()
+		src.kill()
+	}
 }(window, document, "prototype")
 
 
