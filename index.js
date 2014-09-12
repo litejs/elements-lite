@@ -15,7 +15,7 @@
 // http://www.browserscope.org/user/tests/howto
 
 
-!function(window, doc, protoStr) {
+!function(window, document, protoStr) {
 	var elCache = {}
 	, fnCache = {}
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
@@ -72,10 +72,11 @@
 
 		// NOTE: IE-s cloneNode consolidates the two text nodes together as one
 		// http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
-		el = (elCache[name] || (elCache[name] = doc.createElement(name))).cloneNode(true).set(pre)
+		el = (elCache[name] || (elCache[name] = document.createElement(name))).cloneNode(true).set(pre)
 
 		return fnCache[name] && fnCache[name].call(el, args) || el.set(args)
 	}
+	window.El = El
 
 
 	// TODO: Extend El api
@@ -109,11 +110,11 @@
 			if (typeof child == "string" || typeof child == "number") child = El.text(child)
 			else if ( !("nodeType" in child) && "length" in child ) {
 				// document.createDocumentFragment is unsupported in IE5.5
-				// fragment = "createDocumentFragment" in doc ? doc.createDocumentFragment() : El("div")
+				// fragment = "createDocumentFragment" in document ? document.createDocumentFragment() : El("div")
 				for (
 					var len = child.length
 					, i = 0
-					, fragment = doc.createDocumentFragment();
+					, fragment = document.createDocumentFragment();
 					i < len; ) append.call(fragment, child[i++]);
 				child = fragment
 			}
@@ -223,7 +224,7 @@
 				// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 
 				if ((key == "id" || key == "name") && "\v" == "v") {
-					el.mergeAttributes(doc.createElement('<INPUT '+key+'="' + val + '"/>'), false)
+					el.mergeAttributes(document.createElement('<INPUT '+key+'="' + val + '"/>'), false)
 				}
 			} else el[key] = val
 		}
@@ -249,7 +250,6 @@
 		, node = this
 
 		if (bind = !skipSelf && node.getAttribute("data-call")) {
-			console.log("node", node, bind)
 			fnCache[bind].call(node)
 		}
 		if (bind = !skipSelf && node.getAttribute("data-bind")) {
@@ -315,7 +315,6 @@
 	}
 
 	// Note: IE8 don't support :disabled
-	// TODO: test with IE, should it be proto.querySelector or body.querySelector
 	proto.find = "\v" !== "v" && proto.querySelector || function(sel) {
 		return findEl(this, sel, true)
 	}
@@ -328,6 +327,7 @@
 			return new ElAll(findEl(this, sel))
 		}
 
+	// TODO:2014-09-13:lauri:Expose ElAll
 	function ElAll(nodes) {
 		this._nodes = nodes
 	}
@@ -355,11 +355,11 @@
 
 	// IE 6-7
 	if (proto === El[protoStr]) {
-		var create = doc.createElement
-		doc.createElement = function(name) {return extend(create(name))}
+		var create = document.createElement
+		document.createElement = function(name) {return extend(create(name))}
 
 		// NOTE: document.body will not get extended with later added extensions
-		extend(doc.body)
+		extend(document.body)
 
 		// Remove background image flickers on hover in IE6
 		//
@@ -367,12 +367,11 @@
 		// html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
 		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
-	window.El = El
 
 	El[protoStr] = proto
 
 	El.get = function(id) {
-		if (typeof id == "string") id = doc.getElementById(id)
+		if (typeof id == "string") id = document.getElementById(id)
 		return id && id.to ? id : extend(id)
 	}
 
@@ -389,7 +388,7 @@
 	El.cache = elCacheFn
 
 	El.text = function(str) {
-		return doc.createTextNode(str)
+		return document.createTextNode(str)
 	}
 
 
@@ -417,9 +416,10 @@
 					stack.unshift(i)
 				}
 				if (text) {
-					if (text.charAt(0) == ">") {
+					q = text.charAt(0)
+					if (q == ">") {
 						(indent +" "+ text.slice(1)).replace(tplRe, work)
-					} else if (text.charAt(0) == "=") {
+					} else if (q == "=") {
 						parent.set({"data-bind": text.slice(1)})
 					} else {
 						parent.append(text.replace(/\\([=>:])/g, "$1"))
