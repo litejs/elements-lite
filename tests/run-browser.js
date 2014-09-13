@@ -5,7 +5,6 @@ require("browser-upgrade-lite")
 require("liquid-filters-lite")
 require("functional-lite")
 require("../")
-require("../lib/haml")
 
 function getString(node) {
 	if ('outerHTML' in node)
@@ -203,14 +202,14 @@ describe("El").
 
 
 
-describe( "Haml" ).
-	it ("supports haml").
-		equal(getString(El.haml("a\n b\n  i")), '<a><b><i></i></b></a>').
-		equal(getString(El.haml("a \n b\n  i")), '<a><b><i></i></b></a>').
-		equal(getString(El.haml("a\n b\n  i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.haml("a\n b \n  i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.haml("a\n b\n  i link>to")), '<a><b><i>link&gt;to</i></b></a>').
-		anyOf(getString(El.haml("a[href='#a>b']\n b.bold \n  i#ital link")),
+describe( "Templates" ).
+	it ("supports tpl").
+		equal(getString(El.tpl("a\n b\n  i")), '<a><b><i></i></b></a>').
+		equal(getString(El.tpl("a \n b\n  i")), '<a><b><i></i></b></a>').
+		equal(getString(El.tpl("a\n b\n  i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a\n b \n  i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a\n b\n  i link>to")), '<a><b><i>link&gt;to</i></b></a>').
+		anyOf(getString(El.tpl("a[href='#a>b']\n b.bold \n  i#ital link")),
 			[ '<a href="#a>b"><b class=bold><i id=ital>link</i></b></a>'
 			, '<a href="#a>b"><b class="bold"><i id="ital">link</i></b></a>'
 			, '<a href="#a&gt;b"><b class="bold"><i id="ital">link</i></b></a>'
@@ -218,12 +217,12 @@ describe( "Haml" ).
 			]).
 
 	it ("supports block expansion").
-		equal(getString(El.haml("a>b>i")), '<a><b><i></i></b></a>').
-		equal(getString(El.haml("a > b>i")), '<a><b><i></i></b></a>').
-		equal(getString(El.haml("a>b>i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.haml("a>b > i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.haml("a>b>i link>to")), '<a><b><i>link&gt;to</i></b></a>').
-		anyOf(getString(El.haml("a[href='#a>b']>b.bold > i#ital link")),
+		equal(getString(El.tpl("a>b>i")), '<a><b><i></i></b></a>').
+		equal(getString(El.tpl("a > b>i")), '<a><b><i></i></b></a>').
+		equal(getString(El.tpl("a>b>i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a>b > i link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a>b>i link>to")), '<a><b><i>link&gt;to</i></b></a>').
+		anyOf(getString(El.tpl("a[href='#a>b']>b.bold > i#ital link")),
 			[ '<a href="#a>b"><b class=bold><i id=ital>link</i></b></a>'
 			, '<a href="#a>b"><b class="bold"><i id="ital">link</i></b></a>'
 			, '<a href="#a&gt;b"><b class="bold"><i id="ital">link</i></b></a>'
@@ -231,26 +230,26 @@ describe( "Haml" ).
 			]).
 
 	it ("supports templates").
-		anyOf(getString(El.haml(":template t1\n .temp1 t123\nt1")),
+		anyOf(getString(El.tpl(":template t1\n .temp1 t123\nt1")),
 			[ '<div class=temp1>t123</div>'
 			, '<div class="temp1">t123</div>'
 			]).
-		anyOf(getString(El.haml(":template t2\n .temp2>b t123\nt2")),
+		anyOf(getString(El.tpl(":template t2\n .temp2>b t123\nt2")),
 			[ '<div class=temp2><b>t123</b></div>'
 			, '<div class="temp2"><b>t123</b></div>'
 			]).
-		anyOf(getString(El.haml(":template t3\n .temp3\n  b t123\nt3")),
+		anyOf(getString(El.tpl(":template t3\n .temp3\n  b t123\nt3")),
 			[ '<div class=temp3><b>t123</b></div>'
 			, '<div class="temp3"><b>t123</b></div>'
 			]).
 
 	it ( "should render data to elements" ).
-		equal(getString(t1 = El.haml("a>b[data-bind=\"class:'red','i>1'\"]>i =txt:'hello {name}'")), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\"></i></b></a>").
+		equal(getString(t1 = El.tpl("a>b[data-bind=\"class:'red','i>1'\"]>i =txt:'hello {name}'")), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\"></i></b></a>").
 		equal(getString(t1.render({i:1,name:"world"})), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>").
 		equal(getString(t1.render({i:2,name:"moon"})), "<a><b data-bind=\"class:'red','i>1'\" class=\"red\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>").
 
 	it ( "should show set DOM propperty when plugin not found" ).
-		equal(getString(t1 = El.haml("a =unknown_plugin:\'hello {name}\'")), '<a data-bind="unknown_plugin:\'hello {name}\'"></a>').
+		equal(getString(t1 = El.tpl("a =unknown_plugin:\'hello {name}\'")), '<a data-bind="unknown_plugin:\'hello {name}\'"></a>').
 		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello world"></a>').
 		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello moon"></a>').
 

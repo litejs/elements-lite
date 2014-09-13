@@ -2,8 +2,8 @@
 
 
 /**
- * @version    0.3.2
- * @date       2014-09-12
+ * @version    0.3.3
+ * @date       2014-09-13
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -53,12 +53,14 @@
 	}
 
 
-	/*
-	 * Examples:
-	 *   - El("input#123.nice[type=checkbox]:checked:disabled[data-lang=en]")
+	/**
+	 * Turns CSS selector like syntax to DOM Node
+	 * @example
+	 * El("input#123.nice[type=checkbox]:checked:disabled[data-lang=en]")
+	 * @returns {Node}
 	 */
 
-	function El(name, args) {
+	function El(name, args, silence) {
 		var el
 		, pre = {}
 		name = name.replace(elRe, function(_, op, key, val, quotation) {
@@ -74,7 +76,9 @@
 		// http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
 		el = (elCache[name] || (elCache[name] = document.createElement(name))).cloneNode(true).set(pre)
 
-		return fnCache[name] && fnCache[name].call(el, args) || el.set(args)
+		return silence ?
+		(fnCache[name] && el.setAttribute("data-call", name), el) :
+		fnCache[name] && fnCache[name].call(el, args) || el.set(args)
 	}
 	window.El = El
 
@@ -250,6 +254,7 @@
 		, node = this
 
 		if (bind = !skipSelf && node.getAttribute("data-call")) {
+			node.removeAttribute("data-call")
 			fnCache[bind].call(node)
 		}
 		if (bind = !skipSelf && node.getAttribute("data-bind")) {
@@ -378,7 +383,6 @@
 	function elCacheFn(name, el, custom) {
 		elCache[name] = typeof el == "string" ? El(el) : el
 		if (custom) {
-			if (custom != render) el.setAttribute("data-call", name)
 			fnCache[name] = custom
 		}
 	}
@@ -412,7 +416,7 @@
 				}
 			} else {
 				if (name) {
-					parent = El(name).to(parent)
+					parent = El(name, 0, 1).to(parent)
 					stack.unshift(i)
 				}
 				if (text) {
@@ -471,7 +475,9 @@
 		"template": template
 	}
 
-	El.tpl = tpl
+	El.tpl = function(str) {
+		return tpl(str).render()
+	}
 	El.include = function(id, data, parent) {
 		var src = El.get(id)
 		new template(null, id).el.append( El.tpl(src.innerHTML) ).plugin.done()
