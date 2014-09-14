@@ -2,8 +2,8 @@
 
 
 /**
- * @version    0.3.3
- * @date       2014-09-13
+ * @version    0.3.4
+ * @date       2014-09-14
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -18,6 +18,7 @@
 !function(window, document, protoStr) {
 	var elCache = {}
 	, fnCache = {}
+	, createElement = document.createElement
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
 	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\.|.)*?\4|[-\w]+)])?]?/g
 	, tplRe = /^([ \t]*)(\:?)((?:(["'\/])(?:\\.|.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
@@ -65,7 +66,7 @@
 		, pre = {}
 		name = name.replace(elRe, function(_, op, key, val, quotation) {
 			pre[
-				op == "." ? (op = "class", (pre[op] && (key = pre[op]+" "+key)), op) :
+				op == "." ? (op = "class", (pre[op] && (key = pre[op] + " " + key)), op) :
 				op == "#" ? "id" :
 				key
 			] = (quotation ? val.slice(1, -1): val) || key
@@ -228,7 +229,7 @@
 				// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 
 				if ((key == "id" || key == "name") && "\v" == "v") {
-					el.mergeAttributes(document.createElement('<INPUT '+key+'="' + val + '"/>'), false)
+					el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '"/>'), false)
 				}
 			} else el[key] = val
 		}
@@ -360,8 +361,7 @@
 
 	// IE 6-7
 	if (proto === El[protoStr]) {
-		var create = document.createElement
-		document.createElement = function(name) {return extend(create(name))}
+		document.createElement = function(name) {return extend(createElement(name))}
 
 		// NOTE: document.body will not get extended with later added extensions
 		extend(document.body)
@@ -432,11 +432,11 @@
 			}
 		}
 		str.replace(tplRe, work)
-		stack = root.childNodes
-		if (stack.length == 1) return stack[0]
+		root = root.childNodes
+		if (root.length == 1) return root[0]
 
-		for (var arr = [], i = stack.length; i--;) arr[i] = stack[i]
-		return arr
+		for (stack = [], parent = root.length; parent--;) stack[parent] = root[parent]
+		return stack
 	}
 
 	function template(parent, name) {
