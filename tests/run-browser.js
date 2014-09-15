@@ -1,18 +1,19 @@
+require("browser-upgrade-lite")
+
 global.Event = global.Event || {}
 global.i18n = require("../lib/i18n.js").i18n
+global.Fn = require("functional-lite").Fn
 
-require("browser-upgrade-lite")
 require("liquid-filters-lite")
-require("functional-lite")
 require("../")
 
 function getString(node) {
 	if ('outerHTML' in node)
-		return node.outerHTML.toLowerCase().replace(/>[\n\r]+</g, "><").trim();
+		return node.outerHTML.toLowerCase().replace(/>[\n\r]+</g, "><").trim()
 
-	var div = document.createElement("div");
-	div.appendChild(node.cloneNode(true));
-	return div.innerHTML;
+	var div = document.createElement("div")
+	div.appendChild(node.cloneNode(true))
+	return div.innerHTML
 }
 
 i18n.setLang("en")
@@ -245,10 +246,16 @@ describe( "Templates" ).
 
 	it ( "should render data to elements" ).
 		equal(getString(t1 = El.tpl("a>b[data-bind=\"class:'red','i>1'\"]>i =txt:'hello {name}'")), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\"></i></b></a>").
-		equal(getString(t1.render({i:1,name:"world"})), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>").
-		equal(getString(t1.render({i:2,name:"moon"})), "<a><b data-bind=\"class:'red','i>1'\" class=\"red\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>").
+		anyOf(getString(t1.render({i:1,name:"world"})),
+			[ "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
+			, "<a><b class=\"\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
+			]).
+		anyOf(getString(t1.render({i:2,name:"moon"})),
+			[ "<a><b data-bind=\"class:'red','i>1'\" class=\"red\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
+			, "<a><b class=\"red\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
+			]).
 
-	it ( "should show set DOM propperty when plugin not found" ).
+		it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_plugin = '123', should use node.set()"}).
 		equal(getString(t1 = El.tpl("a =unknown_plugin:\'hello {name}\'")), '<a data-bind="unknown_plugin:\'hello {name}\'"></a>').
 		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello world"></a>').
 		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello moon"></a>').
