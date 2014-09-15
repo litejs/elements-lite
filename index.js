@@ -2,8 +2,8 @@
 
 
 /**
- * @version    0.3.4
- * @date       2014-09-14
+ * @version    0.3.5
+ * @date       2014-09-15
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -150,8 +150,7 @@
 
 	function hasClass(name) {
 		// http://jsperf.com/regexp-indexof-perf/32
-		// return (" "+this.className+" ").indexOf(" "+name+" ") > -1
-		return RegExp("\\b" + name + "\\b").test(this.className)
+		return (" " + this.className + " ").indexOf(" " + name + " ") > -1
 	}
 	proto.hasClass = hasClass
 
@@ -164,7 +163,7 @@
 
 	function rmClass(name) {
 		var el = this
-		el.className = (" "+el.className+" ").replace(" "+name+" "," ").trim()
+		el.className = (" "+el.className+" ").replace(" "+name+" ", " ").trim()
 		return el
 	}
 	proto.rmClass = rmClass

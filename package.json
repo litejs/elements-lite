@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "stability": 1,
   "license": "MIT",
   "author": "Lauri Rooden <lauri@rooden.ee>",
@@ -15,6 +15,7 @@
   "readmeFilename": "README.md",
   "scripts": {
     "build": "node node_modules/buildman/index.js --all",
+    "bundle-tests": "browserify tests/run-browser.js > tests/bundle.js",
     "travis-test": "istanbul cover ./tests/run.js && (coveralls < coverage/lcov.info || exit 0)",
     "test": "node tests/run.js"
   },
