@@ -1,8 +1,8 @@
 require("browser-upgrade-lite")
+global.Fn = require("functional-lite").Fn
 
 global.Event = global.Event || {}
 global.i18n = require("../lib/i18n.js").i18n
-global.Fn = require("functional-lite").Fn
 
 require("liquid-filters-lite")
 require("../")

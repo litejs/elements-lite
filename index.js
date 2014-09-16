@@ -93,6 +93,7 @@
 	//
 	// How elements.js extends the DOM
 	// -------------------------------
+	// http://perfectionkills.com/whats-wrong-with-extending-the-dom/
 	//
 	// All DOM extensions on the element are available by default.
 	//
@@ -326,27 +327,27 @@
 
 	proto.findAll = proto.querySelectorAll ?
 		function(sel) {
-			return new ElAll(this.querySelectorAll(sel))
+			return new ElWrap(this.querySelectorAll(sel))
 		} :
 		function(sel) {
-			return new ElAll(findEl(this, sel))
+			return new ElWrap(findEl(this, sel))
 		}
 
-	// TODO:2014-09-13:lauri:Expose ElAll
-	function ElAll(nodes) {
+	function ElWrap(nodes) {
 		this._nodes = nodes
 	}
+	El.wrap = ElWrap
 
-	ElAll.prototype = Object.keys(proto).reduce(function(memo, key) {
+	ElWrap.prototype = Object.keys(proto).reduce(function(memo, key) {
 		memo[key] = function() {
-			var elAll = this
-			, nodes = elAll._nodes
+			var elWrap = this
+			, nodes = elWrap._nodes
 			, i = 0
 			, len = nodes.length
 			for (; i < len; ) {
 				proto[key].apply(nodes[i++], arguments)
 			}
-			return elAll
+			return elWrap
 		}
 		return memo
 	}, {})
@@ -474,6 +475,7 @@
 		"template": template
 	}
 
+	// El.create
 	El.tpl = function(str) {
 		return tpl(str).render()
 	}
