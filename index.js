@@ -2,17 +2,13 @@
 
 
 /**
- * @version    0.3.7
+ * @version    0.3.8
  * @date       2014-09-19
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
  */
 
-
-
-// TODO: find ways for automated testing
-// http://www.browserscope.org/user/tests/howto
 
 
 !function(window, document, protoStr) {
@@ -34,15 +30,6 @@
 		"html": function(node, data, html) {
 			node.innerHTML = html.format(data)
 		},
-		/**
-		"with": function(node, data, scope) {
-			render.call(node, scope, true)
-		},
-		"if": function(node, data, fn) {
-			var childs = getChilds(node)
-			node.empty().append( fn.fn("_")(data) && childs )
-		},
-		//*/
 		"each": function(node, data, arr) {
 			var childs = getChilds(node)
 			if (arr) node.empty().append(arr.map(function(obj) {
@@ -83,33 +70,6 @@
 		fnCache[name] && fnCache[name].call(el, args) || el.set(args)
 	}
 	window.El = El
-
-
-	// TODO: Extend El api
-	// add El.siblings( [selector ] )
-	// add El.children( [selector ] )
-	// add El.invoke
-	// https://github.com/WebReflection/dom4#dom4
-
-	//
-	// How elements.js extends the DOM
-	// -------------------------------
-	// http://perfectionkills.com/whats-wrong-with-extending-the-dom/
-	//
-	// All DOM extensions on the element are available by default.
-	//
-	// In browsers that does not support adding methods to prototype of native objects
-	// such as HTMLElement or Element, document.createElement will be overrided
-	// to extend created elements. El.get() and element.find will extend
-	// returned elements.
-
-	// ### element.append( content, [ before ] ) -> element
-	//
-	// - **content** `element || Array || String || Number`
-	// - **before** `optional`
-	//     - true - Insert content to the beginning of element
-	//     - element - Insert content before specified element
-	//     - Number - Insert content before nth child
 
 	function append(child, before) {
 	       var el = this
@@ -286,17 +246,13 @@
 	// Otherwise, innerText results in an empty string.
 	//
 	// textContent is suported from IE9
-	//
-	// Opera 9-10 have Node.text, Node.textContent
+	// Opera 9-10 have Node.text so we use Node.txt
 
 	proto.txt = function(newText) {
 		var el = this
 		, attr = "textContent" in el ? "textContent" : "innerText"
 		return arguments.length ? (el[attr] = newText) : el[attr]
 	}
-
-	// NOTE: fast selectors for IE
-	// http://ajaxian.com/archives/creating-a-queryselector-for-ie-that-runs-at-native-speed
 
 	function findEl(node, sel, first) {
 		var el
@@ -341,24 +297,21 @@
 
 	ElWrap.prototype = Object.keys(proto).reduce(function(memo, key) {
 		memo[key] = function() {
-			var elWrap = this
-			, nodes = elWrap._nodes
+			var nodes = this._nodes
 			, i = 0
 			, len = nodes.length
 			for (; i < len; ) {
 				proto[key].apply(nodes[i++], arguments)
 			}
-			return elWrap
+			return this
 		}
 		return memo
 	}, {})
-
 
 	function extend(node, key) {
 		if (node) for (key in proto) node[key] = proto[key]
 		return node
 	}
-
 
 	// IE 6-7
 	if (proto === El[protoStr]) {
@@ -396,6 +349,7 @@
 		return document.createTextNode(str)
 	}
 
+	//** templates
 
 	function tpl(str) {
 		var root = document.createDocumentFragment()
@@ -451,33 +405,16 @@
 
 	template.prototype.done = function() {
 		var t = this
-
 		El.cache(t.name, t.el.removeChild(t.el.firstChild), render)
-
 		t.el.plugin = null
-
 		return t.parent
 	}
 
 	tpl.plugins = {
-		/*
-		 * - Declaration
-		 * mixin list
-		 *
-		 * mixin link(href, name)
-		 *   a(class!=attributes.class, href=href)= name
-		 *
-		 * +link('/foo', 'foo')(class="btn")
-		 *
-		 * :include
-		 * :doctype
-		 * - http://stackoverflow.com/questions/8227612/how-to-create-document-objects-with-javascript
-		 */
 		"template": template
 	}
 
-	// El.create
-	El.tpl = function(str) {
+	El.create = El.tpl = function(str) {
 		return tpl(str).render()
 	}
 	El.include = function(id, data, parent) {
@@ -485,10 +422,10 @@
 		new template(null, id).el.append( El.tpl(src.innerHTML) ).plugin.done()
 		src.kill()
 	}
+	//*/
 
 
-
-
+	//** i18n
 	function i18n(text, lang) {
 		return i18n[ lang ? getLang(lang) : currentLang ][text] || text
 	}
@@ -514,8 +451,6 @@
 		Object.merge(i18n[lang] || (i18n[lang] = {}), texts)
 	}
 
-	//setLang("en")
-
 	i18n.get = getLang
 	i18n.use = setLang
 	i18n.add = addLang
@@ -524,6 +459,8 @@
 			addLang(tag, map)
 		})
 	}
+	// setLang("en")
+	//*/
 
 }(window, document, "prototype")
 
