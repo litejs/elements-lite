@@ -2,7 +2,7 @@
 
 
 /**
- * @version    0.3.6
+ * @version    0.3.7
  * @date       2014-09-19
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
@@ -16,7 +16,8 @@
 
 
 !function(window, document, protoStr) {
-	var elCache = {}
+	var currentLang
+	, elCache = {}
 	, fnCache = {}
 	, createElement = document.createElement
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
@@ -484,6 +485,46 @@
 		new template(null, id).el.append( El.tpl(src.innerHTML) ).plugin.done()
 		src.kill()
 	}
+
+
+
+
+	function i18n(text, lang) {
+		return i18n[ lang ? getLang(lang) : currentLang ][text] || text
+	}
+	El.i18n = i18n
+
+	function getLang(lang) {
+		if (!lang) return currentLang
+		lang = (lang || "").toLowerCase()
+		return i18n[lang] ? lang : ((lang = lang.split("-")[0]), i18n[lang]) ? lang : currentLang
+	}
+
+	function setLang(lang) {
+		lang = getLang(lang)
+		if (currentLang != (currentLang = lang)) {
+			i18n[lang] = i18n[lang] || {}
+		}
+		// Use setAttribute
+		document.documentElement.lang = lang
+		return lang
+	}
+
+	function addLang(lang, texts) {
+		Object.merge(i18n[lang] || (i18n[lang] = {}), texts)
+	}
+
+	//setLang("en")
+
+	i18n.get = getLang
+	i18n.use = setLang
+	i18n.add = addLang
+	i18n.def = function(map) {
+		Object.each(map, function(name, tag) {
+			addLang(tag, map)
+		})
+	}
+
 }(window, document, "prototype")
 
 

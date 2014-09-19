@@ -2,10 +2,10 @@ require("browser-upgrade-lite")
 global.Fn = require("functional-lite").Fn
 
 global.Event = global.Event || {}
-global.i18n = require("../lib/i18n.js").i18n
 
 require("liquid-filters-lite")
 require("../")
+global.i18n = window.El.i18n
 
 function getString(node) {
 	if ('outerHTML' in node)
@@ -16,7 +16,45 @@ function getString(node) {
 	return div.innerHTML
 }
 
-i18n.setLang("en")
+i18n.def({ "et":"Eesti keeles"
+	, "en":"In English"
+	, "ru":"На русском"
+	, "fi":"Suomeksi"
+	, "se":"på Svenska"
+})
+
+i18n.add("en", {
+	date: "%a, %d %b %Y %H:%M:%S %z",
+	name: "Name {date|lang}"
+})
+
+i18n.add("et", {
+	date: "%Y %H:%M:%S %z",
+	name: "Nimi {date|lang:'et'}"
+})
+
+/*
+ * navigator.language
+ * "et"
+ * navigator.languages
+ * ["et", "en-US", "en"]
+ */
+//i18n.setLang(navigator.language || navigator.userLanguage)
+
+Date.prototype.lang = function(lang) {
+	return this.format( i18n("date", lang) )
+}
+
+String.prototype.lang = function(lang) {
+	return i18n(this, lang)
+}
+
+i18n.add("en", {
+	firstName: "First Name",
+	lastName: "Last Name"
+})
+
+i18n.use("en")
 
 var el, h1, h2, h3, h4, input, select, t1
 
@@ -249,6 +287,7 @@ describe( "Templates" ).
 		anyOf(getString(t1.render({i:1,name:"world"})),
 			[ "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
 			, "<a><b class=\"\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
+			, "<a><b data-bind=\"class:'red','i>1'\" class=\"\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
 			]).
 		anyOf(getString(t1.render({i:2,name:"moon"})),
 			[ "<a><b data-bind=\"class:'red','i>1'\" class=\"red\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
