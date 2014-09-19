@@ -2,8 +2,8 @@
 
 
 /**
- * @version    0.3.5
- * @date       2014-09-15
+ * @version    0.3.6
+ * @date       2014-09-19
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -20,9 +20,9 @@
 	, fnCache = {}
 	, createElement = document.createElement
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
-	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\.|.)*?\4|[-\w]+)])?]?/g
-	, tplRe = /^([ \t]*)(\:?)((?:(["'\/])(?:\\.|.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
-	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\.|.)*?\3|[-,\s\w])*))?/g
+	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\?.)*?\4|[-\w]+)])?]?/g
+	, tplRe = /^([ \t]*)(\:?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
+	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[-,\s\w])*))?/g
 	, bindings = El.bindings = {
 		"txt": function(node, data, text) {
 			node.txt(text.format(data))
