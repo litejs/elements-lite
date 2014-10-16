@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "stability": 1,
   "license": "MIT",
   "author": "Lauri Rooden <lauri@rooden.ee>",
@@ -32,8 +32,7 @@
     "dom-lite": "*"
   },
   "buildman": {
-    "dist/index-min.js": "index.js",
-    "dist/responsive-min.js": "lib/responsive.js"
+    "dist/index-min.js": "index.js"
   },
   "testling": {
     "files": "tests/run-browser.js",

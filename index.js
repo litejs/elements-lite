@@ -2,8 +2,8 @@
 
 
 /**
- * @version    0.3.8
- * @date       2014-09-19
+ * @version    0.3.9
+ * @date       2014-10-16
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -77,17 +77,19 @@
 	window.El = El
 
 	function append(child, before) {
-	       var el = this
-	       if (child) {
-			if (typeof child == "string" || typeof child == "number") child = El.text(child)
+		var fragment
+		, el = this
+		, i = 0
+		, tmp = typeof child
+		if (child) {
+			if (tmp == "string" || tmp == "number") child = El.text(child)
 			else if ( !("nodeType" in child) && "length" in child ) {
 				// document.createDocumentFragment is unsupported in IE5.5
 				// fragment = "createDocumentFragment" in document ? document.createDocumentFragment() : El("div")
 				for (
-					var len = child.length
-					, i = 0
+					tmp = child.length
 					, fragment = document.createDocumentFragment();
-					i < len; ) append.call(fragment, child[i++]);
+					i < tmp; ) append.call(fragment, child[i++])
 				child = fragment
 			}
 
@@ -195,7 +197,7 @@
 				// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 
 				if ((key == "id" || key == "name") && "\v" == "v") {
-					el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '"/>'), false)
+					el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '">'), false)
 				}
 			} else el[key] = val
 		}
