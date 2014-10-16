@@ -40,7 +40,8 @@ El(".custom", "test").to(document.body)
 
 ### Templates
 
-It is a template engine inspired by Haml and implemented with JavaScript for browser.
+It is a template engine inspired by Haml
+but uses CSS selectors like syntax for describing elements and attributes.
 
 
 #### Tags
@@ -130,7 +131,7 @@ External links
 
 ### Licence
 
-Copyright (c) 2012, 2014 Lauri Rooden &lt;lauri@rooden.ee&gt;  
+Copyright (c) 2012-2014 Lauri Rooden &lt;lauri@rooden.ee&gt;  
 [The MIT License](http://lauri.rooden.ee/mit-license.txt)
 
 

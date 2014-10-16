@@ -33,10 +33,11 @@
 		"each": function(node, data, arr) {
 			var childs = getChilds(node)
 			if (arr) node.empty().append(arr.map(function(obj) {
-				return childs.map(function(el) {
-					return render.call(el.cloneNode(true), obj)
-				})
+				return childs.map(renderClone, obj)
 			}))
+			function renderClone(el) {
+				return render.call(el.cloneNode(true), this)
+			}
 			return node
 		}
 	}
@@ -44,9 +45,11 @@
 
 	/**
 	 * Turns CSS selector like syntax to DOM Node
-	 * @example
-	 * El("input#123.nice[type=checkbox]:checked:disabled[data-lang=en]")
 	 * @returns {Node}
+	 *
+	 * @example
+	 * El("input#12.nice[type=checkbox]:checked:disabled[data-lang=en].class")
+	 * <input id="12" class="nice class" type="checkbox" checked="checked" disabled="disabled" data-lang="en">
 	 */
 
 	function El(name, args, silence) {
@@ -54,10 +57,12 @@
 		, pre = {}
 		name = name.replace(elRe, function(_, op, key, val, quotation) {
 			pre[
-				op == "." ? (op = "class", (pre[op] && (key = pre[op] + " " + key)), op) :
-				op == "#" ? "id" :
+				op == "." ?
+				((pre[op = "class"] && (key = pre[op] + " " + key)), op) :
+				op == "#" ?
+				"id" :
 				key
-			] = (quotation ? val.slice(1, -1): val) || key
+			] = quotation ? val.slice(1, -1) : val || key
 			return ""
 		}) || "div"
 
@@ -459,6 +464,8 @@
 			addLang(tag, map)
 		})
 	}
+	// navigator.userLanguage for IE, navigator.language for others
+	// var lang = navigator.language || navigator.userLanguage;
 	// setLang("en")
 	//*/
 

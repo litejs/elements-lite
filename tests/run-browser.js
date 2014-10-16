@@ -299,6 +299,8 @@ describe( "Templates" ).
 		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello world"></a>').
 		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello moon"></a>').
 
+	it ("supports IF binding").
+
 done()
 
 

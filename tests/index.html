@@ -10,16 +10,13 @@
   font-size: 1.5em;
 }
 </style>
-<script src="../../stable/browser-upgrade-lite/index.js"></script>
-<script src="../../browser-event-lite/index.js"></script>
 <script src="../../functional-lite/index.js"></script>
+<script src="../index.js"></script>
+<script src="../../browser-event-lite/index.js"></script>
 <script src="../../date-format-lite/date-format.js"></script>
-<script src="../../liquid-filters-lite/liquid-filters-lite.js"></script>
-<script src="../elements.js"></script>
-<script src="../lib/haml.js"></script>
-<script src="../lib/i18n.js"></script>
-<script src="../lib/form-to-json.js"></script>
-<script src="../lib/json-to-form.js"></script>
+<script src="../../liquid-filters-lite/index.js"></script>
+<script src="../../litejs/lib/form-to-json.js"></script>
+<script src="../../litejs/lib/json-to-form.js"></script>
 <script id="index" type="text/haml">
 :template test
  .test
@@ -62,7 +59,7 @@
 	.list
 		.begin each:["a", "b", "c"]
 			.row
-		ul.list =each:users
+		ul.list =each:"users"
 			li
 				ul3
 				.input =txt:"Hello <b>{name|upper}</b>"; title:name; class: "my-class", "i>1"
@@ -81,61 +78,17 @@
 {% for item in ["a", "b", "c"] %}
 {% for attr in deeper.not_found %}
 {% for attr in deeper.object %}
+   <ul data-bind2="foreach: months">
 
 input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
 */
 
-// navigator.userLanguage for IE, navigator.language for others
-var lang = navigator.language || navigator.userLanguage;
 // http://stackoverflow.com/questions/3084675/internationalization-in-javascript
 // http://stackoverflow.com/questions/9640630/javascript-i18n-internationalization-frameworks-libraries-for-client-side-use
-
-/*
-   <ul data-bind2="foreach: months">
-   	<li>
-   		The current item is: <b data-bind="text: $data"></b>
-   	</li>
-   </ul>
-*/
-
-i18n.setLang("en")
 
 
 El.include("index")
 
-El.cache.fn.ul3 = function(){
-	this.txt("kala")
-}
-
-var el = El("ul.test").to(document.body)
-
-
-var h3 = El("h3")
-h3.append(El("div", "DIV"))
-
-
-
-
-
-El("li", "2. Screen: " + screen.width + "x" + screen.height).to(el)
-var el4 = El("li#el-4", "4").to(el)
-
-el4.addClass("li-4")
-
-var ul2 = El("ul").append([ El("li").append("4.1"), El("li").append(["4.2"]) ])
-ul2.to(el4)
-
-El("li", "One").to(el, true)
-var el3 = El("li[data-id=li-123]", "Three").to(el, el4)
-El("li", 6).to(el)
-El("li", "Five").after(el.find(".li-4"))
-var el7 = El("li", 7).to(el)
-
-el7.append([
-	" " + (el.find("[data-id=li-123]") === el3),
-	" " + (el.find("#el-4") === el4),
-	" " + (el.find(".li-4") === el4)
-])
 
 var template1 = El("ul2").to(document.body)
 , users2 = [{i:1, name:"u"+new Date}, {i:2, name:"u2"}]
@@ -150,25 +103,7 @@ setInterval(function(){
 
 	template1.render({users:users2})
 
-var form = El("form-test").to(el)
-form.on("submit", function(){
-	console.log("data", JSON.serializeForm(this))
-	return false
-})
 </script>
-
-<div class=test1>
-  test 1
-<div>
-  test 2
-<div class=test1>
-  test 3
-<div>
-  test 4
-</div>
-</div>
-</div>
-</div>
 
 </body>
 <html>
