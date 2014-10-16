@@ -25,7 +25,7 @@
 			node.txt(text.format(data))
 		},
 		"class": function(node, data, name, fn) {
-			node.toggleClass(name, fn.fn("_")(data))
+			toggleClass.call(node, name, fn.fn("_")(data))
 		},
 		"html": function(node, data, html) {
 			node.innerHTML = html.format(data)
@@ -137,10 +137,11 @@
 	}
 	proto.rmClass = rmClass
 
-	proto.toggleClass = function(name, force) {
+	function toggleClass(name, force) {
 		if (arguments.length == 1) force = !hasClass.call(this, name)
 		return ( force ? addClass : rmClass ).call(this, name), force
 	}
+	proto.toggleClass = toggleClass
 
 	proto.empty = function() {
 		for (var node, el = this; node = el.firstChild; ) kill.call(node)
@@ -209,8 +210,7 @@
 		var child
 		, childs = node._childs
 		if (!childs) {
-			node._childs = childs = []
-			for (; child = node.firstChild;) {
+			for (node._childs = childs = []; child = node.firstChild;) {
 				childs.push(child);
 				node.removeChild(child)
 			}

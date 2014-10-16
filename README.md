@@ -2,8 +2,6 @@
 [2]: https://travis-ci.org/litejs/elements-lite
 [3]: https://coveralls.io/repos/litejs/elements-lite/badge.png
 [4]: https://coveralls.io/r/litejs/elements-lite
-[7]: https://ci.testling.com/litejs/elements-lite.png
-[8]: https://ci.testling.com/litejs/elements-lite
 
 
     @version    0.3.9
@@ -117,7 +115,7 @@ becomes
 Browser Support
 ---------------
 
-[![browser support][7]][8]
+It should work IE6 and up but automated testing is currently broken.
 
 
 
