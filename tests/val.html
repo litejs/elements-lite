@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../_stable/browser-upgrade-lite/index.js"></script>
+<script src="../../functional-lite/index.js"></script>
+<script src="../index.js"></script>
+<script src="../../browser-event-lite/index.js"></script>
+<form>
+	<select name=i1 id="i1">
+		<option value="a">A</option>
+		<option value="b" selected>B</option>
+		<option>c</option>
+	</select>
+	<select name=i2 id="i2">
+		<option value="a">A</option>
+		<option value="b">B</option>
+		<option selected>c</option>
+	</select>
+	<select name=i3 id="i3" multiple>
+		<option value="a">A</option>
+		<option value="" selected>B</option>
+		<option>c</option>
+		<option selected>d</option>
+	</select>
+	<input id="ic1" type="checkbox" value="a">
+	<input id="ic2" type="checkbox" value="b" checked>
+	<input id="ic3" type="checkbox" checked>
+	<button onclick="getVals">run</button>
+</form>
+<script>
+function getVals() {
+	console.log(El.get("i1").val())
+	console.log(El.get("i2").val())
+	console.log(El.get("i3").val())
+	console.log(El.get("ic1").val())
+	console.log(El.get("ic2").val())
+	console.log(El.get("ic3").val())
+}
+getVals()
+</script>
+
+</body>
+<html>
+

@@ -263,6 +263,28 @@
 		return arguments.length ? (el[attr] = newText) : el[attr]
 	}
 
+	proto.val = function(val) {
+		var el = this
+		, type = el.type
+		, opts = el.options
+
+		if (arguments.length) {
+			return el.value = val
+		}
+
+		if (type == "select-multiple") {
+			for (val = [], type = 0; el = opts[type++];) {
+				if (el.selected && !el.disabled && !el.parentNode.disabled) val.push(el.value)
+			}
+			return val
+		}
+
+		return (type == "checkbox" || type == "radio") && !el.checked ? "" :
+			el.value ||
+			options && options[el.selectedIndex].value ||
+			"on"
+	}
+
 	function findEl(node, sel, first) {
 		var el
 		, i = 0
