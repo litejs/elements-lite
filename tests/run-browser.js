@@ -299,6 +299,22 @@ describe( "Templates" ).
 		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello world"></a>').
 		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello moon"></a>').
 
+	/*
+	it ("supports declaring a leaf node").
+	run(function() {
+		t1 = El.tpl([""
+			, ":template leaf1"
+			, "  a"
+			, "    b[data-leaf]"
+			, "div"
+			, "  leaf1"
+			, "    i 1"
+			, "  leaf1"
+			, "    i 2"
+		].join("\n"))
+	}).
+	equal(getString(t1), '<div><a><b data-leaf="data-leaf"><i>1</i></b></a><a><b data-leaf="data-leaf"><i>2</i></b></a></div>').
+	*/
 	it ("supports IF binding").
 
 done()

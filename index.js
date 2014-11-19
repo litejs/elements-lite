@@ -240,7 +240,9 @@
 		}
 
 		for (node = node.firstChild; node; node = node.nextSibling) {
-			if (node.nodeType == 1) render.call(node, data)
+			if (node.nodeType == 1) {
+				render.call(node, data)
+			}
 		}
 		return this
 	}
