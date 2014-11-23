@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.3.9",
+  "version": "0.4.0",
   "stability": 1,
   "license": "MIT",
   "author": "Lauri Rooden <lauri@rooden.ee>",
@@ -33,30 +33,5 @@
   },
   "buildman": {
     "dist/index-min.js": "index.js"
-  },
-  "testling": {
-    "files": "tests/run-browser.js",
-    "browsers": [
-      "ie/6..10",
-      "ff/3",
-      "ff/4",
-      "ff/5",
-      "ff/20",
-      "ff/25",
-      "chrome/4",
-      "chrome/10",
-      "chrome/20",
-      "chrome/30",
-      "chrome/31",
-      "opera/10",
-      "opera/11",
-      "opera/11.6",
-      "opera/12",
-      "opera/16",
-      "safari/4..6",
-      "android-browser/4.2",
-      "iphone/6",
-      "ipad/6"
-    ]
   }
 }
