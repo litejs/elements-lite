@@ -3,7 +3,7 @@
 
 /**
  * @version    0.4.0
- * @date       2014-11-23
+ * @date       2014-11-26
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -13,9 +13,11 @@
 
 !function(window, document, protoStr) {
 	var currentLang
+	, body = document.body
+	, createElement = document.createElement
+	, txtAttr = "textContent" in body ? "textContent" : "innerText"
 	, elCache = {}
 	, fnCache = {}
-	, createElement = document.createElement
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
 	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\?.)*?\4|[-\w]+)])?]?/g
 	, tplRe = /^([ \t]*)(\:?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
@@ -273,9 +275,7 @@
 	// Opera 9-10 have Node.text so we use Node.txt
 
 	proto.txt = function(newText) {
-		var el = this
-		, attr = "textContent" in el ? "textContent" : "innerText"
-		return arguments.length ? (el[attr] = newText) : el[attr]
+		return arguments.length ? (this[txtAttr] = newText) : this[txtAttr]
 	}
 
 	proto.val = function(val) {
@@ -364,7 +364,7 @@
 		document.createElement = function(name) {return extend(createElement(name))}
 
 		// NOTE: document.body will not get extended with later added extensions
-		extend(document.body)
+		extend(body)
 
 		// Remove background image flickers on hover in IE6
 		//
