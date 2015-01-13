@@ -2,8 +2,8 @@
 
 
 /**
- * @version    0.4.0
- * @date       2014-11-26
+ * @version    0.5.0
+ * @date       2015-01-13
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -20,27 +20,20 @@
 	, fnCache = {}
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
 	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\?.)*?\4|[-\w]+)])?]?/g
-	, tplRe = /^([ \t]*)(\:?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
+	, tplRe = /^([ \t]*)(@?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[-,\s\w])*))?/g
 	, bindings = El.bindings = {
-		"txt": function(node, data, text) {
-			node.txt(text.format(data))
-		},
 		"class": function(node, data, name, fn) {
 			toggleClass.call(node, name, fn.fn("_")(data))
 		},
 		"html": function(node, data, html) {
 			node.innerHTML = html.format(data)
 		},
-		"each": function(node, data, arr) {
-			var childs = getChilds(node)
-			if (arr) node.empty().append(arr.map(function(obj) {
-				return childs.map(renderClone, obj)
-			}))
-			function renderClone(el) {
-				return render.call(el.cloneNode(true), this)
-			}
-			return node
+		"txt": function(node, data, text) {
+			node.txt(text.format(data))
+		},
+		"val": function(node, data, text) {
+			node.val(text.format(data))
 		}
 	}
 
@@ -220,19 +213,6 @@
 			else append.call(el, args)
 		}
 		return el
-	}
-
-	// Save node initial content for later use
-	function getChilds(node) {
-		var child
-		, childs = node._childs
-		if (!childs) {
-			for (node._childs = childs = []; child = node.firstChild;) {
-				childs.push(child);
-				node.removeChild(child)
-			}
-		}
-		return childs
 	}
 
 	function render(data, skipSelf) {

@@ -4,8 +4,8 @@
 [4]: https://coveralls.io/r/litejs/elements-lite
 
 
-    @version    0.4.0
-    @date       2014-11-26
+    @version    0.5.0
+    @date       2015-01-13
     @stability  1 - Experimental
 
 
@@ -95,7 +95,7 @@ becomes
 
 ```html
 ul.list
-  :template my-row
+  @template my-row
     li.my-row > b row
   my-row
   my-row

@@ -14,31 +14,32 @@
 <script src="../../functional-lite/index.js"></script>
 <script src="../index.js"></script>
 <script src="../../browser-event-lite/index.js"></script>
-<script src="../../date-format-lite/date-format.js"></script>
+<script src="../../date-format-lite/index.js"></script>
 <script src="../../liquid-filters-lite/index.js"></script>
 <script src="../../litejs/lib/form-to-json.js"></script>
 <script src="../../litejs/lib/json-to-form.js"></script>
 <script id="index" type="text/haml">
-:template test
+
+@template test
  .test
   a#button1.link1.link2[title=Link][href="#A link 1"] > b.bold1 > i.ital1 A Link 2
   a#button1.link1.link2[title='A Link 3'][href="#A"] A Link 4
   h3
    .div DIV
      .ok =if:"false"
-       :text This text will not be visible
+       @text This text will not be visible
      .ok =if:"true"
-       :text This text will be visible
-   :same undefined plugin
-   :text plain text
+       @text This text will be visible
+   @same undefined plugin
+   @text plain text
 
-:template li-row
+@template li-row
  li.row
 
-:template ul3
+@template ul3
 	ul.ul3
 
-:template form-test
+@template form-test
  form[action="javascript:"][enctype="multipart/form-data"][method="post"]
   label
    b R1
@@ -56,7 +57,7 @@
    input[name="map[b]"]
   input[type=submit]
 
-:template ul2
+@template ul2
 	.list
 		.begin each:["a", "b", "c"]
 			.row
@@ -87,6 +88,31 @@ input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
 // http://stackoverflow.com/questions/3084675/internationalization-in-javascript
 // http://stackoverflow.com/questions/9640630/javascript-i18n-internationalization-frameworks-libraries-for-client-side-use
 
+	// Save node initial content for later use
+	function getChilds(node) {
+		var child
+		, childs = node._childs
+		if (!childs) {
+			for (node._childs = childs = []; child = node.firstChild;) {
+				childs.push(child);
+				node.removeChild(child)
+			}
+		}
+		return childs
+	}
+
+El.bindings.each = function(node, data, arr) {
+	console.log("each", arguments)
+	var childs = getChilds(node)
+	arr = arr && data[arr] || data
+	if (arr) node.empty().append(arr.map(function(obj) {
+		return childs.map(renderClone, obj)
+	}))
+	function renderClone(el) {
+		return el.cloneNode(true).render(this)
+	}
+	return node
+}
 
 El.include("index")
 
@@ -102,7 +128,7 @@ setInterval(function(){
 }, 1400)
 //*/
 
-	template1.render({users:users2})
+template1.render({users:users2})
 
 </script>
 
