@@ -190,11 +190,15 @@
 		// http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
 		// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 
+		//** modernBrowser
 		if ((key == "id" || key == "name" || key == "type") && "\v" == "v") {
 			el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '">'), false)
 		} else {
 			el.setAttribute(key, val)
 		}
+		/*/
+		el.setAttribute(key, val)
+		//*/
 	}
 
 	proto.set = set
@@ -233,7 +237,7 @@
 
 			fn = "n d p r->d&&(" + bind.replace(renderRe, "(p['$1']?(r=p['$1'](n,d,$2)||r):(n['$1']=$2.format(d))),") + "r)"
 
-			if (fn.fn()(node, data, bindings)) return node
+			if (Fn(fn)(node, data, bindings)) return node
 		}
 
 		for (node = node.firstChild; node; node = node.nextSibling) {
@@ -334,6 +338,7 @@
 		return memo
 	}, {})
 
+	//** modernBrowser
 	function extend(node, key) {
 		if (node) for (key in proto) node[key] = proto[key]
 		return node
@@ -341,23 +346,24 @@
 
 	// IE 6-7
 	if (proto === El[protoStr]) {
-		document.createElement = function(name) {return extend(createElement(name))}
+		document.createElement = function(name) {
+			return extend(createElement(name))
+		}
 
 		// NOTE: document.body will not get extended with later added extensions
 		extend(body)
-
-		// Remove background image flickers on hover in IE6
-		//
-		// You could also use CSS
-		// html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); }
-		/*@cc_on try{document.execCommand('BackgroundImageCache',false,true)}catch(e){}@*/
 	}
+	//*/
 
 	El[protoStr] = proto
 
 	El.get = function(id) {
 		if (typeof id == "string") id = document.getElementById(id)
+		//** modernBrowser
 		return id && id.to ? id : extend(id)
+		/*/
+		return id
+		//*/
 	}
 
 	function elCacheFn(name, el, custom) {
