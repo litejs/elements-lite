@@ -2,8 +2,8 @@
 
 
 /**
- * @version    0.5.0
- * @date       2015-01-13
+ * @version    0.5.1
+ * @date       2015-02-02
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -19,8 +19,16 @@
 	, elCache = {}
 	, fnCache = {}
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
-	, elRe = /([.#:[])([-\w]+)(?:=((["'\/])(?:\\?.)*?\4|[-\w]+)])?]?/g
-	, tplRe = /^([ \t]*)(@?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
+	, selectorCache = {}
+	, selectorRe = /([.#:[])([-\w]+)(?:([~^$*|]?)=((["'\/])(?:\\?.)*?\5|[-\w]+)])?]?/g
+	, lastSelectorRe = /(\s*[>+]?\s*)((["'\/])(?:\\?.)*?\2|[^\s+>])+$/
+	, pseudoClasses = {
+		"empty": "!_.hasChildNodes()",
+		"first-child": "_.parentNode&&_.parentNode.firstChild==_",
+		"last-child" : "_.parentNode&&_.parentNode.lastChild==_",
+		"link": "_.nodeName=='A'&&_.getAttribute('href')"
+	}
+	, templateRe = /^([ \t]*)(@?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[-,\s\w])*))?/g
 	, bindings = El.bindings = {
 		"class": function(node, data, name, fn) {
@@ -50,7 +58,7 @@
 	function El(name, args, silence) {
 		var el
 		, pre = {}
-		name = name.replace(elRe, function(_, op, key, val, quotation) {
+		name = name.replace(selectorRe, function(_, op, key, fn, val, quotation) {
 			pre[
 				op == "." ?
 				((pre[op = "class"] && (key = pre[op] + " " + key)), op) :
@@ -288,25 +296,77 @@
 		var el
 		, i = 0
 		, out = []
-		, rules = ["_"]
-		, tag = sel.replace(elRe, function(_, o, s, v) {
-			rules.push(
-				o == "." ? "(' '+_.className+' ').indexOf(' "+s+" ')>-1" :
-				o == "#" ? "_.id=='"+s+"'" :
-				"_.getAttribute('"+s+"')"+(v?"=='"+v+"'":"")
-			)
-			return ""
-		}) || "*"
-		, els = node.getElementsByTagName(tag)
-		, fn = Fn(rules.join("&&"))
+		, els = node.getElementsByTagName("*")
+		, fn = selectorFn(sel.split(/\s*,\s*/).map(function(sel) {
+			return "_.matches('" + sel + "')"
+		}).join("||"))
 
-		for (; el = els[i++]; ) if (fn(el)) {
+		for (; (el = els[i++]); ) if (fn(el)) {
 			if (first) return el
 			out.push(el)
 		}
 		return first ? null : out
 	}
 
+	function selectorFnStr(sel) {
+		var rules = ["_"]
+		, tag = sel.replace(selectorRe, function(_, op, key, fn, val, quotation, len) {
+			if (quotation) val = val.slice(1, -1)
+			if (val) {
+				len = val.length
+				val = val.replace(/'/g, "\\'")
+			}
+			rules.push(
+				op == "." ? "(' '+_.className+' ').indexOf(' " + key + " ')>-1" :
+				op == "#" ? "_.id=='" + key + "'" :
+				op == ":" && pseudoClasses[key] ||
+				"(a=_.getAttribute('" + key + "'))" + (!fn && val ? "=='" + val + "'" : "")
+			)
+			if (fn) rules.push(
+				fn == "^" ? "a.slice(0," + len + ")=='" + val + "'" :
+				fn == "|" ? "a.split('-')[0]=='" + val + "'" :
+				fn == "$" ? "a.slice(-" + len + ")=='" + val + "'" :
+				fn == "~" ? "(' '+a+' ').indexOf(' " + val + " ')>-1" :
+				"a.indexOf('" + val + "')>-1" // fn == "*"
+			)
+			return ""
+		})
+
+		if (tag && tag != "*") rules.unshift("_.nodeName=='" + tag.toUpperCase() + "'")
+		return rules.join("&&")
+	}
+
+	function selectorFn(str) {
+		// jshint evil:true
+		return selectorCache[str] ||
+		(selectorCache[str] = Function("_,a", "return " + str))
+	}
+
+	proto.matches = proto.matches || function(sel) {
+		var relation, from
+		, parentSel = sel.replace(lastSelectorRe, function(_, _rel, a, b, start) {
+			from = start + _rel.length
+			relation = _rel.trim()
+			return ""
+		})
+		, next = relation == "+" ? this.previousSibling : this.parentNode
+		, fn = selectorFn(selectorFnStr(sel.slice(from)))
+
+		if (!fn(this)) return false
+
+		if (parentSel) {
+			if (!relation) return !!(next && next.closest && next.closest(parentSel))
+			return next && next.matches && next.matches(parentSel) || false
+		}
+		return true
+	}
+
+	proto.closest = proto.closest || function(sel) {
+		for (var el = this; el; el = el.parentNode) if (el.matches && el.matches(sel)) return el
+		return null
+	}
+
+	//** modernBrowser
 	// Note: IE8 don't support :disabled
 	proto.find = "\v" !== "v" && proto.querySelector || function(sel) {
 		return findEl(this, sel, true)
@@ -319,6 +379,13 @@
 		function(sel) {
 			return new ElWrap(findEl(this, sel))
 		}
+	/*/
+	proto.find = proto.querySelector
+	proto.findAll = function(sel) {
+		return new ElWrap(this.querySelectorAll(sel))
+	}
+	//*/
+
 
 	function ElWrap(nodes) {
 		this._nodes = nodes
@@ -409,7 +476,7 @@
 				if (text) {
 					q = text.charAt(0)
 					if (q == ">") {
-						(indent +" "+ text.slice(1)).replace(tplRe, work)
+						(indent +" "+ text.slice(1)).replace(templateRe, work)
 					} else if (q == "=") {
 						parent.set({"data-bind": text.slice(1)})
 					} else {
@@ -418,7 +485,7 @@
 				}
 			}
 		}
-		str.replace(tplRe, work)
+		str.replace(templateRe, work)
 		root = root.childNodes
 		if (root.length == 1) return root[0]
 

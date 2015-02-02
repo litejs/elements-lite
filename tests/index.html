@@ -61,7 +61,7 @@
 	.list
 		.begin each:["a", "b", "c"]
 			.row
-		ul.list =each:"users"
+		ul.list each: user in users
 			li
 				ul3
 				.input =txt:"Hello <b>{name|upper}</b>"; title:name; class: "my-class", "i>1"
@@ -74,6 +74,7 @@
 <script>
 
 /*
+<li each="{ items.filter(filter) }">
 {% for i = 3; --i > 0; %}
 {% for product in products take:5 %}
 {% for product in products skip:5 %}
@@ -100,7 +101,6 @@ input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
 		}
 		return childs
 	}
-
 El.bindings.each = function(node, data, arr) {
 	console.log("each", arguments)
 	var childs = getChilds(node)

@@ -162,6 +162,8 @@ describe("El").
 						, '<select id="id2" class="cl2" disabled="disabled"></select>'
 						, '<select class=cl2 id=id2 disabled></select>'
 						, '<select id=id2 class=cl2 disabled></select>'
+						, '<select disabled id=id2 class=cl2></select>'
+						, '<select disabled class=cl2 id=id2></select>'
 		     				]).
 	it ("should get element by id").
 		equal(El.get("id2"), select).
@@ -269,15 +271,15 @@ describe( "Templates" ).
 			]).
 
 	it ("supports templates").
-		anyOf(getString(El.tpl(":template t1\n .temp1 t123\nt1")),
+		anyOf(getString(El.tpl("@template t1\n .temp1 t123\nt1")),
 			[ '<div class=temp1>t123</div>'
 			, '<div class="temp1">t123</div>'
 			]).
-		anyOf(getString(El.tpl(":template t2\n .temp2>b t123\nt2")),
+		anyOf(getString(El.tpl("@template t2\n .temp2>b t123\nt2")),
 			[ '<div class=temp2><b>t123</b></div>'
 			, '<div class="temp2"><b>t123</b></div>'
 			]).
-		anyOf(getString(El.tpl(":template t3\n .temp3\n  b t123\nt3")),
+		anyOf(getString(El.tpl("@template t3\n .temp3\n  b t123\nt3")),
 			[ '<div class=temp3><b>t123</b></div>'
 			, '<div class="temp3"><b>t123</b></div>'
 			]).
@@ -292,9 +294,10 @@ describe( "Templates" ).
 		anyOf(getString(t1.render({i:2,name:"moon"})),
 			[ "<a><b data-bind=\"class:'red','i>1'\" class=\"red\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
 			, "<a><b class=\"red\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
+			, "<a><b class=red data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
 			]).
 
-		it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_plugin = '123', should use node.set()"}).
+	it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_plugin = '123', should use node.set()"}).
 		equal(getString(t1 = El.tpl("a =unknown_plugin:\'hello {name}\'")), '<a data-bind="unknown_plugin:\'hello {name}\'"></a>').
 		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello world"></a>').
 		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello moon"></a>').
@@ -303,7 +306,7 @@ describe( "Templates" ).
 	it ("supports declaring a leaf node").
 	run(function() {
 		t1 = El.tpl([""
-			, ":template leaf1"
+			, "@template leaf1"
 			, "  a"
 			, "    b[data-leaf]"
 			, "div"
