@@ -19,15 +19,6 @@
 	, elCache = {}
 	, fnCache = {}
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
-	, selectorCache = {}
-	, selectorRe = /([.#:[])([-\w]+)(?:([~^$*|]?)=((["'\/])(?:\\?.)*?\5|[-\w]+)])?]?/g
-	, lastSelectorRe = /(\s*[>+]?\s*)((["'\/])(?:\\?.)*?\2|[^\s+>])+$/
-	, pseudoClasses = {
-		"empty": "!_.hasChildNodes()",
-		"first-child": "_.parentNode&&_.parentNode.firstChild==_",
-		"last-child" : "_.parentNode&&_.parentNode.lastChild==_",
-		"link": "_.nodeName=='A'&&_.getAttribute('href')"
-	}
 	, templateRe = /^([ \t]*)(@?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[-,\s\w])*))?/g
 	, bindings = El.bindings = {
@@ -44,6 +35,74 @@
 			node.val(text.format(data))
 		}
 	}
+	, selectorRe = /([.#:[])([-\w]+)(?:\((.+?)\)|([~^$*|]?)=(("|')(?:\\?.)*?\6|[-\w]+))?]?/g
+	, selectorLastRe = /([\s>+]*)(?:("|')(?:\\?.)*?\2|\(.+?\)|[^\s+>])+$/
+	, selectorSplitRe = /\s*,\s*(?=(?:[^'"()]|"(?:\\?.)*?"|'(?:\\?.)*?'|\(.+?\))+$)/
+	, selectorCache = {}
+	, selectorMap = {
+		"first-child": "(a=_.parentNode)&&a.firstChild==_",
+		"last-child" : "(a=_.parentNode)&&a.lastChild==_",
+		".": "~_.className.split(/\\s+/).indexOf(a)",
+		"#": "_.id==a",
+		"^": "a.indexOf(v)==0",
+		"|": "a.split('-')[0]==v",
+		"$": "a.slice(-v.length)==v",
+		"~": "~a.split(/\\s+/).indexOf(v)",
+		"*": "~a.indexOf(v)"
+	}
+
+	function findEl(node, sel, first) {
+		var el
+		, i = 0
+		, out = []
+		, next = node.firstChild
+		, fn = selectorFn(sel)
+
+		for (; (el = next); ) {
+			if (fn(el)) {
+				if (first) return el
+				out.push(el)
+			}
+			next = el.firstChild || el.nextSibling
+			while (!next && ((el = el.parentNode) !== node)) next = el.nextSibling
+		}
+		return first ? null : out
+	}
+
+	function selectorFn(str) {
+		// jshint evil:true
+		return selectorCache[str] ||
+		(selectorCache[str] = Function("_,v,a,b", "return " +
+			str.split(selectorSplitRe).map(function(sel) {
+				var relation, from
+				, rules = ["_&&_.nodeType===1"]
+				, parentSel = sel.replace(selectorLastRe, function(_, _rel, a, start) {
+					from = start + _rel.length
+					relation = _rel.trim()
+					return ""
+				})
+				, tag = sel.slice(from).replace(selectorRe, function(_, op, key, subSel, fn, val, quotation) {
+					rules.push(
+						"((v='" +
+						(subSel || (quotation ? val.slice(1, -1) : val) || "").replace(/'/g, "\\'") +
+						"'),(a='" + key + "'),1)"
+						,
+						selectorMap[op == ":" ? key : op] ||
+						"(a=_.getAttribute(a))" +
+						(fn ? "&&" + selectorMap[fn] : val ? "==v" : "")
+					)
+					return ""
+				})
+
+				if (tag && tag != "*") rules[0] += "&&_.nodeName=='" + tag.toUpperCase() + "'"
+				if (parentSel) rules.push(
+					relation == "+" ? "(a=_.previousSibling)" : "(a=_.parentNode)",
+					( relation ? "a.matches&&a.matches('" : "a.closest&&a.closest('" ) + parentSel + "')"
+				)
+				return rules.join("&&")
+			}).join("||")
+		))
+	}
 
 
 	/**
@@ -58,7 +117,7 @@
 	function El(name, args, silence) {
 		var el
 		, pre = {}
-		name = name.replace(selectorRe, function(_, op, key, fn, val, quotation) {
+		name = name.replace(selectorRe, function(_, op, key, _sub, fn, val, quotation) {
 			pre[
 				op == "." ?
 				((pre[op = "class"] && (key = pre[op] + " " + key)), op) :
@@ -290,64 +349,6 @@
 			el.value ||
 			options && options[el.selectedIndex].value ||
 			"on"
-	}
-
-	function findEl(node, sel, first) {
-		var el
-		, i = 0
-		, out = []
-		, els = node.getElementsByTagName("*")
-		, fn = selectorFn(sel)
-
-		for (; (el = els[i++]); ) if (fn(el)) {
-			if (first) return el
-			out.push(el)
-		}
-		return first ? null : out
-	}
-
-	function selectorFn(str) {
-		// jshint evil:true
-		return selectorCache[str] ||
-		(selectorCache[str] = Function("_,a", "return " +
-			str.split(/\s*,\s*/).map(function(sel) {
-				var relation, from
-				, rules = ["_"]
-				, parentSel = sel.replace(lastSelectorRe, function(_, _rel, a, b, start) {
-					from = start + _rel.length
-					relation = _rel.trim()
-					return ""
-				})
-				, tag = sel.slice(from).replace(selectorRe, function(_, op, key, fn, val, quotation, len) {
-					if (quotation) val = val.slice(1, -1)
-					if (val) {
-						len = val.length
-						val = val.replace(/'/g, "\\'")
-					}
-					rules.push(
-						op == "." ? "(' '+_.className+' ').indexOf(' " + key + " ')>-1" :
-						op == "#" ? "_.id=='" + key + "'" :
-						op == ":" && pseudoClasses[key] ||
-						"(a=_.getAttribute('" + key + "'))" + (!fn && val ? "=='" + val + "'" : "")
-					)
-					if (fn) rules.push(
-						fn == "^" ? "a.slice(0," + len + ")=='" + val + "'" :
-						fn == "|" ? "a.split('-')[0]=='" + val + "'" :
-						fn == "$" ? "a.slice(-" + len + ")=='" + val + "'" :
-						fn == "~" ? "(' '+a+' ').indexOf(' " + val + " ')>-1" :
-						"a.indexOf('" + val + "')>-1" // fn == "*"
-					)
-					return ""
-				})
-
-				if (tag && tag != "*") rules.splice(1, 0, "_.nodeName=='" + tag.toUpperCase() + "'")
-				if (parentSel) rules.push(
-					relation == "+" ? "(a=_.previousSibling)" : "(a=_.parentNode)",
-					( relation ? "a.matches&&a.matches('" : "a.closest&&a.closest('" ) + parentSel + "')"
-				)
-				return rules.join("&&")
-			}).join("||")
-		))
 	}
 
 	proto.matches = proto.matches || function(sel) {
