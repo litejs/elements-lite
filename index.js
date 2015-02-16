@@ -520,24 +520,27 @@
 
 	//** i18n
 	function i18n(text, lang) {
-		return i18n[ lang ? getLang(lang) : currentLang ][text] || text
+		lang = i18n[getLang(lang)]
+		return lang[text] ||
+		lang[text = text.slice(text.indexOf(":") + 1) || text] ||
+		text
 	}
 	El.i18n = i18n
 
 	function getLang(lang) {
-		if (!lang) return currentLang
-		lang = (lang || "").toLowerCase()
-		return i18n[lang] ? lang : ((lang = lang.split("-")[0]), i18n[lang]) ? lang : currentLang
+		return lang && (
+			i18n[lang = lang.toLowerCase()] ||
+			i18n[lang = lang.split("-")[0]]
+		) ? lang : currentLang
 	}
 
 	function setLang(lang) {
-		lang = getLang(lang)
-		if (currentLang != (currentLang = lang)) {
-			i18n[lang] = i18n[lang] || {}
+		if (currentLang != (currentLang = getLang(lang))) {
+			i18n[currentLang] = i18n[currentLang] || {}
 		}
 		// Use setAttribute
-		document.documentElement.lang = lang
-		return lang
+		document.documentElement.lang = currentLang
+		return currentLang
 	}
 
 	function addLang(lang, texts) {
