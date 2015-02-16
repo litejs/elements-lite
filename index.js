@@ -400,19 +400,14 @@
 	}, {})
 
 	//** modernBrowser
-	function extend(node, key) {
-		if (node) for (key in proto) node[key] = proto[key]
-		return node
-	}
-
 	// IE 6-7
 	if (proto === El[protoStr]) {
 		document.createElement = function(name) {
-			return extend(createElement(name))
+			return Object.merge(createElement(name), proto)
 		}
 
 		// NOTE: document.body will not get extended with later added extensions
-		extend(body)
+		Object.merge(body, proto)
 	}
 	//*/
 
@@ -421,7 +416,7 @@
 	El.get = function(id) {
 		if (typeof id == "string") id = document.getElementById(id)
 		//** modernBrowser
-		return id && id.to ? id : extend(id)
+		return id && id.to ? id : Object.merge(id, proto)
 		/*/
 		return id
 		//*/
