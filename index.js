@@ -361,6 +361,9 @@
 
 	//** modernBrowser
 	// Note: IE8 don't support :disabled
+	// !+"\v1"
+	// More shortest way to test for IE in javascript:
+	// ie = !-[1, ]
 	proto.find = "\v" !== "v" && proto.querySelector || function(sel) {
 		return findEl(this, sel, true)
 	}
