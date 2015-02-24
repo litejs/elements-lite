@@ -180,8 +180,7 @@
 	}
 
 	function hasClass(name) {
-		// http://jsperf.com/regexp-indexof-perf/32
-		return (" " + this.className + " ").indexOf(" " + name + " ") > -1
+		return this.className.split(/\s+/).indexOf(name) > -1
 	}
 	proto.hasClass = hasClass
 
