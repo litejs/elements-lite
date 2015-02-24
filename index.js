@@ -351,11 +351,11 @@
 			"on"
 	}
 
-	proto.matches = proto.matches || function(sel) {
+	if (!proto.matches) proto.matches = function(sel) {
 		return !!selectorFn(sel)(this)
 	}
 
-	proto.closest = proto.closest || function(sel) {
+	if (!proto.closest) proto.closest = function(sel) {
 		for (var el = this; el; el = el.parentNode) if (el.matches && el.matches(sel)) return el
 		return null
 	}
