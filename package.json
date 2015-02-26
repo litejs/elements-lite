@@ -1,9 +1,10 @@
 {
   "name": "elements-lite",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "stability": 1,
-  "license": "MIT",
   "author": "Lauri Rooden <lauri@rooden.ee>",
+  "license": "MIT",
+  "homepage": "https://www.litejs.com/elements-lite/",
   "description": "DOM buildel for browser",
   "keywords": [
     "browser",
@@ -13,6 +14,7 @@
   ],
   "main": "index.js",
   "readmeFilename": "README.md",
+  "files": ["index.js"],
   "scripts": {
     "build": "node node_modules/buildman/index.js --all",
     "bundle-tests": "browserify tests/run-browser.js > tests/bundle.js",
