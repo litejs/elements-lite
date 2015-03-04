@@ -131,11 +131,11 @@
 
 		// NOTE: IE-s cloneNode consolidates the two text nodes together as one
 		// http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
-		el = (elCache[name] || (elCache[name] = document.createElement(name))).cloneNode(true).set(pre)
+		el = (elCache[name] || (elCache[name] = document.createElement(name))).cloneNode(true).attr(pre)
 
 		return silence ?
 		(fnCache[name] && el.setAttribute("data-call", name), el) :
-		fnCache[name] && fnCache[name].call(el, args) || el.set(args)
+		(fnCache[name] || (typeof args == "object" ? attr : append)).call(el, args)
 	}
 	window.El = El
 
@@ -238,7 +238,7 @@
 				Object.each(key, function(val, key) {
 					attr.call(el, key, val)
 				})
-				return
+				return el
 			}
 			return el.getAttribute(key)
 		}
@@ -260,30 +260,15 @@
 		//** modernBrowser
 		if ((key == "id" || key == "name" || key == "type") && "\v" == "v") {
 			el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '">'), false)
-		} else {
-			el.setAttribute(key, val)
-		}
-		/*/
-		el.setAttribute(key, val)
+		} else
 		//*/
-	}
-
-	proto.set = set
-	function set(args, key, val) {
-		var el = this
-		if (args) {
-			if (typeof args == "object") for (key in args) {
-				val = args[key]
-				// El uses class
-				if (key == "class") addClass.call(el, val)
-				else if (typeof val == "string") {
-					attr.call(el, key, val)
-				}
-				else if (!val) el.removeAttribute(key)
-			}
-			else append.call(el, args)
+		if (key == "class") {
+			addClass.call(el, val)
+		} else if (val) {
+			el.setAttribute(key, val)
+		} else {
+			el.removeAttribute(key)
 		}
-		return el
 	}
 
 	function render(data, skipSelf) {
@@ -470,7 +455,7 @@
 					if (q == ">") {
 						(indent +" "+ text.slice(1)).replace(templateRe, work)
 					} else if (q == "=") {
-						parent.set({"data-bind": text.slice(1)})
+						parent.attr("data-bind", text.slice(1))
 					} else {
 						parent.append(text.replace(/\\([=>:])/g, "$1"))
 					}

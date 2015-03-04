@@ -127,14 +127,14 @@ describe("El").
 			]).
 
 	it ("shoult set attributes").
-		equal(input.set({id: "set_id", title:"set title"}), input).
+		equal(input.attr({id: "set_id", title:"set title"}), input).
 		equal(input.id, "set_id").
 		equal(input.title, "set title").
-		equal(input.set({title:"change title", name:"new name", id: "new_id"}), input).
+		equal(input.attr({title:"change title", name:"new name", id: "new_id"}), input).
 		equal(input.title, "change title").
 		equal(input.name, "new name").
 		equal(input.id, "new_id").
-		equal(input.set({title: null}), input).
+		equal(input.attr({title: null}), input).
 		ok(!input.title).
 
 	it ("has kill() and empty() methods").
