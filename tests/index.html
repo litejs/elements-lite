@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html><head>
+	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" type="text/css" href="common.css">
 </head>
@@ -26,12 +27,12 @@
   a#button1.link1.link2[title='A Link 3'][href="#A"] A Link 4
   h3
    .div DIV
-     .ok =if:"false"
+     .ok &if:"false"
        @text This text will not be visible
-     .ok =if:"true"
+     .ok &if:"true"
        @text This text will be visible
    @same undefined plugin
-   @text plain text
+   @txt plain text
 
 @template li-row
  li.row
@@ -60,20 +61,156 @@
 @template ul2
 	.list
 		.begin each:["a", "b", "c"]
+			input[type=checkbox][data-bind="checked:Math.random()>.5"]
+			input[type=checkbox][data-bind="disabled:Math.random()>.5"]
 			.row
-		ul.list each: user in users
+		ul.list &each: user in users
 			li
 				ul3
-				.input =txt:"Hello <b>{name|upper}</b>"; title:name; class: "my-class", "i>1"
-				.input =html:"Hello <b>{name|upper}</b>"
-				input =value:"Hello {name|upper}"
-		.end \= Static text
+				@template in1
+					.input &txt:"Hello0 <b>{user.name|upper}</b>"; title: GLOBAL_NAME; class: "my-class", "i>1"
+				/ul.tags &if:tags; each: tag in d.user.tags
+				/	li &={tag}
+				in1
+				.input &html:"Hello1 <b>{user.name|upper}</b>"
+				.input &-Hello2 <b>{user.name|upper}</b>
+				.input &=Hello3 <b>{user.name|upper}</b>
+				input &value:"Hello4 {user.name|upper}"
+		.end \& Static text
 		.foot \> Static text
+		/ Comment
 .index
+	[data-bind="visible: shouldShowMessage"]
+	whoo
+	| I think this might get
+	| pretty long so I should
+	| probably make it
+	| multiline so it doesn't
+	| look awful.
+	p This is short.
 </script>
 <script>
+var GLOBAL_NAME = "naa-mee"
+, i18n = El.i18n
+
+i18n.def({ "et":"Eesti keeles"
+	, "en":"In English"
+	, "ru":"На русском"
+	, "fi":"Suomeksi"
+	, "se":"på Svenska"
+})
+
+i18n.add("en", {
+	date: "%a, %d %b %Y %H:%M:%S %z",
+	name: "Name"
+})
+
+i18n.add("et", {
+	date: "%Y %H:%M:%S %z",
+	name: "Nimi"
+})
+
+i18n.use("en")
+
+!function(bindings) {
+	var hasOwn = Object.prototype.hasOwnProperty
+	// Save node initial content for later use
+	function getChilds(node) {
+		var child
+		, childs = node._childs
+		if (!childs) {
+			for (node._childs = childs = []; child = node.firstChild;) {
+				childs.push(child);
+				node.removeChild(child)
+			}
+		}
+		return childs
+	}
+
+
+	bindings.checked = function(node, data, checked) {
+		node.checked = checked
+	}
+
+	bindings.disabled = function(node, data, disabled) {
+		node.disabled = disabled
+	}
+
+	bindings.enabled = function(node, data, enabled) {
+		node.disabled = !enabled
+	}
+
+	bindings.if = function(node, data, enabled) {
+		console.log("if", arguments)
+
+		if (!enabled) return node.kill()
+	}
+
+	bindings.each = each
+	function each(node, data, expr) {
+		var childs = getChilds(node)
+		var _ = expr.match(/^\s*(\w+) in (\w*)(.*)/)
+
+		var fn = "var loop={i:0,offset:0},_3=loop,_2="
+		+ _[2]
+		+ _[3].replace(/ (limit|offset):\s*(\d+)/ig, ";loop.$1=$2")
+		+ ";if(_2)for(_1 in _2)if(_2.hasOwnProperty(_1)&&!(loop.offset&&loop.offset--)){loop.i++;if(loop.limit&&loop.i-loop.offset>loop.limit)break;loop.key=_1;var "
+		+ _[1]
+		+ "=_2[_1];"
+
+		node.empty()
+
+		var scope = Object.create(data)
+		, arr = data[_[2]]
+		console.log("each", arguments, arr, childs)
+
+		for (var key in arr) if (hasOwn.call(arr, key)) {
+			scope[_[1]] = arr[key]
+			node.append( childs.map(renderClone, scope) )
+		}
+
+		return node
+		arr = arr && data[arr] || data
+		if (arr) node.empty().append(arr.map(function(obj) {
+			return childs.map(renderClone, obj)
+		}))
+		function renderClone(el) {
+			console.log("render", this)
+			return el.cloneNode(true).render(this)
+		}
+	}
+	each.raw = 1
+}(El.bindings)
+
+El.include("index")
+
+!function() {
+	var undef
+	, users2 = [{i:1, name:"u"+new Date, tags: ["A", "B", "C"]}, {i:2, name:"u2"}]
+	, template1 = El("ul2").to(document.body)
+
+	/*/
+	setInterval(function(){
+		if (users.length > 2) users.length = 2
+		else users.push({name:"u3"+new Date})
+		template1.render({users:users})
+	}, 1400)
+	//*/
+
+	template1.render({users:users2})
+}()
 
 /*
+Comments: /
+Multiline: |
+Unescaping HTML: !=
+Escaping HTML: &=
+Ruby Interpolation: #{}
+Whitespace Preservation: ~
+Running Ruby: -
+Inserting Ruby: =
+Whitespace Removal: > and <
+
 <li each="{ items.filter(filter) }">
 {% for i = 3; --i > 0; %}
 {% for product in products take:5 %}
@@ -88,47 +225,6 @@ input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
 
 // http://stackoverflow.com/questions/3084675/internationalization-in-javascript
 // http://stackoverflow.com/questions/9640630/javascript-i18n-internationalization-frameworks-libraries-for-client-side-use
-
-	// Save node initial content for later use
-	function getChilds(node) {
-		var child
-		, childs = node._childs
-		if (!childs) {
-			for (node._childs = childs = []; child = node.firstChild;) {
-				childs.push(child);
-				node.removeChild(child)
-			}
-		}
-		return childs
-	}
-El.bindings.each = function(node, data, arr) {
-	console.log("each", arguments)
-	var childs = getChilds(node)
-	arr = arr && data[arr] || data
-	if (arr) node.empty().append(arr.map(function(obj) {
-		return childs.map(renderClone, obj)
-	}))
-	function renderClone(el) {
-		return el.cloneNode(true).render(this)
-	}
-	return node
-}
-
-El.include("index")
-
-
-var template1 = El("ul2").to(document.body)
-, users2 = [{i:1, name:"u"+new Date}, {i:2, name:"u2"}]
-
-/*/
-setInterval(function(){
-	if (users.length > 2) users.length = 2
-	else users.push({name:"u3"+new Date})
-	template1.render({users:users})
-}, 1400)
-//*/
-
-template1.render({users:users2})
 
 </script>
 

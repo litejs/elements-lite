@@ -20,8 +20,8 @@
 	, elCache = {}
 	, fnCache = {}
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
-	, templateRe = /^([ \t]*)(@?)((?:(["'\/])(?:\\?.)*?\4|[-\w\:.#\[\]=])+)[ \t]*(.*)$/gm
-	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[-,\s\w])*))?/g
+	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*)$/gm
+	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
 	, bindings = El.bindings = {
 		"class": function(node, data, name, fn) {
 			toggleClass.call(node, name, fn.fn("_")(data))
@@ -281,13 +281,18 @@
 		}
 		if (bind = !skipSelf && node.getAttribute("data-bind")) {
 			lang = node.getAttribute("lang") || lang
-			// HACK: allow .el ={name} short syntax
-			if (bind.charAt(0) == "{") bind='txt:"' + bind.replace(/"/g, '\\"') + '"'
 			// i18n(bind, lang).format(data)
 			// document.documentElement.lang
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
 
-			fn = "n d p r->d&&(" + bind.replace(renderRe, "(p['$1']?(r=p['$1'](n,d,$2)||r):(n['$1']=$2.format(d))),") + "r)"
+			fn = "n d b r->d&&(" + bind.replace(renderRe, function(_, $1, $2) {
+				return bindings[$1] ?
+				//"(r=b." + $1 + "(n,d," + $2 + ")||r)," :
+				"(r=b." + $1 + "(n,d," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r)," :
+				"n.attr('" + $1 + "'," + $2 + ".format(d)),"
+			}) + "r)"
+
+			//console.log("FN", fn)
 
 			if (Fn(fn)(node, data, bindings)) return node
 		}
@@ -443,21 +448,26 @@
 					parent = (new tpl.plugins[name](parent, text)).el
 					stack.unshift(i)
 				} else {
-					parent.append(El.text( name == "text" ? text : all ))
+					parent.append(all)
 				}
 			} else {
 				if (name) {
 					parent = El(name, 0, 1).to(parent)
+					// TODO:2015-02-27:lauri:should we find a child to where put a content?
 					stack.unshift(i)
 				}
 				if (text) {
 					q = text.charAt(0)
+					name = text.slice(1)
 					if (q == ">") {
-						(indent +" "+ text.slice(1)).replace(templateRe, work)
-					} else if (q == "=") {
-						parent.attr("data-bind", text.slice(1))
-					} else {
-						parent.append(text.replace(/\\([=>:])/g, "$1"))
+						(indent + " " + name).replace(templateRe, work)
+					} else if (q == "&") {
+						q = name.charAt(0)
+						if (q == "-") name = "txt:'" + name.slice(1).replace(/'/g, "\\'") + "'"
+						if (q == "=") name = "txt:'" + name.slice(1).replace(/'/g, "\\'") + "'"
+						parent.attr("data-bind", name)
+					} else if (q != "/") {
+						parent.append(q == "|" ? name : text.replace(/\\([>&|/])/g, "$1"))
 					}
 				}
 			}

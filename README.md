@@ -99,6 +99,7 @@ ul.list
     li.my-row > b row
   my-row
   my-row
+  / Comment
 ```
 
 becomes
@@ -110,7 +111,17 @@ becomes
 </ul>
 ```
 
+#### Data bindings
 
+```html
+ul[data-bind="class: 'red', list.count > 5; each: row in list"]
+  li[data-bind="txt: row"]
+```
+
+Fill template with data
+
+```javascript
+el.render({list:["A", "B", "C"]})
 
 Browser Support
 ---------------

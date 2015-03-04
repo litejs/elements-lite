@@ -285,7 +285,7 @@ describe( "Templates" ).
 			]).
 
 	it ( "should render data to elements" ).
-		equal(getString(t1 = El.tpl("a>b[data-bind=\"class:'red','i>1'\"]>i =txt:'hello {name}'")), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\"></i></b></a>").
+		equal(getString(t1 = El.tpl("a>b[data-bind=\"class:'red','i>1'\"]>i &txt:'hello {name}'")), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\"></i></b></a>").
 		anyOf(getString(t1.render({i:1,name:"world"})),
 			[ "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
 			, "<a><b class=\"\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
