@@ -19,9 +19,13 @@
 <script src="../../liquid-filters-lite/index.js"></script>
 <script src="../../litejs/lib/form-to-json.js"></script>
 <script src="../../litejs/lib/json-to-form.js"></script>
+<script src="../../litejs/src/view.js"></script>
 <script id="index" type="text/haml">
 
-@template test
+@view main body
+ .route Main
+
+@template test test2 test3 test4
  .test
   a#button1.link1.link2[title=Link][href="#A link 1"] > b.bold1 > i.ital1 A Link 2
   a#button1.link1.link2[title='A Link 3'][href="#A"] A Link 4
@@ -181,6 +185,30 @@ i18n.use("en")
 	}
 	each.raw = 1
 }(El.bindings)
+
+!function(exports) {
+	View("body", document.body)
+	function view(parent, name) {
+		console.log("view", arguments)
+		var t = this
+		t.name = name
+		t.parent = parent
+		t.el = El("div")
+		t.el.plugin = t
+		return t
+	}
+
+	view.prototype.done = function() {
+		var t = this
+		, arr = t.name.split(" ")
+		View(arr[0], t.el.removeChild(t.el.firstChild), arr[1], arr[2])
+		t.el.plugin = null
+		return t.parent
+	}
+
+	exports.view = view
+
+}(El.plugins)
 
 El.include("index")
 

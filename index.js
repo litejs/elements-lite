@@ -444,8 +444,8 @@
 			}
 
 			if (plugin) {
-				if (tpl.plugins[name]) {
-					parent = (new tpl.plugins[name](parent, text)).el
+				if (El.plugins[name]) {
+					parent = (new El.plugins[name](parent, text)).el
 					stack.unshift(i)
 				} else {
 					parent.append(all)
@@ -481,6 +481,7 @@
 	}
 
 	function template(parent, name) {
+		console.log("template", arguments)
 		var t = this
 		t.name = name
 		t.parent = parent
@@ -496,7 +497,7 @@
 		return t.parent
 	}
 
-	tpl.plugins = {
+	El.plugins = {
 		"template": template
 	}
 
