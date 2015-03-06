@@ -2,7 +2,7 @@
 <html><head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" type="text/css" href="common.css">
+	<link rel="stylesheet" type="text/css" href="../../litejs/example/app.css">
 </head>
 <body>
 <style>
@@ -20,10 +20,32 @@
 <script src="../../litejs/lib/form-to-json.js"></script>
 <script src="../../litejs/lib/json-to-form.js"></script>
 <script src="../../litejs/src/view.js"></script>
+<script src="../../browser-history-lite/dist/hash-only-src.js"></script>
 <script id="index" type="text/haml">
 
-@view main body
- .route Main
+@view #main #body .content
+ .route
+   h1 Header
+   .nav &enabled: true; controller: Array; disabled: false
+     a[href="#home"] Home
+     a[href="#settings"] Settings
+     a[href="#broken-link"] Broken link
+   .content
+   .footer Bye
+
+@view 404 #main
+ .page
+   h1 404
+   | Page not found.
+   | Maybe you want to look something else?
+
+@view home #main
+ .page
+   h1 Home
+
+@view settings #main
+ .page
+   h1 Settings
 
 @template test test2 test3 test4
  .test
@@ -131,6 +153,12 @@ i18n.use("en")
 		return childs
 	}
 
+	bindings.controller = function(node, data, controller) {
+		var bind = node.attr("data-bind")
+		//, newBind = bind.replace(//)
+	}
+	bindings.controller.once = true
+
 
 	bindings.checked = function(node, data, checked) {
 		node.checked = checked
@@ -187,7 +215,7 @@ i18n.use("en")
 }(El.bindings)
 
 !function(exports) {
-	View("body", document.body)
+	View("#body", document.body)
 	function view(parent, name) {
 		console.log("view", arguments)
 		var t = this
@@ -201,34 +229,36 @@ i18n.use("en")
 	view.prototype.done = function() {
 		var t = this
 		, arr = t.name.split(" ")
-		View(arr[0], t.el.removeChild(t.el.firstChild), arr[1], arr[2])
+		View(arr[0], t.el.removeChild(t.el.firstChild).render(), arr[1], arr[2])
 		t.el.plugin = null
 		return t.parent
 	}
 
 	exports.view = view
 
+
 }(El.plugins)
 
 El.include("index")
 
+View.default = "home"
+history.start(View.show)
+
+/*
 !function() {
 	var undef
 	, users2 = [{i:1, name:"u"+new Date, tags: ["A", "B", "C"]}, {i:2, name:"u2"}]
 	, template1 = El("ul2").to(document.body)
 
-	/*/
 	setInterval(function(){
 		if (users.length > 2) users.length = 2
 		else users.push({name:"u3"+new Date})
 		template1.render({users:users})
 	}, 1400)
-	//*/
 
 	template1.render({users:users2})
 }()
 
-/*
 Comments: /
 Multiline: |
 Unescaping HTML: !=

@@ -14,6 +14,7 @@
 
 !function(window, document, protoStr) {
 	var currentLang
+	, hasOwn = Object.prototype.hasOwnProperty
 	, body = document.body
 	, createElement = document.createElement
 	, txtAttr = "textContent" in body ? "textContent" : "innerText"
@@ -272,25 +273,30 @@
 	}
 
 	function render(data, skipSelf) {
-		var bind, fn, lang
+		var bind, newBind, fn, lang
 		, node = this
 
-		if (bind = !skipSelf && node.getAttribute("data-call")) {
+		if (bind = !skipSelf && node.attr("data-call")) {
 			node.removeAttribute("data-call")
 			fnCache[bind].call(node)
 		}
-		if (bind = !skipSelf && node.getAttribute("data-bind")) {
-			lang = node.getAttribute("lang") || lang
+		if (bind = !skipSelf && node.attr("data-bind")) {
+			lang = node.attr("lang") || lang
+			newBind = bind
 			// i18n(bind, lang).format(data)
 			// document.documentElement.lang
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
 
 			fn = "n d b r->d&&(" + bind.replace(renderRe, function(_, $1, $2) {
+				if (hasOwn.call(bindings[$1]||{}, "once")) {
+					newBind = newBind.split(_).join("")
+				}
 				return bindings[$1] ?
 				//"(r=b." + $1 + "(n,d," + $2 + ")||r)," :
 				"(r=b." + $1 + "(n,d," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r)," :
 				"n.attr('" + $1 + "'," + $2 + ".format(d)),"
 			}) + "r)"
+			if (bind != newBind) node.attr("data-bind", newBind)
 
 			//console.log("FN", fn)
 
@@ -481,7 +487,6 @@
 	}
 
 	function template(parent, name) {
-		console.log("template", arguments)
 		var t = this
 		t.name = name
 		t.parent = parent
