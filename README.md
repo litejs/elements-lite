@@ -118,11 +118,6 @@ ul[data-bind="class: 'red', list.count > 5; each: row in list"]
   li[data-bind="txt: row"]
 ```
 
-Fill template with data
-
-```javascript
-el.render({list:["A", "B", "C"]})
-
 Browser Support
 ---------------
 
