@@ -135,7 +135,7 @@
 		el = (elCache[name] || (elCache[name] = document.createElement(name))).cloneNode(true).attr(pre)
 
 		return silence ?
-		(fnCache[name] && el.setAttribute("data-call", name), el) :
+		(fnCache[name] && el.attr("data-call", name), el) :
 		(fnCache[name] || (typeof args == "object" ? attr : append)).call(el, args)
 	}
 	window.El = El
@@ -288,7 +288,7 @@
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
 
 			fn = "n d b r->d&&(" + bind.replace(renderRe, function(_, $1, $2) {
-				if (hasOwn.call(bindings[$1]||{}, "once")) {
+				if (hasOwn.call(bindings[$1]||render, "once")) {
 					newBind = newBind.split(_).join("")
 				}
 				return bindings[$1] ?
@@ -467,13 +467,13 @@
 					name = text.slice(1)
 					if (q == ">") {
 						(indent + " " + name).replace(templateRe, work)
-					} else if (q == "&") {
-						q = name.charAt(0)
-						if (q == "-") name = "txt:'" + name.slice(1).replace(/'/g, "\\'") + "'"
-						if (q == "=") name = "txt:'" + name.slice(1).replace(/'/g, "\\'") + "'"
-						parent.attr("data-bind", name)
+					} else if (q == "|" || q == "\\") {
+						parent.append(name + "\n")
 					} else if (q != "/") {
-						parent.append(q == "|" ? name : text.replace(/\\([>&|/])/g, "$1"))
+						if (q != "&") {
+							name = "txt:i18n('" + text.replace(/'/g, "\\'") + "').format(d)"
+						}
+						parent.attr("data-bind", name)
 					}
 				}
 			}

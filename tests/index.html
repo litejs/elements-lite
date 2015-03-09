@@ -2,13 +2,29 @@
 <html><head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" type="text/css" href="../../litejs/example/app.css">
 </head>
 <body>
 <style>
 
-.test1 {
-  font-size: 1.5em;
+.nav {
+	overflow: auto;
+}
+.nav a {
+	background: #eee;
+	display: block;
+	float: left;
+	padding: .3em .6em;
+	margin-right: .3em;
+}
+.h {
+	font-size: .5em;
+	font-weight: normal;
+	font-style: italic;
+}
+.footer {
+	border-top: 1px solid #eee;
+	padding: .3em .6em;
+	margin: 2em 0;
 }
 </style>
 <script src="../../_stable/browser-upgrade-lite/index.js"></script>
@@ -23,97 +39,60 @@
 <script src="../../browser-history-lite/dist/hash-only-src.js"></script>
 <script id="index" type="text/haml">
 
+@template nav
+  .nav
+    a[href="#home"] Home
+    a[href="#settings"] Settings
+    a[href="#test"] Test
+    a[href="#broken-link"] Broken link
+
 @view #main #body .content
- .route
-   h1 Header
-   .nav &enabled: true; controller: Array; disabled: false
-     a[href="#home"] Home
-     a[href="#settings"] Settings
-     a[href="#broken-link"] Broken link
-   .content
-   .footer Bye
+  .route
+    h1 Header
+    nav
+    .content
+    .footer | Plain text not translated
 
 @view 404 #main
- .page
-   h1 404
-   | Page not found.
-   | Maybe you want to look something else?
+  .page
+    h2 Error 404
+    | Page not found.
+    | Maybe you want to look something else?
 
 @view home #main
- .page
-   h1 Home
+  .page
+    h2 Home
+    h2 | Home
+    div _welcome
+
 
 @view settings #main
- .page
-   h1 Settings
+  .page
+    h2 Settings
+    .h | Settings
+    | Lot of settings
+    a[href="#settings/rules"] Ruulid
+    nav
+    nav
 
-@template test test2 test3 test4
- .test
-  a#button1.link1.link2[title=Link][href="#A link 1"] > b.bold1 > i.ital1 A Link 2
-  a#button1.link1.link2[title='A Link 3'][href="#A"] A Link 4
-  h3
-   .div DIV
-     .ok &if:"false"
-       @text This text will not be visible
-     .ok &if:"true"
-       @text This text will be visible
-   @same undefined plugin
-   @txt plain text
+@view test #main
+  .page
+    h2 Test
+    .t1 > b Bold
+    .t2 \> Starts with angle
+    .t3 Text
+    .t4 |Text
+    .t5 \|Text
+    pre
+     | abc
+     |   def
+     | hij
 
-@template li-row
- li.row
+@view settings/rules #main
+  .page
+    h2 Rules
 
-@template ul3
-	ul.ul3
-
-@template form-test
- form[action="javascript:"][enctype="multipart/form-data"][method="post"]
-  label
-   b R1
-   input[type=radio][name=r][value=1]
-  label
-   b R2
-   input[type=radio][name=r][value=2]
-  label
-   b Arr
-   input[name="map[key][]"]
-   input[name="map[key][]"]
-  label
-   b Map
-   input[name="map[a]"]
-   input[name="map[b]"]
-  input[type=submit]
-
-@template ul2
-	.list
-		.begin each:["a", "b", "c"]
-			input[type=checkbox][data-bind="checked:Math.random()>.5"]
-			input[type=checkbox][data-bind="disabled:Math.random()>.5"]
-			.row
-		ul.list &each: user in users
-			li
-				ul3
-				@template in1
-					.input &txt:"Hello0 <b>{user.name|upper}</b>"; title: GLOBAL_NAME; class: "my-class", "i>1"
-				/ul.tags &if:tags; each: tag in d.user.tags
-				/	li &={tag}
-				in1
-				.input &html:"Hello1 <b>{user.name|upper}</b>"
-				.input &-Hello2 <b>{user.name|upper}</b>
-				.input &=Hello3 <b>{user.name|upper}</b>
-				input &value:"Hello4 {user.name|upper}"
-		.end \& Static text
-		.foot \> Static text
-		/ Comment
 .index
-	[data-bind="visible: shouldShowMessage"]
-	whoo
-	| I think this might get
-	| pretty long so I should
-	| probably make it
-	| multiline so it doesn't
-	| look awful.
-	p This is short.
 </script>
 <script>
 var GLOBAL_NAME = "naa-mee"
@@ -127,12 +106,18 @@ i18n.def({ "et":"Eesti keeles"
 })
 
 i18n.add("en", {
-	date: "%a, %d %b %Y %H:%M:%S %z",
-	name: "Name"
+	_welcome: "Welcome text"
 })
 
 i18n.add("et", {
+	Home: "Kodu",
+	_welcome: "tervitustekst",
 	date: "%Y %H:%M:%S %z",
+	Header: "Pealkiri",
+	Bye: "Lõpp",
+	Settings: "Suvandid",
+	"Broken link": "Katkine link",
+	"Error 404": "Viga 404",
 	name: "Nimi"
 })
 
@@ -140,6 +125,7 @@ i18n.use("en")
 
 !function(bindings) {
 	var hasOwn = Object.prototype.hasOwnProperty
+	, slice = Array.prototype.slice
 	// Save node initial content for later use
 	function getChilds(node) {
 		var child
@@ -152,6 +138,14 @@ i18n.use("en")
 		}
 		return childs
 	}
+
+	bindings.fn = function(node, data, fn) {
+		fn.apply(node, slice.call(arguments, 3))
+	}
+	bindings.fn.raw = true
+	bindings.fn.once = true
+
+	bindings.init = bindings.fn
 
 	bindings.controller = function(node, data, controller) {
 		var bind = node.attr("data-bind")
@@ -229,7 +223,10 @@ i18n.use("en")
 	view.prototype.done = function() {
 		var t = this
 		, arr = t.name.split(" ")
-		View(arr[0], t.el.removeChild(t.el.firstChild).render(), arr[1], arr[2])
+		View(arr[0], t.el.removeChild(t.el.firstChild).render({}), arr[1], arr[2])
+		.on("show", function(){
+			this.el.render({})
+		})
 		t.el.plugin = null
 		return t.parent
 	}
@@ -241,7 +238,7 @@ i18n.use("en")
 
 El.include("index")
 
-View.default = "home"
+View.main = "home"
 history.start(View.show)
 
 /*
@@ -278,6 +275,73 @@ Whitespace Removal: > and <
 {% for attr in deeper.object %}
    <ul data-bind2="foreach: months">
 
+@template test test2 test3 test4
+ .test
+  a#button1.link1.link2[title=Link][href="#A link 1"] > b.bold1 > i.ital1 A Link 2
+  a#button1.link1.link2[title='A Link 3'][href="#A"] A Link 4
+  h3
+   .div DIV
+     .ok &if:"false"
+       @text This text will not be visible
+     .ok &if:"true"
+       @text This text will be visible
+   @same undefined plugin
+   @txt plain text
+
+@template li-row
+ li.row
+
+@template ul3
+	ul.ul3
+
+@template form-test
+ form[action="javascript:"][enctype="multipart/form-data"][method="post"]
+  label
+   b R1
+   input[type=radio][name=r][value=1]
+  label
+   b R2
+   input[type=radio][name=r][value=2]
+  label
+   b Arr
+   input[name="map[key][]"]
+   input[name="map[key][]"]
+  label
+   b Map
+   input[name="map[a]"]
+   input[name="map[b]"]
+  input[type=submit]
+
+@template ul2
+	.list
+		.begin each:["a", "b", "c"]
+			input[type=checkbox][data-bind="checked:Math.random()>.5"]
+			input[type=checkbox][data-bind="disabled:Math.random()>.5"]
+			.row
+		ul.list &each: user in users
+			li
+				ul3
+				@template in1
+					.input &txt:"Hello0 <b>{user.name|upper}</b>"; title: GLOBAL_NAME; class: "my-class", "i>1"
+				/ul.tags &if:tags; each: tag in d.user.tags
+				/	li &={tag}
+				in1
+				.input &html:"Hello1 <b>{user.name|upper}</b>"
+				.input &-Hello2 <b>{user.name|upper}</b>
+				.input &=Hello3 <b>{user.name|upper}</b>
+				input &value:"Hello4 {user.name|upper}"
+		.end \& Static text
+		.foot \> Static text
+		/ Comment
+.index
+	[data-bind="visible: shouldShowMessage"]
+	whoo
+	| I think this might get
+	| pretty long so I should
+	| probably make it
+	| multiline so it doesn't
+	| look awful.
+	p This is short.
 input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
 */
 
