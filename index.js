@@ -272,12 +272,26 @@
 		}
 	}
 
+	var dataCache = {}
+	, dataCacheSeq = 0
+
 	function render(data, skipSelf) {
 		var bind, newBind, fn, lang
 		, node = this
 
-		if (bind = !skipSelf && node.attr("data-call")) {
+		if (!data) {
+			//for (;!data && node; node = node.parentNode) if (bind = node.nodeType == 1 && attr.call(node, "data-id")) {
+			//	data = dataCache[bind]
+			//}
+			//node = this
+		}
+
+		if (bind = node.attr("data-data")) {
 			node.removeAttribute("data-call")
+			fnCache[bind].call(node)
+		}
+		if (bind = !skipSelf && node.attr("data-el-data")) {
+			node.attr("data-el-data")
 			fnCache[bind].call(node)
 		}
 		if (bind = !skipSelf && node.attr("data-bind")) {
