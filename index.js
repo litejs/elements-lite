@@ -494,10 +494,7 @@
 		}
 		str.replace(templateRe, work)
 		root = root.childNodes
-		if (root.length == 1) return root[0]
-
-		for (stack = [], parent = root.length; parent--;) stack[parent] = root[parent]
-		return stack
+		return root.length == 1 ? root[0] : root
 	}
 
 	function template(parent, name) {
