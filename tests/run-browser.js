@@ -247,10 +247,10 @@ describe( "Templates" ).
 	it ("supports tpl").
 		equal(getString(El.tpl("a\n b\n  i")), '<a><b><i></i></b></a>').
 		equal(getString(El.tpl("a \n b\n  i")), '<a><b><i></i></b></a>').
-		equal(getString(El.tpl("a\n b\n  i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.tpl("a\n b \n  i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.tpl("a\n b\n  i link>to")), '<a><b><i>link&gt;to</i></b></a>').
-		anyOf(getString(El.tpl("a[href='#a>b']\n b.bold \n  i#ital link")),
+		equal(getString(El.tpl("a\n b\n  i |link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a\n b \n  i |link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a\n b\n  i |link>to")), '<a><b><i>link&gt;to</i></b></a>').
+		anyOf(getString(El.tpl("a[href='#a>b']\n b.bold \n  i#ital |link")),
 			[ '<a href="#a>b"><b class=bold><i id=ital>link</i></b></a>'
 			, '<a href="#a>b"><b class="bold"><i id="ital">link</i></b></a>'
 			, '<a href="#a&gt;b"><b class="bold"><i id="ital">link</i></b></a>'
@@ -260,10 +260,10 @@ describe( "Templates" ).
 	it ("supports block expansion").
 		equal(getString(El.tpl("a>b>i")), '<a><b><i></i></b></a>').
 		equal(getString(El.tpl("a > b>i")), '<a><b><i></i></b></a>').
-		equal(getString(El.tpl("a>b>i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.tpl("a>b > i link")), '<a><b><i>link</i></b></a>').
-		equal(getString(El.tpl("a>b>i link>to")), '<a><b><i>link&gt;to</i></b></a>').
-		anyOf(getString(El.tpl("a[href='#a>b']>b.bold > i#ital link")),
+		equal(getString(El.tpl("a>b>i |link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a>b > i |link")), '<a><b><i>link</i></b></a>').
+		equal(getString(El.tpl("a>b>i |link>to")), '<a><b><i>link&gt;to</i></b></a>').
+		anyOf(getString(El.tpl("a[href='#a>b']>b.bold > i#ital |link")),
 			[ '<a href="#a>b"><b class=bold><i id=ital>link</i></b></a>'
 			, '<a href="#a>b"><b class="bold"><i id="ital">link</i></b></a>'
 			, '<a href="#a&gt;b"><b class="bold"><i id="ital">link</i></b></a>'
@@ -271,15 +271,15 @@ describe( "Templates" ).
 			]).
 
 	it ("supports templates").
-		anyOf(getString(El.tpl("@template t1\n .temp1 t123\nt1")),
+		anyOf(getString(El.tpl("@template t1\n .temp1 |t123\nt1")),
 			[ '<div class=temp1>t123</div>'
 			, '<div class="temp1">t123</div>'
 			]).
-		anyOf(getString(El.tpl("@template t2\n .temp2>b t123\nt2")),
+		anyOf(getString(El.tpl("@template t2\n .temp2>b |t123\nt2")),
 			[ '<div class=temp2><b>t123</b></div>'
 			, '<div class="temp2"><b>t123</b></div>'
 			]).
-		anyOf(getString(El.tpl("@template t3\n .temp3\n  b t123\nt3")),
+		anyOf(getString(El.tpl("@template t3\n .temp3\n  b |t123\nt3")),
 			[ '<div class=temp3><b>t123</b></div>'
 			, '<div class="temp3"><b>t123</b></div>'
 			]).

@@ -120,13 +120,17 @@
 		var el
 		, pre = {}
 		name = name.replace(selectorRe, function(_, op, key, _sub, fn, val, quotation) {
-			pre[
+			val = quotation ? val.slice(1, -1) : val || key
+			pre[op =
 				op == "." ?
-				((pre[op = "class"] && (key = pre[op] + " " + key)), op) :
+				(fn = "~", "className") :
 				op == "#" ?
 				"id" :
 				key
-			] = quotation ? val.slice(1, -1) : val || key
+			] = fn && pre[op] ?
+				fn == "^" ? val + pre[op] :
+				pre[op] + (fn == "~" ? " " : "") + val :
+				val
 			return ""
 		}) || "div"
 
@@ -263,9 +267,7 @@
 			el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '">'), false)
 		} else
 		//*/
-		if (key == "class") {
-			addClass.call(el, val)
-		} else if (val) {
+		if (val) {
 			el.setAttribute(key, val)
 		} else {
 			el.removeAttribute(key)
@@ -482,7 +484,7 @@
 					if (q == ">") {
 						(indent + " " + name).replace(templateRe, work)
 					} else if (q == "|" || q == "\\") {
-						parent.append(name + "\n")
+						parent.append(name) // + "\n")
 					} else if (q != "/") {
 						if (q != "&") {
 							name = "txt:i18n('" + text.replace(/'/g, "\\'") + "').format(d)"
