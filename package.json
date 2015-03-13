@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "stability": 1,
   "author": "Lauri Rooden <lauri@rooden.ee>",
   "license": "MIT",
@@ -14,7 +14,10 @@
   ],
   "main": "index.js",
   "readmeFilename": "README.md",
-  "files": ["index.js"],
+  "files": [
+    "dist",
+    "index.js"
+  ],
   "scripts": {
     "build": "node node_modules/buildman/index.js --all",
     "bundle-tests": "browserify tests/run-browser.js > tests/bundle.js",
