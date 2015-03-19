@@ -263,7 +263,7 @@
 		// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 
 		//** modernBrowser
-		if ((key == "id" || key == "name" || key == "type") && "\v" == "v") {
+		if ((key == "id" || key == "name") && "\v" == "v") {
 			el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '">'), false)
 		} else
 		//*/
