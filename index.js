@@ -123,7 +123,7 @@
 			val = quotation ? val.slice(1, -1) : val || key
 			pre[op =
 				op == "." ?
-				(fn = "~", "className") :
+				(fn = "~", "class") :
 				op == "#" ?
 				"id" :
 				key
@@ -267,7 +267,9 @@
 			el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '">'), false)
 		} else
 		//*/
-		if (val) {
+		if (key == "class") {
+			addClass.call(el, val)
+		} else if (val) {
 			el.setAttribute(key, val)
 		} else {
 			el.removeAttribute(key)
