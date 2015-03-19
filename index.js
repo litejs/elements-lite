@@ -18,15 +18,21 @@
 	, body = document.body
 	, createElement = document.createElement
 	, txtAttr = "textContent" in body ? "textContent" : "innerText"
-	, elCache = {}
-	, fnCache = {}
+	, elCache = El.cache = {}
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
-	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*)$/gm
+	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*?)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
 	, bindings = El.bindings = {
 		"class": function(node, data, name, fn) {
-			toggleClass.call(node, name, fn.fn("_")(data))
+			toggleClass.call(node, name, fn.fn("_").call(data))
 		},
+		"checked": function(node, data, checked) {
+			node.checked = checked
+		},
+		"disabled": function(node, data, disabled) {
+			node.disabled = disabled
+		},
+		"each": bindingsEach,
 		"html": function(node, data, html) {
 			node.innerHTML = html.format(data)
 		},
@@ -138,9 +144,8 @@
 		// http://brooknovak.wordpress.com/2009/08/23/ies-clonenode-doesnt-actually-clone/
 		el = (elCache[name] || (elCache[name] = document.createElement(name))).cloneNode(true).attr(pre)
 
-		return silence ?
-		(fnCache[name] && el.attr("data-call", name), el) :
-		(fnCache[name] || (typeof args == "object" ? attr : append)).call(el, args)
+		return silence || !args ? el :
+		(typeof args == "object" ? attr : append).call(el, args)
 	}
 	window.El = El
 
@@ -150,7 +155,7 @@
 		, i = 0
 		, tmp = typeof child
 		if (child) {
-			if (tmp == "string" || tmp == "number") child = El.text(child)
+			if (tmp == "string" || tmp == "number") child = document.createTextNode(child)
 			else if ( !("nodeType" in child) && "length" in child ) {
 				// document.createDocumentFragment is unsupported in IE5.5
 				// fragment = "createDocumentFragment" in document ? document.createDocumentFragment() : El("div")
@@ -276,54 +281,52 @@
 		}
 	}
 
-	var dataCache = {}
-	, dataCacheSeq = 0
+	var scopeSeq = 0
+	, scopeGlobal = El.global = {i18n: i18n}
 
-	function render(data, skipSelf) {
-		var bind, newBind, fn, lang
+	function getScope(node, _new, parent) {
+		var dataNode = !_new && (
+			node.closest("[data-scope]") ||
+			parent && parent.closest("[data-scope]")
+		)
+		, data = dataNode && getScope[attr.call(dataNode, "data-scope")] || scopeGlobal
+
+		if (_new && dataNode !== node) {
+			data = getScope[++scopeSeq] = Object.create(data)
+			attr.call(node, "data-scope", scopeSeq)
+		}
+
+		return data
+	}
+	El.getScope = getScope
+
+	function render(scope, skipSelf) {
+		var newBind, fn
 		, node = this
+		, bind = attr.call(node, "data-scope")
 
-		if (!data) {
-			//for (;!data && node; node = node.parentNode) if (bind = node.nodeType == 1 && attr.call(node, "data-id")) {
-			//	data = dataCache[bind]
-			//}
-			//node = this
-		}
+		scope = bind ? getScope[bind] : scope || getScope(node)
 
-		if (bind = node.attr("data-data")) {
-			node.removeAttribute("data-call")
-			fnCache[bind].call(node)
-		}
-		if (bind = !skipSelf && node.attr("data-el-data")) {
-			node.attr("data-el-data")
-			fnCache[bind].call(node)
-		}
-		if (bind = !skipSelf && node.attr("data-bind")) {
-			lang = node.attr("lang") || lang
+		if (bind = attr.call(node, "data-bind")) {
 			newBind = bind
-			// i18n(bind, lang).format(data)
+			// i18n(bind, lang).format(scope)
 			// document.documentElement.lang
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
 
 			fn = "n d b r->d&&(" + bind.replace(renderRe, function(_, $1, $2) {
-				if (hasOwn.call(bindings[$1]||render, "once")) {
-					newBind = newBind.split(_).join("")
-				}
 				return bindings[$1] ?
-				//"(r=b." + $1 + "(n,d," + $2 + ")||r)," :
-				"(r=b." + $1 + "(n,d," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r)," :
+				(hasOwn.call(bindings[$1], "once") && (newBind = newBind.replace(_, "")),
+					"(r=b['" + $1 + "'](n,d," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r),") :
 				"n.attr('" + $1 + "'," + $2 + ".format(d)),"
 			}) + "r)"
-			if (bind != newBind) node.attr("data-bind", newBind)
+			if (bind != newBind) attr.call(node, "data-bind", newBind)
 
-			//console.log("FN", fn)
-
-			if (Fn(fn)(node, data, bindings)) return node
+			if (Fn(fn)(node, scope, bindings)) return node
 		}
 
 		for (node = node.firstChild; node; node = node.nextSibling) {
 			if (node.nodeType == 1) {
-				render.call(node, data)
+				render.call(node, scope)
 			}
 		}
 		return this
@@ -439,21 +442,6 @@
 		//*/
 	}
 
-	function elCacheFn(name, el, custom) {
-		elCache[name] = typeof el == "string" ? El(el) : el
-		if (custom) {
-			fnCache[name] = custom
-		}
-	}
-
-	elCacheFn._el = elCache
-	elCacheFn._fn = fnCache
-	El.cache = elCacheFn
-
-	El.text = function(str) {
-		return document.createTextNode(str)
-	}
-
 	//** templates
 
 	function tpl(str) {
@@ -489,9 +477,9 @@
 						parent.append(name) // + "\n")
 					} else if (q != "/") {
 						if (q != "&") {
-							name = "txt:i18n('" + text.replace(/'/g, "\\'") + "').format(d)"
+							name = "txt:El.i18n('" + text.replace(/'/g, "\\'") + "').format(d)"
 						}
-						parent.attr("data-bind", name)
+						attr.call(parent, "data-bind", name)
 					}
 				}
 			}
@@ -512,7 +500,7 @@
 
 	template.prototype.done = function() {
 		var t = this
-		El.cache(t.name, t.el.removeChild(t.el.firstChild), render)
+		elCache[t.name] = t.el.removeChild(t.el.firstChild)
 		t.el.plugin = null
 		return t.parent
 	}
@@ -521,12 +509,11 @@
 		"template": template
 	}
 
-	El.create = El.tpl = function(str) {
-		return tpl(str).render()
-	}
+	El.create = El.tpl = tpl
+
 	El.include = function(id, data, parent) {
 		var src = El.get(id)
-		new template(null, id).el.append( El.tpl(src.innerHTML) ).plugin.done()
+		new template(null, id).el.append( tpl(src.innerHTML) ).plugin.done()
 		src.kill()
 	}
 	//*/
@@ -558,10 +545,12 @@
 	}
 
 	function addLang(lang, texts) {
+		if (i18n.list.indexOf(lang) == -1) i18n.list.push(lang)
 		Object.merge(i18n[lang] || (i18n[lang] = {}), texts)
 	}
 
 	i18n.get = getLang
+	i18n.list = []
 	i18n.use = setLang
 	i18n.add = addLang
 	i18n.def = function(map) {
@@ -569,11 +558,48 @@
 			addLang(tag, map)
 		})
 	}
+	String[protoStr].lang = function(lang) {
+		return i18n(this, lang)
+	}
 	// navigator.userLanguage for IE, navigator.language for others
 	// var lang = navigator.language || navigator.userLanguage;
 	// setLang("en")
 	//*/
 
+	function getChilds(node) {
+		var child
+		, childs = node._childs
+		if (!childs) {
+			for (node._childs = childs = []; child = node.firstChild;) {
+				childs.push(child);
+				node.removeChild(child)
+			}
+		}
+		return childs
+	}
+
+	function bindingsEach(node, data, expr) {
+		var child = getChilds(node)[0]
+		, match = /^\s*(\w+) in (\w*)(.*)/.exec(expr)
+		, fn = "with(data){var out=[],loop={i:0,offset:0},_1,_2=" + match[2]
+		+ match[3].replace(/ (limit|offset):\s*(\d+)/ig, ";loop.$1=$2")
+		+ ";if(_2)for(_1 in _2)if(hasOwn.call(_2,_1)&&!(loop.offset&&loop.offset--)){"
+		+     "loop.i++;"
+		+     "if(loop.limit&&loop.i-loop.offset>loop.limit)break;"
+		+     "loop.key=_1;"
+		+     "var clone=el.cloneNode(true)"
+		+     ",scope=El.getScope(clone,data);"
+		+     "scope.loop=loop;"
+		+     "scope." + match[1] + "=_2[_1];"
+		+     "out.push(clone);"
+		+ "};return out}"
+
+		var childs = Function("hasOwn,el,data", fn)(hasOwn, child, data)
+
+		node.empty().append(childs).render()
+		return node
+	}
+	bindingsEach.raw = bindingsEach.once = 1
 }(window, document, "prototype")
 
 

@@ -5,7 +5,13 @@
 </head>
 <body>
 <style>
+.hide {
+	display: none;
+}
 
+.selected {
+	font-weight: bold;
+}
 .nav {
 	overflow: auto;
 }
@@ -28,30 +34,35 @@
 }
 </style>
 <script src="../../_stable/browser-upgrade-lite/index.js"></script>
+<script src="../../_stable/browser-cookie-lite/index.js"></script>
 <script src="../../functional-lite/index.js"></script>
 <script src="../index.js"></script>
 <script src="../../browser-event-lite/index.js"></script>
 <script src="../../date-format-lite/index.js"></script>
 <script src="../../liquid-filters-lite/index.js"></script>
-<script src="../../litejs/lib/form-to-json.js"></script>
-<script src="../../litejs/lib/json-to-form.js"></script>
 <script src="../../litejs/src/view.js"></script>
 <script src="../../browser-history-lite/dist/hash-only-src.js"></script>
 <script id="index" type="text/haml">
 
-@template nav
-  .nav
-    a[href="#home"] Home
-    a[href="#settings"] Settings
-    a[href="#test"] Test
-    a[href="#broken-link"] Broken link
+@template nav-row
+  span
+    a &href: "{href}"; txt: "{name|lang}"
 
 @view #main #body .content
   .route
     h1 Header
-    nav
+    ul.nav &each: lang in _.list
+      a &lang: "{lang}"; txt: "{lang|lang:lang}"; on: "click", Controller.setLang; class: "selected", d.lang == _.get()
+    .nav
+      nav-row &with: {href:"#home",        name: "Home"}
+      nav-row &with: {href:"#users",       name: "Users"}
+      nav-row &with: {href:"#settings",    name: "Settings"}
+      nav-row &with: {href:"#test",        name: "Test"}
+      nav-row &with: {href:"#broken-link", name: "Broken link"}
     .content
-    .footer | Plain text not translated
+    .footer
+      .lft | Plain text
+      .rgt Plain text
 
 @view 404 #main
   .page
@@ -62,18 +73,31 @@
 @view home #main
   .page
     h2 Home
-    h2 | Home
     div _welcome
 
+
+@view users #main
+  .page
+    h2 Users
+    ul &each: user in ["1", "2", "3", "4", "5"] limit:2 offset:1
+      li
+        a &href: "#users/{user}"; txt: _("User {user}")
+
+@view users/{id} #main
+  .page
+    h2 User #{route.id}
 
 @view settings #main
   .page
     h2 Settings
     .h | Settings
     | Lot of settings
+    ul &each: row in ["A", "B", "C"]
+      li
+        span Row {row}
+        input[name=a0][type=checkbox][data-bind="checked:Math.random()>.5"]
+        input[name=a1][type=checkbox][data-bind="disabled:Math.random()>.5"]
     a[href="#settings/rules"] Ruulid
-    nav
-    nav
 
 @view test #main
   .page
@@ -96,21 +120,29 @@
 </script>
 <script>
 var GLOBAL_NAME = "naa-mee"
-, i18n = El.i18n
+, _ = El.i18n
+, Controller = {}
 
-i18n.def({ "et":"Eesti keeles"
+Controller.setLang = function() {
+	cookie("lng", _.use(this.attr("lang")))
+	document.body.render()
+}
+
+_.def({ "et":"Eesti keeles"
 	, "en":"In English"
 	, "ru":"На русском"
 	, "fi":"Suomeksi"
 	, "se":"på Svenska"
 })
 
-i18n.add("en", {
+_.add("en", {
 	_welcome: "Welcome text"
 })
 
-i18n.add("et", {
+_.add("et", {
 	Home: "Kodu",
+	Users: "Kasutajad",
+	"User {user}": "Kasutaja {user}",
 	_welcome: "tervitustekst",
 	date: "%Y %H:%M:%S %z",
 	Header: "Pealkiri",
@@ -121,24 +153,12 @@ i18n.add("et", {
 	name: "Nimi"
 })
 
-i18n.use("en")
+_.use(cookie("lng") || "en")
 
 !function(bindings) {
 	var hasOwn = Object.prototype.hasOwnProperty
 	, slice = Array.prototype.slice
 	// Save node initial content for later use
-	function getChilds(node) {
-		var child
-		, childs = node._childs
-		if (!childs) {
-			for (node._childs = childs = []; child = node.firstChild;) {
-				childs.push(child);
-				node.removeChild(child)
-			}
-		}
-		return childs
-	}
-
 	bindings.fn = function(node, data, fn) {
 		fn.apply(node, slice.call(arguments, 3))
 	}
@@ -147,71 +167,25 @@ i18n.use("en")
 
 	bindings.init = bindings.fn
 
-	bindings.controller = function(node, data, controller) {
-		var bind = node.attr("data-bind")
-		//, newBind = bind.replace(//)
-	}
-	bindings.controller.once = true
-
-
-	bindings.checked = function(node, data, checked) {
-		node.checked = checked
-	}
-
-	bindings.disabled = function(node, data, disabled) {
-		node.disabled = disabled
-	}
-
-	bindings.enabled = function(node, data, enabled) {
-		node.disabled = !enabled
-	}
-
-	bindings.if = function(node, data, enabled) {
+	bindings["if"] = function(node, data, enabled) {
 		console.log("if", arguments)
 
 		if (!enabled) return node.kill()
 	}
-
-	bindings.each = each
-	function each(node, data, expr) {
-		var childs = getChilds(node)
-		var _ = expr.match(/^\s*(\w+) in (\w*)(.*)/)
-
-		var fn = "var loop={i:0,offset:0},_3=loop,_2="
-		+ _[2]
-		+ _[3].replace(/ (limit|offset):\s*(\d+)/ig, ";loop.$1=$2")
-		+ ";if(_2)for(_1 in _2)if(_2.hasOwnProperty(_1)&&!(loop.offset&&loop.offset--)){loop.i++;if(loop.limit&&loop.i-loop.offset>loop.limit)break;loop.key=_1;var "
-		+ _[1]
-		+ "=_2[_1];"
-
-		node.empty()
-
-		var scope = Object.create(data)
-		, arr = data[_[2]]
-		console.log("each", arguments, arr, childs)
-
-		for (var key in arr) if (hasOwn.call(arr, key)) {
-			scope[_[1]] = arr[key]
-			node.append( childs.map(renderClone, scope) )
-		}
-
-		return node
-		arr = arr && data[arr] || data
-		if (arr) node.empty().append(arr.map(function(obj) {
-			return childs.map(renderClone, obj)
-		}))
-		function renderClone(el) {
-			console.log("render", this)
-			return el.cloneNode(true).render(this)
-		}
+	bindings["on"] = function(node, data, ev, fn) {
+		node.on(ev, fn)
 	}
-	each.raw = 1
+	bindings["with"] = function(node, data, map) {
+		Object.merge(El.getScope(node, true), map)
+		return node.render()
+	}
+	bindings["with"].once = 1
+
 }(El.bindings)
 
 !function(exports) {
 	View("#body", document.body)
 	function view(parent, name) {
-		console.log("view", arguments)
 		var t = this
 		t.name = name
 		t.parent = parent
@@ -223,10 +197,7 @@ i18n.use("en")
 	view.prototype.done = function() {
 		var t = this
 		, arr = t.name.split(" ")
-		View(arr[0], t.el.removeChild(t.el.firstChild).render({}), arr[1], arr[2])
-		.on("show", function(){
-			this.el.render({})
-		})
+		View(arr[0], t.el.removeChild(t.el.firstChild), arr[1], arr[2])
 		t.el.plugin = null
 		return t.parent
 	}

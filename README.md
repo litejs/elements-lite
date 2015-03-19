@@ -118,6 +118,27 @@ ul[data-bind="class: 'red', list.count > 5; each: row in list"]
   li[data-bind="txt: row"]
 ```
 
+.. is equal to
+
+```html
+ul &class: "red", list.count > 5; each: row in list
+  li[data-bind="txt: row"]
+```
+
+Add custom bindings
+
+```javascript
+El.bindings.enabled = function(node, data, enabled) {
+    node.disabled = !enabled
+}
+```
+
+```html
+ul &enabled: list.count > 5
+  li[data-bind="txt: row"]
+```
+
+
 Browser Support
 ---------------
 
