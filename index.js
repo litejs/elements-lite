@@ -283,7 +283,7 @@
 	}
 
 	var scopeSeq = 0
-	, scopeGlobal = El.global = {i18n: i18n}
+	, scopeGlobal = El.global = {window:window, i18n: i18n}
 
 	function getScope(node, _new, parent) {
 		var dataNode = !_new && (
