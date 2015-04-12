@@ -24,7 +24,7 @@
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
 	, bindings = El.bindings = {
 		"class": function(node, data, name, fn) {
-			toggleClass.call(node, name, fn.fn("_").call(data))
+			toggleClass.call(node, name, fn.fn("_")(data))
 		},
 		"checked": function(node, data, checked) {
 			node.checked = checked
