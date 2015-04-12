@@ -2,8 +2,8 @@
 
 
 /*
- * @version    0.6.1
- * @date       2015-03-21
+ * @version    0.6.2
+ * @date       2015-04-13
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
@@ -231,6 +231,7 @@
 	proto.kill = kill
 
 	proto.on = function(ev, fn) {
+		// element.setCapture(retargetToElement)
 		Event.add(this, ev, fn)
 		return this
 	}
@@ -300,7 +301,7 @@
 	}
 	El.getScope = getScope
 
-	function render(scope, skipSelf) {
+	function render(scope) {
 		var newBind, fn
 		, node = this
 		, bind = attr.call(node, "data-scope")
