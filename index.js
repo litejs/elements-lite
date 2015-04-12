@@ -530,7 +530,7 @@
 
 	function getLang(lang) {
 		return lang && (
-			i18n[lang = lang.toLowerCase()] ||
+			i18n[lang = ("" + lang).toLowerCase()] ||
 			i18n[lang = lang.split("-")[0]]
 		) ? lang : currentLang
 	}
@@ -547,6 +547,7 @@
 	function addLang(lang, texts) {
 		if (i18n.list.indexOf(lang) == -1) i18n.list.push(lang)
 		Object.merge(i18n[lang] || (i18n[lang] = {}), texts)
+		if (!currentLang) setLang(lang)
 	}
 
 	i18n.get = getLang
