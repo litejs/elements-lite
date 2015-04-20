@@ -14,6 +14,8 @@
 
 !function(window, document, protoStr) {
 	var currentLang
+	, ie678 = !+"\v1"
+	, ie67 = ie678 && (document.documentMode||1) < 8
 	, hasOwn = Object.prototype.hasOwnProperty
 	, body = document.body
 	, createElement = document.createElement
@@ -269,7 +271,7 @@
 		// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
 
 		//** modernBrowser
-		if ((key == "id" || key == "name") && "\v" == "v") {
+		if (ie67 && (key == "id" || key == "name" || key == "checked")) {
 			el.mergeAttributes(createElement('<INPUT '+key+'="' + val + '">'), false)
 		} else
 		//*/
@@ -330,6 +332,11 @@
 				render.call(bind, scope)
 			}
 		}
+		//** modernBrowser
+		if (ie678 && node.nodeName == "SELECT") {
+			node.parentNode.insertBefore(node, node)
+		}
+		//*/
 		return node
 	}
 
@@ -344,7 +351,13 @@
 	// Opera 9-10 have Node.text so we use Node.txt
 
 	proto.txt = function(newText) {
-		return arguments.length ? (this[txtAttr] = newText) : this[txtAttr]
+		return arguments.length ? (
+			//** modernBrowser
+			// Fix for IE5-7
+			//(ie67 && this.tagName == "OPTION" && (this.label = newText)),
+			//*/
+			this[txtAttr] = newText
+		) : this[txtAttr]
 	}
 
 	proto.val = function(val) {
