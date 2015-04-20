@@ -325,12 +325,12 @@
 			if (Fn(fn)(node, scope, bindings)) return node
 		}
 
-		for (node = node.firstChild; node; node = node.nextSibling) {
-			if (node.nodeType == 1) {
-				render.call(node, scope)
+		for (bind = node.firstChild; bind; bind = bind.nextSibling) {
+			if (bind.nodeType == 1) {
+				render.call(bind, scope)
 			}
 		}
-		return this
+		return node
 	}
 
 	proto.render = render
