@@ -480,7 +480,8 @@
 						if (q != "&") {
 							name = "txt:El.i18n('" + text.replace(/'/g, "\\'") + "').format(d)"
 						}
-						attr.call(parent, "data-bind", name)
+						q = attr.call(parent, "data-bind")
+						attr.call(parent, "data-bind", (q ? q + ";" : "") + name)
 					}
 				}
 			}
