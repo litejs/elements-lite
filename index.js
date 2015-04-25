@@ -516,11 +516,19 @@
 		return t
 	}
 
-	template.prototype.done = function() {
-		var t = this
-		elCache[t.name] = t.el.removeChild(t.el.firstChild)
-		t.el.plugin = null
-		return t.parent
+	template.prototype = {
+		_done: function() {
+			var t = this
+			, el = t.el.childNodes.length > 1 ? new El.wrap(t.el.childNodes) : t.el.firstChild
+			t.el.plugin = t.el = t.parent = null
+			return el
+		},
+		done: function() {
+			var t = this
+			, parent = t.parent
+			elCache[t.name] = t._done()
+			return parent
+		}
 	}
 
 	El.plugins = {
