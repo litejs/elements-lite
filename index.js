@@ -415,23 +415,26 @@
 	//*/
 
 
+	var wrapProto = []
+
 	function ElWrap(nodes) {
-		this._nodes = nodes
+		wrapProto.push.apply(this, nodes)
 	}
 	El.wrap = ElWrap
 
 	ElWrap.prototype = Object.keys(proto).reduce(function(memo, key) {
-		memo[key] = function() {
-			var nodes = this._nodes
-			, i = 0
-			, len = nodes.length
-			for (; i < len; ) {
-				proto[key].apply(nodes[i++], arguments)
+		memo[key] = wrap
+		function wrap() {
+			for (var val, i = 0, len = this.length; i < len; ) {
+				val = proto[key].apply(this[i++], arguments)
+				if (wrap.first && val) return val
 			}
 			return this
 		}
 		return memo
-	}, {})
+	}, wrapProto)
+
+	wrapProto.find.first = 1
 
 	//** modernBrowser
 	// IE 6-7
