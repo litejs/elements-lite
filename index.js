@@ -14,8 +14,9 @@
 
 !function(window, document, protoStr) {
 	var currentLang
+	// JScript engine in IE<9 does not recognize vertical tabulation character
 	, ie678 = !+"\v1"
-	, ie67 = ie678 && (document.documentMode||1) < 8
+	, ie67 = ie678 && (document.documentMode|0) < 8
 	, hasOwn = Object.prototype.hasOwnProperty
 	, body = document.body
 	, createElement = document.createElement
@@ -85,7 +86,7 @@
 		(selectorCache[str] = Function("_,v,a,b", "return " +
 			str.split(selectorSplitRe).map(function(sel) {
 				var relation, from
-				, rules = ["_&&_.nodeType===1"]
+				, rules = ["_&&_.nodeType==1"]
 				, parentSel = sel.replace(selectorLastRe, function(_, _rel, a, start) {
 					from = start + _rel.length
 					relation = _rel.trim()
@@ -247,7 +248,7 @@
 	function attr(key, val) {
 		var el = this
 		if (arguments.length == 1) {
-			if (key && key.constructor === Object) {
+			if (key && key.constructor == Object) {
 				Object.each(key, function(val, key) {
 					attr.call(el, key, val)
 				})
@@ -262,10 +263,7 @@
 		// http://webbugtrack.blogspot.com/2007/09/bug-116-for-attribute-woes-in-ie6.html
 
 		// there are bug in IE<9 where changed 'name' param not accepted on form submit
-		// The JScript engine used in IE doesn't recognize vertical tabulation character
-		// oldIE = "\v" == "v"
-		//
-		// IE8 and below also support document.createElement('<P>')
+		// IE8 and below support document.createElement('<P>')
 		//
 		// http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
 		// http://msdn.microsoft.com/en-us/library/ms536614(VS.85).aspx
@@ -304,9 +302,14 @@
 	El.getScope = getScope
 
 	function render(scope) {
-		var newBind, fn
+		var bind, newBind, fn
 		, node = this
-		, bind = attr.call(node, "data-scope")
+
+		if (node.nodeType != 1) {
+			return node
+		}
+
+		bind = attr.call(node, "data-scope")
 
 		scope = bind ? getScope[bind] : scope || getScope(node)
 
@@ -328,9 +331,7 @@
 		}
 
 		for (bind = node.firstChild; bind; bind = bind.nextSibling) {
-			if (bind.nodeType == 1) {
-				render.call(bind, scope)
-			}
+			render.call(bind, scope)
 		}
 		//** modernBrowser
 		if (ie678 && node.nodeName == "SELECT") {
@@ -393,10 +394,7 @@
 
 	//** modernBrowser
 	// Note: IE8 don't support :disabled
-	// !+"\v1"
-	// More shortest way to test for IE in javascript:
-	// ie = !-[1, ]
-	proto.find = "\v" !== "v" && proto.querySelector || function(sel) {
+	proto.find = !ie678 && proto.querySelector || function(sel) {
 		return findEl(this, sel, true)
 	}
 
@@ -438,7 +436,7 @@
 
 	//** modernBrowser
 	// IE 6-7
-	if (proto === El[protoStr]) {
+	if (proto == El[protoStr]) {
 		document.createElement = function(name) {
 			return Object.merge(createElement(name), proto)
 		}
