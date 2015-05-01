@@ -517,7 +517,7 @@
 	template.prototype = {
 		_done: function() {
 			var t = this
-			, el = t.el.childNodes.length > 1 ? new El.wrap(t.el.childNodes) : t.el.firstChild
+			, el = t.el.childNodes.length > 1 ? new ElWrap(t.el.childNodes) : t.el.firstChild
 			t.el.plugin = t.el = t.parent = null
 			return el
 		},
