@@ -427,7 +427,7 @@
 				val = proto[key].apply(this[i++], arguments)
 				if (wrap.first && val) return val
 			}
-			return this
+			return wrap.first ? null : this
 		}
 		return memo
 	}, wrapProto)
