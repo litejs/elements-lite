@@ -26,24 +26,24 @@
 	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*?)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
 	, bindings = El.bindings = {
-		"class": function(node, data, name, fn) {
-			toggleClass.call(node, name.format(data), fn == null || fn.fn("_")(data))
+		"class": function(data, name, fn) {
+			toggleClass.call(this, name.format(data), fn == null || fn.fn("_")(data))
 		},
-		"checked": function(node, data, checked) {
-			node.checked = checked
+		"checked": function(data, checked) {
+			this.checked = checked
 		},
-		"disabled": function(node, data, disabled) {
-			node.disabled = disabled
+		"disabled": function(data, disabled) {
+			this.disabled = disabled
 		},
 		"each": bindingsEach,
-		"html": function(node, data, html) {
-			node.innerHTML = html.format(data)
+		"html": function(data, html) {
+			this.innerHTML = html.format(data)
 		},
-		"txt": function(node, data, text) {
-			node.txt(text.format(data))
+		"txt": function(data, text) {
+			this.txt(text.format(data))
 		},
-		"val": function(node, data, text) {
-			node.val(text.format(data))
+		"val": function(data, text) {
+			this.val(text.format(data))
 		}
 	}
 	, selectorRe = /([.#:[])([-\w]+)(?:\((.+?)\)|([~^$*|]?)=(("|')(?:\\?.)*?\6|[-\w]+))?]?/g
@@ -319,15 +319,15 @@
 			// document.documentElement.lang
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
 
-			fn = "n d b r->d&&(" + bind.replace(renderRe, function(_, $1, $2) {
+			fn = "data b r->data&&(" + bind.replace(renderRe, function(_, $1, $2) {
 				return bindings[$1] ?
 				(hasOwn.call(bindings[$1], "once") && (newBind = newBind.replace(_, "")),
-					"(r=b['" + $1 + "'](n,d," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r),") :
-				"n.attr('" + $1 + "'," + $2 + ".format(d)),"
+					"(r=b['" + $1 + "'].call(this,data," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r),") :
+				"this.attr('" + $1 + "'," + $2 + ".format(data)),"
 			}) + "r)"
 			if (bind != newBind) attr.call(node, "data-bind", newBind)
 
-			if (Fn(fn)(node, scope, bindings)) return node
+			if (Fn(fn, "data").call(node, scope, bindings)) return node
 		}
 
 		for (bind = node.firstChild; bind; bind = bind.nextSibling) {
@@ -492,7 +492,7 @@
 						parent.append(name) // + "\n")
 					} else if (q != "/") {
 						if (q != "&") {
-							name = "txt:El.i18n('" + text.replace(/'/g, "\\'") + "').format(d)"
+							name = "txt:El.i18n('" + text.replace(/'/g, "\\'") + "').format(data)"
 						}
 						q = attr.call(parent, "data-bind")
 						attr.call(parent, "data-bind", (q ? q + ";" : "") + name)
@@ -603,8 +603,9 @@
 		return childs
 	}
 
-	function bindingsEach(node, data, expr) {
-		var child = getChilds(node)[0]
+	function bindingsEach(data, expr) {
+		var node = this
+		, child = getChilds(node)[0]
 		, match = /^\s*(\w+) in (\w*)(.*)/.exec(expr)
 		, fn = "with(data){var out=[],loop={i:0,offset:0},_1,_2=" + match[2]
 		+ match[3].replace(/ (limit|offset):\s*(\d+)/ig, ";loop.$1=$2")

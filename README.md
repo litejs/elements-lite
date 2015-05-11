@@ -128,8 +128,8 @@ ul &class: "red", list.count > 5; each: row in list
 Add custom bindings
 
 ```javascript
-El.bindings.enabled = function(node, data, enabled) {
-    node.disabled = !enabled
+El.bindings.enabled = function(data, enabled) {
+    this.disabled = !enabled
 }
 ```
 
