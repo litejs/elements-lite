@@ -229,6 +229,7 @@
 		if (Event.removeAll) Event.removeAll(el)
 		if (el.killHook) el.killHook()
 		if (el.empty) el.empty()
+		// TODO:2015-05-12:lauri:Remove data-scope
 		return el
 	}
 	proto.kill = kill
@@ -283,23 +284,13 @@
 	}
 
 	var scopeSeq = 0
-	, scopeGlobal = El.global = {window:window, i18n: i18n}
+	, scopeData = El.data = { window:window, i18n: i18n }
 
-	function getScope(node, _new, parent) {
-		var dataNode = !_new && (
-			node.closest("[data-scope]") ||
-			parent && parent.closest("[data-scope]")
-		)
-		, data = dataNode && getScope[attr.call(dataNode, "data-scope")] || scopeGlobal
-
-		if (_new && dataNode !== node) {
-			data = getScope[++scopeSeq] = Object.create(data)
-			attr.call(node, "data-scope", scopeSeq)
-		}
-
-		return data
+	function elScope(node, parent) {
+		return elScope[node.attr("data-scope")] ||
+		(node.attr("data-scope", ++scopeSeq), elScope[scopeSeq] = Object.create(parent))
 	}
-	El.getScope = getScope
+	El.scope = elScope
 
 	function render(scope) {
 		var bind, newBind, fn
@@ -309,9 +300,10 @@
 			return node
 		}
 
-		bind = attr.call(node, "data-scope")
-
-		scope = bind ? getScope[bind] : scope || getScope(node)
+		scope = elScope[node.attr("data-scope")]
+		|| scope
+		|| (bind = node.closest("[data-scope]")) && elScope[bind.attr("data-scope")]
+		|| scopeData
 
 		if (bind = attr.call(node, "data-bind")) {
 			newBind = bind
@@ -614,7 +606,7 @@
 		+     "if(loop.limit&&loop.i-loop.offset>loop.limit)break;"
 		+     "loop.key=_1;"
 		+     "var clone=el.cloneNode(true)"
-		+     ",scope=El.getScope(clone,data);"
+		+     ",scope=El.scope(clone,data);"
 		+     "scope.loop=loop;"
 		+     "scope." + match[1] + "=_2[_1];"
 		+     "out.push(clone);"

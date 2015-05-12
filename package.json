@@ -33,7 +33,7 @@
     "buildman": "*",
     "browser-upgrade-lite": "*",
     "liquid-filters-lite": "*",
-    "functional-lite": "*",
+    "functional-lite": "0.3.2",
     "dom-lite": "*"
   },
   "buildman": {
