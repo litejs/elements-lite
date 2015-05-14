@@ -295,7 +295,7 @@
 	}
 	El.scope = elScope
 
-	function render(scope) {
+	function render(scope, skipSelf) {
 		var bind, newBind, fn
 		, node = this
 
@@ -308,7 +308,7 @@
 		|| (bind = node.closest("[data-scope]")) && elScope[bind.attr("data-scope")]
 		|| scopeData
 
-		if (bind = attr.call(node, "data-bind")) {
+		if (bind = !skipSelf && attr.call(node, "data-bind")) {
 			newBind = bind
 			// i18n(bind, lang).format(scope)
 			// document.documentElement.lang
