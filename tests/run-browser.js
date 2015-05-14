@@ -2,6 +2,7 @@ require("browser-upgrade-lite")
 global.Fn = require("functional-lite").Fn
 
 global.Event = global.Event || {}
+global.Event.Emitter = require("browser-event-lite").Event.Emitter
 
 require("liquid-filters-lite")
 require("../")

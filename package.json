@@ -1,6 +1,6 @@
 {
   "name": "elements-lite",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "stability": 1,
   "author": "Lauri Rooden <lauri@rooden.ee>",
   "license": "MIT",
@@ -31,6 +31,7 @@
   "devDependencies": {
     "testman": "*",
     "buildman": "*",
+    "browser-event-lite": "*",
     "browser-upgrade-lite": "*",
     "liquid-filters-lite": "*",
     "functional-lite": "0.3.2",
