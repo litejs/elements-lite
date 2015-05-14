@@ -426,6 +426,12 @@
 
 	wrapProto.find.first = 1
 
+	wrapProto.cloneNode = function(deep) {
+		return new ElWrap(this.map(function(el) {
+			return el.cloneNode(deep)
+		}))
+	}
+
 	//** modernBrowser
 	// IE 6-7
 	if (proto == El[protoStr]) {
