@@ -225,9 +225,9 @@
 
 	function kill() {
 		var el = this
+		if (el.emit) el.emit("kill")
 		if (el.parentNode) el.parentNode.removeChild(el)
 		if (Event.removeAll) Event.removeAll(el)
-		if (el.killHook) el.killHook()
 		if (el.empty) el.empty()
 		// TODO:2015-05-12:lauri:Remove data-scope
 		return el
@@ -243,6 +243,9 @@
 	proto.non = function(ev, fn) {
 		Event.remove(this, ev, fn)
 		return this
+	}
+	proto.emit = function() {
+		Event.Emitter.emit.apply(this, arguments)
 	}
 
 	proto.attr = attr
