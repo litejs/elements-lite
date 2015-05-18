@@ -224,12 +224,15 @@
 	}
 
 	function kill() {
-		var el = this
+		var id
+		, el = this
 		if (el.emit) el.emit("kill")
 		if (el.parentNode) el.parentNode.removeChild(el)
 		if (Event.removeAll) Event.removeAll(el)
 		if (el.empty) el.empty()
-		// TODO:2015-05-12:lauri:Remove data-scope
+		if (id = el.attr && el.attr("data-scope")) {
+			delete elScope[id]
+		}
 		return el
 	}
 	proto.kill = kill
