@@ -294,7 +294,12 @@
 
 	function elScope(node, parent) {
 		return elScope[node.attr("data-scope")] ||
-		(node.attr("data-scope", ++scopeSeq), elScope[scopeSeq] = Object.create(parent))
+		(
+			node.attr("data-scope", ++scopeSeq),
+			node = elScope[scopeSeq] = Object.create(parent),
+			node._super = parent,
+			node
+		)
 	}
 	El.scope = elScope
 
