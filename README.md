@@ -4,8 +4,8 @@
 [4]: https://coveralls.io/r/litejs/elements-lite
 
 
-    @version    0.6.6
-    @date       2015-05-14
+    @version    0.7.0
+    @date       2015-05-22
     @stability  1 - Experimental
 
 
@@ -128,7 +128,7 @@ ul &class: "red", list.count > 5; each: row in list
 Add custom bindings
 
 ```javascript
-El.bindings.enabled = function(data, enabled) {
+El.bindings.enabled = function(enabled) {
     this.disabled = !enabled
 }
 ```
