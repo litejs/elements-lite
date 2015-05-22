@@ -26,24 +26,12 @@
 	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*?)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
 	, bindings = El.bindings = {
-		"class": function(data, name, fn) {
-			toggleClass.call(this, name, fn == null || fn.fn("_")(data))
-		},
-		"checked": function(data, checked) {
-			this.checked = checked
-		},
-		"disabled": function(data, disabled) {
-			this.disabled = disabled
+		"class": function(name, fn) {
+			toggleClass.call(this, name, fn == null || fn)
 		},
 		"each": bindingsEach,
-		"html": function(data, html) {
+		"html": function(html) {
 			this.innerHTML = html
-		},
-		"txt": function(data, text) {
-			this.txt(text)
-		},
-		"val": function(data, text) {
-			this.val(text)
 		}
 	}
 	, selectorRe = /([.#:[])([-\w]+)(?:\((.+?)\)|([~^$*|]?)=(("|')(?:\\?.)*?\6|[-\w]+))?]?/g
@@ -325,7 +313,7 @@
 			fn = "data b r->data&&(" + bind.replace(renderRe, function(_, $1, $2) {
 				return bindings[$1] ?
 				(hasOwn.call(bindings[$1], "once") && (newBind = newBind.replace(_, "")),
-					"(r=b['" + $1 + "'].call(this,data," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r),") :
+					"(r=b['" + $1 + "'].call(this," + (bindings[$1].raw ? "data,'" + $2 + "'" : $2) + ")||r),") :
 				"this.attr('" + $1 + "'," + $2 + "),"
 			}) + "r)"
 			if (bind != newBind) attr.call(node, "data-bind", newBind)
@@ -354,7 +342,7 @@
 	// textContent is suported from IE9
 	// Opera 9-10 have Node.text so we use Node.txt
 
-	proto.txt = function(newText) {
+	proto.txt = bindings.txt = function(newText) {
 		return arguments.length ? (
 			//** modernBrowser
 			// Fix for IE5-7
@@ -364,7 +352,7 @@
 		) : this[txtAttr]
 	}
 
-	proto.val = function(val) {
+	proto.val = bindings.val = function(val) {
 		var el = this
 		, type = el.type
 		, opts = el.options
