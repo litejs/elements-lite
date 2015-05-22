@@ -27,7 +27,7 @@
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
 	, bindings = El.bindings = {
 		"class": function(data, name, fn) {
-			toggleClass.call(this, name.format(data), fn == null || fn.fn("_")(data))
+			toggleClass.call(this, name, fn == null || fn.fn("_")(data))
 		},
 		"checked": function(data, checked) {
 			this.checked = checked
@@ -37,13 +37,13 @@
 		},
 		"each": bindingsEach,
 		"html": function(data, html) {
-			this.innerHTML = html.format(data)
+			this.innerHTML = html
 		},
 		"txt": function(data, text) {
-			this.txt(text.format(data))
+			this.txt(text)
 		},
 		"val": function(data, text) {
-			this.val(text.format(data))
+			this.val(text)
 		}
 	}
 	, selectorRe = /([.#:[])([-\w]+)(?:\((.+?)\)|([~^$*|]?)=(("|')(?:\\?.)*?\6|[-\w]+))?]?/g
@@ -326,7 +326,7 @@
 				return bindings[$1] ?
 				(hasOwn.call(bindings[$1], "once") && (newBind = newBind.replace(_, "")),
 					"(r=b['" + $1 + "'].call(this,data," + (bindings[$1].raw ? "'" + $2 + "'" : $2) + ")||r),") :
-				"this.attr('" + $1 + "'," + $2 + ".format(data)),"
+				"this.attr('" + $1 + "'," + $2 + "),"
 			}) + "r)"
 			if (bind != newBind) attr.call(node, "data-bind", newBind)
 

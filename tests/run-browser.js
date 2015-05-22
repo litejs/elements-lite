@@ -286,16 +286,16 @@ describe( "Templates" ).
 			]).
 
 	it ( "should render data to elements" ).
-		equal(getString(t1 = El.tpl("a>b[data-bind=\"class:'red','i>1'\"]>i &txt:'hello {name}'")), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\"></i></b></a>").
+		equal(getString(t1 = El.tpl("a>b[data-bind=\"class:'red','i>1'\"]>i &txt:name")), "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:name\"></i></b></a>").
 		anyOf(getString(t1.render({i:1,name:"world"})),
-			[ "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
-			, "<a><b class=\"\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
-			, "<a><b data-bind=\"class:'red','i>1'\" class=\"\"><i data-bind=\"txt:'hello {name}'\">hello world</i></b></a>"
+			[ "<a><b data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:name\">world</i></b></a>"
+			, "<a><b class=\"\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:name\">world</i></b></a>"
+			, "<a><b data-bind=\"class:'red','i>1'\" class=\"\"><i data-bind=\"txt:name\">world</i></b></a>"
 			]).
 		anyOf(getString(t1.render({i:2,name:"moon"})),
-			[ "<a><b data-bind=\"class:'red','i>1'\" class=\"red\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
-			, "<a><b class=\"red\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
-			, "<a><b class=red data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:'hello {name}'\">hello moon</i></b></a>"
+			[ "<a><b data-bind=\"class:'red','i>1'\" class=\"red\"><i data-bind=\"txt:name\">moon</i></b></a>"
+			, "<a><b class=\"red\" data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:name\">moon</i></b></a>"
+			, "<a><b class=red data-bind=\"class:'red','i>1'\"><i data-bind=\"txt:name\">moon</i></b></a>"
 			]).
 
 	it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_plugin = '123', should use node.set()"}).
