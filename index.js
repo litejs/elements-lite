@@ -278,7 +278,7 @@
 	}
 
 	var scopeSeq = 0
-	, scopeData = El.data = { window:window, i18n: i18n }
+	, scopeData = El.data = { window: window, _: i18n }
 
 	function elScope(node, parent) {
 		return elScope[node.attr("data-scope")] ||
@@ -489,7 +489,7 @@
 						parent.append(name) // + "\n")
 					} else if (q != "/") {
 						if (q != "&") {
-							name = "txt:El.i18n('" + text.replace(/'/g, "\\'") + "').format(data)"
+							name = "txt:_('" + text.replace(/'/g, "\\'") + "').format(data)"
 						}
 						q = attr.call(parent, "data-bind")
 						attr.call(parent, "data-bind", (q ? q + ";" : "") + name)
