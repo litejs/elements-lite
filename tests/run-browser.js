@@ -298,10 +298,10 @@ describe( "Templates" ).
 			, "<a><b class=red data-bind=\"class:'red',i>1\"><i data-bind=\"txt:name\">moon</i></b></a>"
 			]).
 
-	it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_plugin = '123', should use node.set()"}).
-		equal(getString(t1 = El.tpl("a =unknown_plugin:\'hello {name}\'")), '<a data-bind="unknown_plugin:\'hello {name}\'"></a>').
-		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello world"></a>').
-		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_plugin:\'hello {name}\'" unknown_plugin="hello moon"></a>').
+	it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_binding = '123', should use node.set()"}).
+		equal(getString(t1 = El.tpl("a &unknown_binding:\'hello {name}\'")), '<a data-bind="unknown_binding:\'hello {name}\'"></a>').
+		equal(getString(t1.render({name:"world"})), '<a data-bind="unknown_binding:\'hello {name}\'" unknown_binding="hello world"></a>').
+		equal(getString(t1.render({name:"moon"})), '<a data-bind="unknown_binding:\'hello {name}\'" unknown_binding="hello moon"></a>').
 
 	/*
 	it ("supports declaring a leaf node").
