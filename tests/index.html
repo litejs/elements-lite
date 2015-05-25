@@ -47,13 +47,14 @@
 
 @template nav-row
   span
-    a &href: "{href}"; txt: "{name|lang}"
+    a {name}
+      &href: href
 
 @view #main #body .content
   .route
     h1 Header
-    ul.nav &each: lang in _.list
-      a &lang: "{lang}"; txt: "{lang|lang:lang}"; on: "click", Controller.setLang; class: "selected", d.lang == _.get()
+    ul.nav &each: lng in _.list
+      a &lang: lng; txt: lng.lang(lng); on: "click", Controller.setLang; class: "selected", lng == _.get()
     .nav
       nav-row &with: {href:"#home",        name: "Home"}
       nav-row &with: {href:"#users",       name: "Users"}
@@ -82,7 +83,8 @@
     h2 Users
     ul &each: user in ["1", "2", "3", "4", "5"] limit:2 offset:1
       li
-        a &href: "#users/{user}"; txt: _("User {user}")
+        a User {user}
+          &href: "#users/" + user
 
 @view users/{id} #main
   .page
@@ -100,6 +102,10 @@
         input[name=a1][type=checkbox][data-bind="disabled:Math.random()>.5"]
     a[href="#settings/rules"] Ruulid
 
+@template multi-line
+  .row1 name}
+  .row2 name|upcase}
+
 @view test #main
   .page
     h2 Test
@@ -112,6 +118,7 @@
      | abc
      |   def
      | hij
+    multi-line
 
 @view settings/rules #main
   .page

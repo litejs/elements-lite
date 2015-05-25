@@ -464,7 +464,7 @@
 		function work(all, indent, plugin, name, q, text) {
 			for (var i = indent.length; i <= stack[0]; ) {
 				stack.shift()
-				parent = (parent.plugin) ? parent.plugin.done() : parent.parentNode
+				parent = (parent.plugin) ? parent.plugin.done() : parent.parentNode || parent[0].parentNode
 			}
 
 			if (plugin) {
