@@ -280,14 +280,20 @@
 	var scopeSeq = 0
 	, scopeData = El.data = { window: window, _: i18n }
 
-	function elScope(node, parent) {
-		return elScope[node.attr("data-scope")] ||
-		(
-			node.attr("data-scope", ++scopeSeq),
-			node = elScope[scopeSeq] = Object.create(parent),
-			node._super = parent,
-			node
-		)
+	function elScope(node, parent, _scope) {
+		if (_scope = elScope[node.attr("data-scope")]) {
+			return _scope
+		}
+		if (!parent || parent === true) {
+			_scope = node.closest("[data-scope]")
+			_scope = _scope && elScope[_scope.attr("data-scope")] || scopeData
+		}
+		if (parent) {
+			node.attr("data-scope", ++scopeSeq)
+			_scope = elScope[scopeSeq] = Object.create(parent = (_scope || parent))
+			_scope._super = parent
+		}
+		return _scope
 	}
 	El.scope = elScope
 
@@ -299,6 +305,7 @@
 			return node
 		}
 
+		// TODO:2015-05-25:lauri:Use elScope
 		scope = elScope[node.attr("data-scope")]
 		|| scope
 		|| (bind = node.closest("[data-scope]")) && elScope[bind.attr("data-scope")]
@@ -609,9 +616,9 @@
 		+ ";if(_2)for(_1 in _2)if(hasOwn.call(_2,_1)&&!(loop.offset&&loop.offset--)){"
 		+     "loop.i++;"
 		+     "if(loop.limit&&loop.i-loop.offset>loop.limit)break;"
-		+     "loop.key=_1;"
 		+     "var clone=el.cloneNode(true)"
 		+     ",scope=El.scope(clone,data);"
+		+     "scope.loopKey=loop.key=_1;"
 		+     "scope.loop=loop;"
 		+     "scope." + match[1] + "=_2[_1];"
 		+     "out.push(clone);"
