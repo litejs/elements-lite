@@ -157,14 +157,15 @@
 				child = fragment
 			}
 
-			if (child.nodeType) el.insertBefore(child,
-				(before === true ? el.firstChild :
-				typeof before == "number" ? el.childNodes[
-					before < 0 ? el.childNodes.length - before - 2 : before
-				] : before) || null
-			)
-			if (child.appendHook) child.appendHook()
-			//"childHook" in el && el.childHook()
+			if (child.nodeType) {
+				tmp = el.insertBefore ? el : el[el.length - 1]
+				tmp.insertBefore(child,
+					(before === true ? tmp.firstChild :
+					typeof before == "number" ? tmp.childNodes[
+						before < 0 ? tmp.childNodes.length - before - 2 : before
+					] : before) || null
+				)
+			}
 		}
 		return el
 	}
