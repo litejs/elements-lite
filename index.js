@@ -22,6 +22,9 @@
 	, createElement = document.createElement
 	, txtAttr = "textContent" in body ? "textContent" : "innerText"
 	, elCache = El.cache = {}
+	, scopeSeq = 0
+	, scopeData = El.data = { window: window, _: i18n }
+	, wrapProto = []
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
 	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*?)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
@@ -278,9 +281,6 @@
 		}
 	}
 
-	var scopeSeq = 0
-	, scopeData = El.data = { window: window, _: i18n }
-
 	function elScope(node, parent, _scope) {
 		if (_scope = elScope[node.attr("data-scope")]) {
 			return _scope
@@ -412,8 +412,6 @@
 	}
 	//*/
 
-
-	var wrapProto = []
 
 	function ElWrap(nodes) {
 		wrapProto.push.apply(this, nodes)
