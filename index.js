@@ -329,7 +329,8 @@
 			if (Fn(fn, "data").call(node, scope, bindings)) return node
 		}
 
-		for (bind = node.firstChild; bind; bind = bind.nextSibling) {
+		for (bind = node.firstChild; bind; bind = newBind) {
+			newBind = bind.nextSibling
 			render.call(bind, scope)
 		}
 		//** modernBrowser
