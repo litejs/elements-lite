@@ -502,7 +502,8 @@
 						parent.append(name) // + "\n")
 					} else if (q != "/") {
 						if (q != "&") {
-							name = "txt:_('" + text.replace(/'/g, "\\'") + "').format(data)"
+							name = (parent.tagName == "INPUT" ? "val" : "txt")
+							+ ":_('" + text.replace(/'/g, "\\'") + "').format(data)"
 						}
 						q = attr.call(parent, "data-bind")
 						attr.call(parent, "data-bind", (q ? q + ";" : "") + name)
