@@ -32,8 +32,14 @@
 		"class": function(name, fn) {
 			toggleClass.call(this, name, fn == null || fn)
 		},
-		"each": bindingsEach,
-		"html": function(html) {
+		css: function(key, val) {
+			this.style[key.camelCase()] = val
+		},
+		data: function(key, val) {
+			this.attr("data-" + key, val)
+		},
+		each: bindingsEach,
+		html: function(html) {
 			this.innerHTML = html
 		}
 	}
