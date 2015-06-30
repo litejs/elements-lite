@@ -288,15 +288,15 @@
 	}
 
 	function elScope(node, parent, _scope) {
-		if (_scope = elScope[node.attr("data-scope")]) {
+		if (_scope = elScope[attr.call(node, "data-scope")]) {
 			return _scope
 		}
 		if (!parent || parent === true) {
-			_scope = node.closest("[data-scope]")
-			_scope = _scope && elScope[_scope.attr("data-scope")] || scopeData
+			_scope = closest.call(node, "[data-scope]")
+			_scope = _scope && elScope[attr.call(_scope, "data-scope")] || scopeData
 		}
 		if (parent) {
-			node.attr("data-scope", ++scopeSeq)
+			attr.call(node, "data-scope", ++scopeSeq)
 			_scope = elScope[scopeSeq] = Object.create(parent = (_scope || parent))
 			_scope._super = parent
 		}
@@ -313,9 +313,9 @@
 		}
 
 		// TODO:2015-05-25:lauri:Use elScope
-		scope = elScope[node.attr("data-scope")]
+		scope = elScope[attr.call(node, "data-scope")]
 		|| scope
-		|| (bind = node.closest("[data-scope]")) && elScope[bind.attr("data-scope")]
+		|| (bind = closest.call(node, "[data-scope]")) && elScope[attr.call(bind, "data-scope")]
 		|| scopeData
 
 		if (bind = !skipSelf && attr.call(node, "data-bind")) {
@@ -393,7 +393,9 @@
 		return !!selectorFn(sel)(this)
 	}
 
-	if (!proto.closest) proto.closest = function(sel) {
+	if (!proto.closest) proto.closest = closest
+
+	function closest(sel) {
 		for (var el = this; el; el = el.parentNode) if (el.matches && el.matches(sel)) return el
 		return null
 	}
