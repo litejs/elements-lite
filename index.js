@@ -556,7 +556,7 @@
 
 	//** i18n
 	function i18n(text, lang) {
-		lang = i18n[getLang(lang)]
+		lang = i18n[getLang(lang) || currentLang]
 		return lang[text] ||
 		lang[text = text.slice(text.indexOf(":") + 1) || text] ||
 		text
@@ -567,12 +567,13 @@
 		return lang && (
 			i18n[lang = ("" + lang).toLowerCase()] ||
 			i18n[lang = lang.split("-")[0]]
-		) ? lang : currentLang
+		) && lang
 	}
 
 	function setLang(lang) {
-		if (currentLang != (currentLang = getLang(lang))) {
-			i18n[currentLang] = i18n[currentLang] || {}
+		lang = getLang(lang)
+		if (lang && currentLang != lang) {
+			i18n[currentLang = lang] = i18n[currentLang] || {}
 		}
 		// Use setAttribute
 		document.documentElement.lang = currentLang
