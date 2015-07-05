@@ -576,9 +576,9 @@
 		lang = getLang(lang)
 		if (lang && currentLang != lang) {
 			i18n[currentLang = lang] = i18n[currentLang] || {}
+			// Use setAttribute
+			document.documentElement.lang = i18n.current = currentLang
 		}
-		// Use setAttribute
-		document.documentElement.lang = currentLang
 		return currentLang
 	}
 
