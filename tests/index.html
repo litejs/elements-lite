@@ -53,8 +53,6 @@
 @view #main #body .content
   .route
     h1 Header
-    ul.nav &each: lng in _.list
-      a &lang: lng; txt: lng.lang(lng); on: "click", Controller.setLang; class: "selected", lng == _.get()
     .nav
       nav-row &with: {href:"#home",        name: "Home"}
       nav-row &with: {href:"#users",       name: "Users"}
@@ -81,10 +79,6 @@
 @view users #main
   .page
     h2 Users
-    ul &each: user in ["1", "2", "3", "4", "5"] limit:2 offset:1
-      li
-        a User {user}
-          &href: "#users/" + user
 
 @view users/{id} #main
   .page
@@ -95,11 +89,6 @@
     h2 Settings
     .h | Settings
     | Lot of settings
-    ul &each: row in ["A", "B", "C"]
-      li
-        span Row {row}
-        input[name=a0][type=checkbox][data-bind="checked:Math.random()>.5"]
-        input[name=a1][type=checkbox][data-bind="disabled:Math.random()>.5"]
     a[href="#settings/rules"] Ruulid
 
 @template multi-line
@@ -193,20 +182,6 @@ View.main = "home"
 history.start(View.show)
 
 /*
-!function() {
-	var undef
-	, users2 = [{i:1, name:"u"+new Date, tags: ["A", "B", "C"]}, {i:2, name:"u2"}]
-	, template1 = El("ul2").to(document.body)
-
-	setInterval(function(){
-		if (users.length > 2) users.length = 2
-		else users.push({name:"u3"+new Date})
-		template1.render({users:users})
-	}, 1400)
-
-	template1.render({users:users2})
-}()
-
 Comments: /
 Multiline: |
 Unescaping HTML: !=
@@ -216,88 +191,7 @@ Whitespace Preservation: ~
 Running Ruby: -
 Inserting Ruby: =
 Whitespace Removal: > and <
-
-<li each="{ items.filter(filter) }">
-{% for i = 3; --i > 0; %}
-{% for product in products take:5 %}
-{% for product in products skip:5 %}
-{% for item in ["a", "b", "c"] %}
-{% for attr in deeper.not_found %}
-{% for attr in deeper.object %}
-   <ul data-bind2="foreach: months">
-
-@template test test2 test3 test4
- .test
-  a#button1.link1.link2[title=Link][href="#A link 1"] > b.bold1 > i.ital1 A Link 2
-  a#button1.link1.link2[title='A Link 3'][href="#A"] A Link 4
-  h3
-   .div DIV
-     .ok &if:"false"
-       @text This text will not be visible
-     .ok &if:"true"
-       @text This text will be visible
-   @same undefined plugin
-   @txt plain text
-
-@template li-row
- li.row
-
-@template ul3
-	ul.ul3
-
-@template form-test
- form[action="javascript:"][enctype="multipart/form-data"][method="post"]
-  label
-   b R1
-   input[type=radio][name=r][value=1]
-  label
-   b R2
-   input[type=radio][name=r][value=2]
-  label
-   b Arr
-   input[name="map[key][]"]
-   input[name="map[key][]"]
-  label
-   b Map
-   input[name="map[a]"]
-   input[name="map[b]"]
-  input[type=submit]
-
-@template ul2
-	.list
-		.begin each:["a", "b", "c"]
-			input[type=checkbox][data-bind="checked:Math.random()>.5"]
-			input[type=checkbox][data-bind="disabled:Math.random()>.5"]
-			.row
-		ul.list &each: user in users
-			li
-				ul3
-				@template in1
-					.input &txt:"Hello0 <b>{user.name|upper}</b>"; title: GLOBAL_NAME; class: "my-class", "i>1"
-				/ul.tags &if:tags; each: tag in d.user.tags
-				/	li &={tag}
-				in1
-				.input &html:"Hello1 <b>{user.name|upper}</b>"
-				.input &-Hello2 <b>{user.name|upper}</b>
-				.input &=Hello3 <b>{user.name|upper}</b>
-				input &value:"Hello4 {user.name|upper}"
-		.end \& Static text
-		.foot \> Static text
-		/ Comment
-.index
-	[data-bind="visible: shouldShowMessage"]
-	whoo
-	| I think this might get
-	| pretty long so I should
-	| probably make it
-	| multiline so it doesn't
-	| look awful.
-	p This is short.
-input: http://webdesignerwall.com/tutorials/cross-browser-html5-placeholder-text
 */
-
-// http://stackoverflow.com/questions/3084675/internationalization-in-javascript
-// http://stackoverflow.com/questions/9640630/javascript-i18n-internationalization-frameworks-libraries-for-client-side-use
 
 </script>
 

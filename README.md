@@ -114,14 +114,14 @@ becomes
 #### Data bindings
 
 ```html
-ul[data-bind="class: 'red', list.count > 5; each: row in list"]
+ul[data-bind="class: 'red', list.count > 5"]
   li[data-bind="txt: row"]
 ```
 
 .. is equal to
 
 ```html
-ul &class: "red", list.count > 5; each: row in list
+ul &class: "red", list.count > 5
   li[data-bind="txt: row"]
 ```
 
