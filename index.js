@@ -332,7 +332,14 @@
 			}) + "r)"
 			if (bind != newBind) attr.call(node, "data-bind", newBind)
 
-			if (Fn(fn, "data").call(node, scope, bindings)) return node
+			try {
+				if (Fn(fn, "data").call(node, scope, bindings)) {
+					return node
+				}
+			} catch (e) {
+				console.error("Broken data-bind: " + bind)
+				return node
+			}
 		}
 
 		for (bind = node.firstChild; bind; bind = newBind) {
