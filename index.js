@@ -30,7 +30,7 @@
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
 	, bindings = El.bindings = {
 		"class": function(name, fn) {
-			toggleClass.call(this, name, fn == null || fn)
+			toggleClass.call(this, name, arguments.length < 2 || fn)
 		},
 		css: function(key, val) {
 			this.style[key.camelCase()] = val
