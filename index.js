@@ -564,22 +564,22 @@
 
 	//** i18n
 	function i18n(text, lang) {
-		lang = i18n[getLang(lang) || currentLang]
+		lang = i18n[i18nGet(lang) || currentLang]
 		return lang[text] ||
 		lang[text = text.slice(text.indexOf(":") + 1) || text] ||
 		text
 	}
 	El.i18n = i18n
 
-	function getLang(lang) {
+	function i18nGet(lang) {
 		return lang && (
 			i18n[lang = ("" + lang).toLowerCase()] ||
 			i18n[lang = lang.split("-")[0]]
 		) && lang
 	}
 
-	function setLang(lang) {
-		lang = getLang(lang)
+	function i18nUse(lang) {
+		lang = i18nGet(lang)
 		if (lang && currentLang != lang) {
 			i18n[currentLang = lang] = i18n[currentLang] || {}
 			// Use setAttribute
@@ -588,19 +588,19 @@
 		return currentLang
 	}
 
-	function addLang(lang, texts) {
+	function i18nAdd(lang, texts) {
 		if (i18n.list.indexOf(lang) == -1) i18n.list.push(lang)
 		Object.merge(i18n[lang] || (i18n[lang] = {}), texts)
-		if (!currentLang) setLang(lang)
+		if (!currentLang) i18nUse(lang)
 	}
 
-	i18n.get = getLang
 	i18n.list = []
-	i18n.use = setLang
-	i18n.add = addLang
+	i18n.get = i18nGet
+	i18n.use = i18nUse
+	i18n.add = i18nAdd
 	i18n.def = function(map) {
 		Object.each(map, function(name, tag) {
-			addLang(tag, map)
+			i18nAdd(tag, map)
 		})
 	}
 	String[protoStr].lang = function(lang) {
@@ -608,7 +608,7 @@
 	}
 	// navigator.userLanguage for IE, navigator.language for others
 	// var lang = navigator.language || navigator.userLanguage;
-	// setLang("en")
+	// i18nUse("en")
 	//*/
 
 }(window, document, "prototype")
