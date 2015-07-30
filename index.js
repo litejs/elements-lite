@@ -581,9 +581,7 @@
 	function i18nUse(lang) {
 		lang = i18nGet(lang)
 		if (lang && currentLang != lang) {
-			i18n[currentLang = lang] = i18n[currentLang] || {}
-			// Use setAttribute
-			document.documentElement.lang = i18n.current = currentLang
+			i18n[currentLang = i18n.current = lang] = i18n[currentLang] || {}
 		}
 		return currentLang
 	}
