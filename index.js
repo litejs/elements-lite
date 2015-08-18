@@ -210,7 +210,11 @@
 
 	function rmClass(name) {
 		var el = this
-		el.className = (" "+el.className+" ").replace(" "+name+" ", " ").trim()
+
+		if (hasClass.call(el, name)) {
+			el.className = (" " + el.className + " ").replace(" " + name + " ", " ").trim()
+		}
+
 		return el
 	}
 	proto.rmClass = rmClass
