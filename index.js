@@ -197,7 +197,13 @@
 
 	function addClass(name) {
 		var el = this
-		el.className += !el.className ? name : hasClass.call(el, name) ? "" : " " + name
+		, current = el.className
+
+		if (current) {
+			name = hasClass.call(el, name) ? current : current + " " + name
+		}
+
+		if (current != name) el.className = name
 		return el
 	}
 	proto.addClass = addClass
