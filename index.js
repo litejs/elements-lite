@@ -374,7 +374,7 @@
 	// Opera 9-10 have Node.text so we use Node.txt
 
 	proto.txt = bindings.txt = function(newText) {
-		return arguments.length ? (
+		return arguments.length && this[txtAttr] != newText ? (
 			//** modernBrowser
 			// Fix for IE5-7
 			//(ie67 && this.tagName == "OPTION" && (this.label = newText)),
