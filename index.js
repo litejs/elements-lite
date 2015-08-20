@@ -346,7 +346,10 @@
 					return node
 				}
 			} catch (e) {
-				console.error("Broken data-bind: " + bind)
+				//** debug
+				e.message += " in binding: " + bind
+				console.error(e)
+				//*/
 				return node
 			}
 		}
