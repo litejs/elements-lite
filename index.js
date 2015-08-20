@@ -263,9 +263,9 @@
 		var el = this
 		if (arguments.length == 1) {
 			if (key && key.constructor == Object) {
-				Object.each(key, function(val, key) {
-					attr.call(el, key, val)
-				})
+				for (val in key) {
+					attr.call(el, val, key[val])
+				}
 				return el
 			}
 			return el.getAttribute(key)
