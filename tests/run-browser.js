@@ -169,8 +169,12 @@ describe("El").
 
 	it ("has txt() method").
 		equal(el.txt(), "").
+		equal(el.txt(""), "").
+		equal(el.txt("hello"), "hello").
 		equal(el.txt("hello"), "hello").
 		equal(el.txt(), "hello").
+		equal(el.txt(""), "").
+		equal(el.txt(), "").
 
 
 	it ("has class methods").
@@ -189,12 +193,22 @@ describe("El").
 		equal(el.hasClass("c2"), true).
 		equal(el.hasClass("c3"), false).
 
-		equal(el.rmClass("c3"), el).
+		equal(el.addClass("c3"), el).
 		equal(el.hasClass("c1"), true).
 		equal(el.hasClass("c2"), true).
-		equal(el.hasClass("c3"), false).
+		equal(el.hasClass("c3"), true).
 
 		equal(el.rmClass("c2"), el).
+		equal(el.hasClass("c1"), true).
+		equal(el.hasClass("c2"), false).
+		equal(el.hasClass("c3"), true).
+
+		equal(el.rmClass("c3"), el).
+		equal(el.hasClass("c1"), true).
+		equal(el.hasClass("c2"), false).
+		equal(el.hasClass("c3"), false).
+
+		equal(el.rmClass("c3"), el).
 		equal(el.hasClass("c1"), true).
 		equal(el.hasClass("c2"), false).
 		equal(el.hasClass("c3"), false).
@@ -227,7 +241,7 @@ describe( "Templates" ).
 		htmlSimilar(El.tpl("a\n b \n  i |link"), '<a><b><i>link</i></b></a>').
 		htmlSimilar(El.tpl("a\n b\n  i |link>to"), '<a><b><i>link&gt;to</i></b></a>').
 		htmlSimilar(El.tpl("a[href='#a>b']\n b.bold \n  i#ital |link"),
-			'<a href="#a>b"><b class="bold"><i id="ital">link</i></b></a>').
+			'<a href="#a&gt;b"><b class="bold"><i id="ital">link</i></b></a>').
 
 	it ("supports block expansion").
 		htmlSimilar(El.tpl("a>b>i"), '<a><b><i></i></b></a>').
@@ -236,7 +250,7 @@ describe( "Templates" ).
 		htmlSimilar(El.tpl("a>b > i |link"), '<a><b><i>link</i></b></a>').
 		htmlSimilar(El.tpl("a>b>i |link>to"), '<a><b><i>link&gt;to</i></b></a>').
 		htmlSimilar(El.tpl("a[href='#a>b']>b.bold > i#ital |link"),
-			'<a href="#a>b"><b class=bold><i id=ital>link</i></b></a>').
+			'<a href="#a&gt;b"><b class=bold><i id=ital>link</i></b></a>').
 
 	it ("supports templates").
 		htmlSimilar(El.tpl("@template t1\n .temp1 |t123\nt1"),
@@ -247,11 +261,11 @@ describe( "Templates" ).
 			'<div class="temp3"><b>t123</b></div>').
 
 	it ( "should render data to elements" ).
-		htmlSimilar(t1 = El.tpl("a>b[data-bind=\"class:'red',i>1\"]>i &txt:name"), "<a><b data-bind=\"class:'red',i>1\"><i data-bind=\"txt:name\"></i></b></a>").
+		htmlSimilar(t1 = El.tpl("a>b[data-bind=\"class:'red',i>1\"]>i &txt:name"), "<a><b data-bind=\"class:'red',i&gt;1\"><i data-bind=\"txt:name\"></i></b></a>").
 		htmlSimilar(t1.render({i:1,name:"world"}),
-			"<a><b class=\"\" data-bind=\"class:'red',i>1\"><i data-bind=\"txt:name\">world</i></b></a>").
+			"<a><b data-bind=\"class:'red',i&gt;1\"><i data-bind=\"txt:name\">world</i></b></a>").
 		htmlSimilar(t1.render({i:2,name:"moon"}),
-			"<a><b class=\"red\" data-bind=\"class:'red',i>1\"><i data-bind=\"txt:name\">moon</i></b></a>").
+			"<a><b class=\"red\" data-bind=\"class:'red',i&gt;1\"><i data-bind=\"txt:name\">moon</i></b></a>").
 
 	it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_binding = '123', should use node.set()"}).
 		htmlSimilar(t1 = El.tpl("a &unknown_binding:\'hello {name}\'"), '<a data-bind="unknown_binding:\'hello {name}\'"></a>').

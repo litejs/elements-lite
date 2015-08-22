@@ -408,10 +408,12 @@
 			"on"
 	}
 
+	// Element.matches is supported from Chrome 34, Firefox 34
 	if (!proto.matches) proto.matches = function(sel) {
 		return !!selectorFn(sel)(this)
 	}
 
+	// Element.closest is supported from Chrome 41, Firefox 35
 	if (!proto.closest) proto.closest = closest
 
 	function closest(sel) {
