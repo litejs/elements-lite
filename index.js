@@ -260,15 +260,20 @@
 
 	proto.attr = attr
 	function attr(key, val) {
-		var el = this
-		if (arguments.length == 1) {
-			if (key && key.constructor == Object) {
-				for (val in key) {
-					attr.call(el, val, key[val])
-				}
-				return el
+		var current
+		, el = this
+
+		if (key && key.constructor == Object) {
+			for (val in key) {
+				attr.call(el, val, key[val])
 			}
-			return el.getAttribute(key)
+			return el
+		}
+
+		current = el.getAttribute(key)
+
+		if (arguments.length == 1) {
+			return current
 		}
 		// Note: IE5-7 doesn't set styles and removes events when you try to set them.
 		//
@@ -290,8 +295,10 @@
 		if (key == "class") {
 			addClass.call(el, val)
 		} else if (val) {
-			el.setAttribute(key, val)
-		} else {
+			if (current != val) {
+				el.setAttribute(key, val)
+			}
+		} else if (current) {
 			el.removeAttribute(key)
 		}
 	}
