@@ -409,10 +409,10 @@
 			return val
 		}
 
-		return (type == "checkbox" || type == "radio") && !el.checked ? "" :
-			el.value ||
-			options && options[el.selectedIndex].value ||
-			"on"
+		return type == "checkbox" || type == "radio" ?
+		(el.checked ? el.value == "on" || el.value : false) :
+		opts && opts[el.selectedIndex] && opts[el.selectedIndex].value ||
+		el.value
 	}
 
 	// Element.matches is supported from Chrome 34, Firefox 34
