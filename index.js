@@ -294,7 +294,7 @@
 		//*/
 		if (key == "class") {
 			addClass.call(el, val)
-		} else if (val) {
+		} else if (val || val === 0) {
 			if (current != val) {
 				el.setAttribute(key, val)
 			}
