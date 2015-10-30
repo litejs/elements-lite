@@ -18,13 +18,14 @@
 	, ie678 = !+"\v1"
 	, ie67 = ie678 && (document.documentMode|0) < 8
 	, hasOwn = Object.prototype.hasOwnProperty
+	, wrapProto = []
+	, slice = Function[protoStr].call.bind(wrapProto.slice)
 	, body = document.body
 	, createElement = document.createElement
 	, txtAttr = "textContent" in body ? "textContent" : "innerText"
 	, elCache = El.cache = {}
 	, scopeSeq = 0
 	, scopeData = El.data = { window: window, _: i18n }
-	, wrapProto = []
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
 	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*?)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
@@ -450,7 +451,7 @@
 
 
 	function ElWrap(nodes) {
-		wrapProto.push.apply(this, nodes)
+		wrapProto.push.apply(this, slice(nodes))
 	}
 	El.wrap = ElWrap
 
