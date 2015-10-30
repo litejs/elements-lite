@@ -17,7 +17,7 @@
 	// JScript engine in IE<9 does not recognize vertical tabulation character
 	, ie678 = !+"\v1"
 	, ie67 = ie678 && (document.documentMode|0) < 8
-	, hasOwn = Object.prototype.hasOwnProperty
+	, hasOwn = Object[protoStr].hasOwnProperty
 	, wrapProto = []
 	, slice = Function[protoStr].call.bind(wrapProto.slice)
 	, body = document.body
@@ -455,7 +455,7 @@
 	}
 	El.wrap = ElWrap
 
-	ElWrap.prototype = Object.keys(proto).reduce(function(memo, key) {
+	ElWrap[protoStr] = Object.keys(proto).reduce(function(memo, key) {
 		memo[key] = wrap
 		function wrap() {
 			for (var val, i = 0, len = this.length; i < len; ) {
@@ -556,7 +556,7 @@
 		return t
 	}
 
-	template.prototype = {
+	template[protoStr] = {
 		_done: function() {
 			var t = this
 			, el = t.el.childNodes.length > 1 ? new ElWrap(t.el.childNodes) : t.el.firstChild
