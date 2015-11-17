@@ -33,7 +33,7 @@
 			toggleClass.call(this, name, arguments.length < 2 || fn)
 		},
 		css: function(key, val) {
-			this.style[key.camelCase()] = val
+			this.style[key.camelCase()] = val || ""
 		},
 		data: function(key, val) {
 			this.attr("data-" + key, val)
