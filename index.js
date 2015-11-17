@@ -19,7 +19,6 @@
 	, ie67 = ie678 && (document.documentMode|0) < 8
 	, hasOwn = Object[protoStr].hasOwnProperty
 	, wrapProto = []
-	, slice = Function[protoStr].call.bind(wrapProto.slice)
 	, body = document.body
 	, createElement = document.createElement
 	, txtAttr = "textContent" in body ? "textContent" : "innerText"
@@ -451,7 +450,13 @@
 
 
 	function ElWrap(nodes) {
-		wrapProto.push.apply(this, slice(nodes))
+		/**
+		 *  1. Extended array size will not updated
+		 *     when array elements set directly in Android 2.2.
+		 */
+		for (var pos = this.length /* 1 */ = nodes.length; pos--; ) {
+			this[pos] = nodes[pos]
+		}
 	}
 	El.wrap = ElWrap
 
