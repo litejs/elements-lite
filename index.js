@@ -356,6 +356,7 @@
 				//** debug
 				e.message += " in binding: " + bind
 				console.error(e)
+				if (window.onerror) window.onerror(e.message, e.fileName, e.lineNumber)
 				//*/
 				return node
 			}
