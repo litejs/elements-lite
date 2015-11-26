@@ -56,8 +56,11 @@ i18n.add("en", {
 
 i18n.use("en")
 
-var el, h1, h2, h3, h4, input, select, t1
+var undef
+, el, h1, h2, h3, h4, input, radio, select, t1
 , testman = require("testman")
+, map1 = {"map1": 1}
+, map2 = {"map2": 2}
 
 testman.describe.it.htmlSimilar = function(actual, expected) {
 	var re = /[^\s"'=]+(=("|')(?:\\?.)*?\2)?/g
@@ -74,6 +77,7 @@ describe("El").
 			el = El("div")
 			select = El("select#id2.cl2:disabled")
 			input = El("input")
+			radio = El("input[type=radio]")
 			h1 = El("h1")
 			h2 = El("h2")
 			h3 = El("h3")
@@ -175,6 +179,17 @@ describe("El").
 		equal(el.txt(), "hello").
 		equal(el.txt(""), "").
 		equal(el.txt(), "").
+
+	it ("has val() method").
+		anyOf(input.val(), ["", undef]).
+		anyOf(select.val(), ["", undef]).
+		equal(radio.val(), false).
+		run(function() {
+			input.valObject = map1
+			select.valObject = map2
+		}).
+		equal(input.val(), map1).
+		equal(select.val(), map2).
 
 
 	it ("has class methods").

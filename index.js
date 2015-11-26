@@ -240,6 +240,7 @@
 		if (id = el.attr && el.attr("data-scope")) {
 			delete elScope[id]
 		}
+		if (el.valObject) el.valObject = null
 		return el
 	}
 	proto.kill = kill
@@ -403,17 +404,19 @@
 			return el.value = val
 		}
 
-		if (type == "select-multiple") {
-			for (val = [], type = 0; el = opts[type++];) {
-				if (el.selected && !el.disabled) val.push(el.value)
+		if (opts) {
+			if (type == "select-multiple") {
+				for (val = [], type = 0; el = opts[type++];) {
+					if (el.selected && !el.disabled) val.push(el.valObject || el.value)
+				}
+				return val
 			}
-			return val
+			el = opts[el.selectedIndex] || el
 		}
 
 		return type == "checkbox" || type == "radio" ?
-		(el.checked ? el.value == "on" || el.value : false) :
-		opts && opts[el.selectedIndex] && opts[el.selectedIndex].value ||
-		el.value
+		(el.checked ? el.value == "on" || el.valObject || el.value : false) :
+		el.valObject || el.value
 	}
 
 	// Element.matches is supported from Chrome 34, Firefox 34
