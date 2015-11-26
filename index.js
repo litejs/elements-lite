@@ -405,7 +405,7 @@
 
 		if (type == "select-multiple") {
 			for (val = [], type = 0; el = opts[type++];) {
-				if (el.selected && !el.disabled && !el.parentNode.disabled) val.push(el.value)
+				if (el.selected && !el.disabled) val.push(el.value)
 			}
 			return val
 		}
