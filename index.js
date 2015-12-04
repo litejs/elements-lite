@@ -350,7 +350,7 @@
 			if (bind != newBind) attr.call(node, "data-bind", newBind)
 
 			try {
-				if (Fn(fn, "data").call(node, scope, bindings)) {
+				if (Fn(fn, node, scope)(scope, bindings)) {
 					return node
 				}
 			} catch (e) {
