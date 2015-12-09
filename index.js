@@ -414,8 +414,7 @@
 			el = opts[el.selectedIndex] || el
 		}
 
-		return type == "checkbox" || type == "radio" ?
-		(el.checked ? el.value == "on" || el.valObject || el.value : false) :
+		return (type == "checkbox" || type == "radio") && !el.checked ? null :
 		el.valObject || el.value
 	}
 

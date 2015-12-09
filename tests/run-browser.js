@@ -183,7 +183,7 @@ describe("El").
 	it ("has val() method").
 		anyOf(input.val(), ["", undef]).
 		anyOf(select.val(), ["", undef]).
-		equal(radio.val(), false).
+		equal(radio.val(), null).
 		run(function() {
 			input.valObject = map1
 			select.valObject = map2
