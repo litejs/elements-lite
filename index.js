@@ -406,8 +406,10 @@
 
 		if (opts) {
 			if (type == "select-multiple") {
-				for (val = [], type = 0; el = opts[type++];) {
-					if (el.selected && !el.disabled) val.push(el.valObject || el.value)
+				for (val = [], type = 0; el = opts[type++]; ) {
+					if (el.selected && !el.disabled) {
+						val.push(el.valObject || el.value)
+					}
 				}
 				return val
 			}
