@@ -574,7 +574,6 @@
 		t.parent = parent
 		t.el = El("div")
 		t.el.plugin = t
-		return t
 	}
 
 	template[protoStr] = {
