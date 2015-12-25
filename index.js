@@ -603,6 +603,9 @@
 	js[protoStr].done = Fn("Function(this.txt)(),this.parent")
 
 	El.plugins = {
+		"css": js.extend({
+			done: Fn("El.css(this.txt),this.parent")
+		}),
 		"js": js,
 		"template": template
 	}
