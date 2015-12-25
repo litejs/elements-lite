@@ -532,7 +532,9 @@
 				parent = (parent.plugin) ? parent.plugin.done() : parent.parentNode || parent[0].parentNode
 			}
 
-			if (plugin) {
+			if (parent.txtMode) {
+				parent.txt += all + "\n"
+			} else if (plugin) {
 				if (El.plugins[name]) {
 					parent = (new El.plugins[name](parent, text)).el
 					stack.unshift(i)
@@ -591,7 +593,17 @@
 		}
 	}
 
+	function js(parent) {
+		var t = this
+		t.txtMode = t.parent = parent
+		t.txt = ""
+		t.plugin = t.el = t
+	}
+
+	js[protoStr].done = Fn("Function(this.txt)(),this.parent")
+
 	El.plugins = {
+		"js": js,
 		"template": template
 	}
 

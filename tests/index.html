@@ -37,18 +37,21 @@
 <script src="../../_stable/browser-cookie-lite/index.js"></script>
 <script src="../../functional-lite/index.js"></script>
 <script src="../index.js"></script>
-<script src="../../browser-event-lite/index.js"></script>
+<script src="../../event/index.js"></script>
 <script src="../../date-format-lite/index.js"></script>
 <script src="../../liquid-filters-lite/index.js"></script>
 <script src="../../litejs/src/bindings.js"></script>
 <script src="../../litejs/src/view.js"></script>
-<script src="../../browser-history-lite/dist/hash-only-src.js"></script>
+<script src="../../history/dist/hash-only-src.js"></script>
 <script id="index" type="text/haml">
 
 @template nav-row
   span
     a {name}
       &href: href
+
+@js
+	alert(2)
 
 @view #main #body .content
   .route
