@@ -603,6 +603,12 @@
 	js[protoStr].done = Fn("Function(this.txt)(),this.parent")
 
 	El.plugins = {
+		"binding": js.extend({
+			done: function() {
+				Object.merge(bindings, Function("return({" + this.txt + "})")())
+				return this.parent
+			}
+		}),
 		"css": js.extend({
 			done: Fn("El.css(this.txt),this.parent")
 		}),
