@@ -19,7 +19,6 @@
 	, ie67 = ie678 && (document.documentMode|0) < 8
 	, hasOwn = Object[protoStr].hasOwnProperty
 	, wrapProto = []
-	, head = document.getElementsByTagName("head")[0]
 	, body = document.body
 	, createElement = document.createElement
 	, txtAttr = "textContent" in body ? "textContent" : "innerText"
@@ -513,7 +512,7 @@
 		if (!styleNode) {
 			// Safari and IE6-8 requires dynamically created
 			// <style> elements to be inserted into the <head>
-			styleNode = El("style").to(head)
+			styleNode = El("style").to(document.getElementsByTagName("head")[0])
 		}
 		if (styleNode.styleSheet) styleNode.styleSheet.cssText += str
 		else styleNode.appendChild(document.createTextNode(str))
