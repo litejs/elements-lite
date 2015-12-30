@@ -46,9 +46,10 @@
 <script id="index" type="text/haml">
 
 @template nav-row
-  span
-    a {name}
-      &href: href
+	span
+		a
+			&txt: name
+			&href: href
 
 @binding
 	testAlert: function() {
@@ -59,7 +60,7 @@
 	body { background: red; }
 
 @js
-	alert(2)
+	console.log("JS loaded")
 
 @view #main #body .content
   .route
