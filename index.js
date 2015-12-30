@@ -24,7 +24,7 @@
 	, txtAttr = "textContent" in body ? "textContent" : "innerText"
 	, elCache = El.cache = {}
 	, scopeSeq = 0
-	, scopeData = El.data = { window: window, _: i18n }
+	, scopeData = El.data = { _: i18n }
 	, proto = (window.HTMLElement || window.Element || El)[protoStr]
 	, templateRe = /^([ \t]*)(@?)((?:("|')(?:\\?.)*?\4|[-\w\:.#\[\]=])*)[ \t]*(.*?)$/gm
 	, renderRe = /[;\s]*(\w+)(?:\s*\:((?:(["'\/])(?:\\?.)*?\3|[^;])*))?/g
