@@ -3,7 +3,7 @@ global.Fn = require("functional-lite").Fn
 
 global.Event = require("browser-event-lite").Event
 
-require("liquid-filters-lite")
+require("./format.js")
 require("../")
 global.i18n = window.El.i18n
 
@@ -58,6 +58,7 @@ i18n.use("en")
 
 var undef
 , el, h1, h2, h3, h4, input, radio, select, t1
+, select1, select2
 , testman = require("testman")
 , map1 = {"map1": 1}
 , map2 = {"map2": 2}
@@ -182,6 +183,7 @@ describe("El").
 
 	it ("has val() method").
 		anyOf(input.val(), ["", undef]).
+		equal(input.val("xx"), "xx").
 		anyOf(select.val(), ["", undef]).
 		equal(radio.val(), null).
 		run(function() {
@@ -190,6 +192,31 @@ describe("El").
 		}).
 		equal(input.val(), map1).
 		equal(select.val(), map2).
+		run(function() {
+			select1 = El("select")
+			select2 = El("select:multiple")
+			select1.append([
+				El("option[value=1]"),
+				El("option[value=2]:selected"),
+				El("option[value=o1]"),
+				El("option[value=o2]:selected"),
+			])
+			select2.append([
+				El("option[value=1]"),
+				El("option[value=2]:selected"),
+				El("option[value=o1]"),
+				El("option[value=o2]:selected"),
+			])
+			// HACK: set type and options manualy as dom-lite does not handle them correctly
+			select1.options = select1.childNodes
+			select2.type = "select-multiple"
+			select2.options = select2.childNodes
+
+			return "2,o2" == select2.val()
+		}).
+		//equal(select1.val(), "o2").
+		equal("" + select2.val(), "2,o2").
+		equal(select2.options.length, 4).
 
 
 	it ("has class methods").
@@ -281,6 +308,14 @@ describe( "Templates" ).
 			"<a><b data-bind=\"class:'red',i&gt;1\"><i data-bind=\"txt:name\">world</i></b></a>").
 		htmlSimilar(t1.render({i:2,name:"moon"}),
 			"<a><b class=\"red\" data-bind=\"class:'red',i&gt;1\"><i data-bind=\"txt:name\">moon</i></b></a>").
+		htmlSimilar(El.tpl("div &css: 'margin-top', '1px'").render(),
+			'<div data-bind="css: \'margin-top\', \'1px\'" style="margin-top: 1px"></div>').
+		htmlSimilar(El.tpl("div &css: 'margin-top', ''").render(),
+			'<div data-bind="css: \'margin-top\', \'\'" style="margin-top: "></div>').
+		htmlSimilar(El.tpl("div &html: '<hr>'").render(),
+			'<div data-bind="html: \'&lt;hr&gt;\'"><hr></div>').
+		htmlSimilar(El.tpl("div &data: 'xx', 'y'").render(),
+			'<div data-bind="data: \'xx\', \'y\'" data-xx="y"></div>').
 
 	it ( "should show set DOM propperty when plugin not found" , {skip: "Browsers does not show attrs set by node.unknown_binding = '123', should use node.set()"}).
 		htmlSimilar(t1 = El.tpl("a &unknown_binding:\'hello {name}\'"), '<a data-bind="unknown_binding:\'hello {name}\'"></a>').
