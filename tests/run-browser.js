@@ -77,8 +77,8 @@ describe("El").
 		run(function(){
 			el = El("div")
 			select = El("select#id2.cl2:disabled")
-			input = El("input")
-			radio = El("input[type=radio]")
+			input = El("input").to(document.body)
+			radio = El("input[type=radio]").to(document.body)
 			h1 = El("h1")
 			h2 = El("h2")
 			h3 = El("h3")
@@ -167,6 +167,9 @@ describe("El").
 
 		equal(el.find("h2"), h2).
 		equal(!!el.find(".cl3"), false).
+		equal(document.body.findAll("input").length, 2).
+		equal(document.body.findAll("input")[0], input).
+		equal(document.body.findAll("input")[1], radio).
 
 
 	it ("supports boolean attributes").
@@ -322,23 +325,20 @@ describe( "Templates" ).
 		htmlSimilar(t1.render({name:"world"}), '<a data-bind="unknown_binding:\'hello {name}\'" unknown_binding="hello world"></a>').
 		htmlSimilar(t1.render({name:"moon"}), '<a data-bind="unknown_binding:\'hello {name}\'" unknown_binding="hello moon"></a>').
 
-	/*
-	it ("supports declaring a leaf node").
-	run(function() {
-		t1 = El.tpl([""
-			, "@template leaf1"
-			, "  a"
-			, "    b[data-leaf]"
-			, "div"
-			, "  leaf1"
-			, "    i 1"
-			, "  leaf1"
-			, "    i 2"
-		].join("\n"))
+	test ("scope", function(assert) {
+		assert.plan(3)
+
+		var a = El("a")
+		, b = El("b")
+		, aScope = El.scope(a, true)
+		, bScope = El.scope(b)
+
+		El.scope(a).x = 1
+
+		assert.equal(aScope.x, 1)
+		assert.notEqual(aScope, bScope)
+		assert.ok(!bScope.x)
 	}).
-	equal(getString(t1), '<div><a><b data-leaf="data-leaf"><i>1</i></b></a><a><b data-leaf="data-leaf"><i>2</i></b></a></div>').
-	*/
-	it ("supports IF binding").
 
 done()
 
