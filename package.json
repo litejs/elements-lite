@@ -32,7 +32,6 @@
     "buildman": "*",
     "browser-event-lite": "*",
     "browser-upgrade-lite": "*",
-    "liquid-filters-lite": "*",
     "functional-lite": "0.5.0",
     "dom-lite": "*"
   },
