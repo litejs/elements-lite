@@ -4,8 +4,8 @@
 [4]: https://coveralls.io/r/litejs/elements-lite
 
 
-    @version    0.8.2
-    @date       2015-12-16
+    @version    0.9.0
+    @date       2016-01-07
     @stability  1 - Experimental
 
 
