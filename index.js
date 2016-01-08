@@ -467,8 +467,12 @@
 	}
 	El.wrap = ElWrap
 
-	ElWrap[protoStr] = Object.keys(proto).reduce(function(memo, key) {
-		memo[key] = wrap
+	ElWrap[protoStr] = wrapProto
+
+	Object.keys(proto).each(addWrapProto)
+
+	function addWrapProto(key) {
+		wrapProto[key] = wrap
 		function wrap() {
 			for (var val, i = 0, len = this.length; i < len; ) {
 				val = proto[key].apply(this[i++], arguments)
@@ -476,8 +480,7 @@
 			}
 			return wrap.first ? null : this
 		}
-		return memo
-	}, wrapProto)
+	}
 
 	wrapProto.find.first = 1
 
