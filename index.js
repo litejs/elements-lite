@@ -413,7 +413,9 @@
 				}
 				return val
 			}
-			el = opts[el.selectedIndex] || el
+			// IE8 throws error when accessing to options[-1]
+			val = el.selectedIndex
+			el = val > -1 && opts[val] || el
 		}
 
 		return (type == "checkbox" || type == "radio") && !el.checked ? null :
