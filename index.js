@@ -482,6 +482,9 @@
 		}
 	}
 
+	addWrapProto("closest")
+
+	wrapProto.closest.first =
 	wrapProto.find.first = 1
 
 	wrapProto.cloneNode = function(deep) {
