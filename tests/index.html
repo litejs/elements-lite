@@ -54,6 +54,12 @@
 @binding
 	testAlert: function() {
 		alert(1)
+	},
+	appendTwo: function() {
+		this.append([
+			El("div", "el 1"),
+			El("div", "el 2")
+		])
 	}
 
 @css
@@ -86,6 +92,7 @@
   .page
     h2 Home
     div _welcome
+    div &appendTwo
 
 
 @view users #main
