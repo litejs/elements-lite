@@ -354,11 +354,11 @@
 			// document.documentElement.lang
 			// document.getElementsByTagName('html')[0].getAttribute('lang')
 
-			fn = "data b r->data&&(" + bind.replace(renderRe, function(_, $1, $2) {
-				return bindings[$1] ?
-				(hasOwn.call(bindings[$1], "once") && (newBind = newBind.replace(_, "")),
-					"(r=b['" + $1 + "'].call(this," + (bindings[$1].raw ? "data,'" + $2 + "'" : $2) + ")||r),") :
-				"this.attr('" + $1 + "'," + $2 + "),"
+			fn = "data b r->data&&(" + bind.replace(renderRe, function(match, name, args) {
+				return bindings[name] ?
+				(hasOwn.call(bindings[name], "once") && (newBind = newBind.replace(match, "")),
+					"(r=b['" + name + "'].call(this," + (bindings[name].raw ? "data,'" + args + "'" : args) + ")||r),") :
+				"this.attr('" + name + "'," + args + "),"
 			}) + "r)"
 			if (bind != newBind) attr.call(node, "data-bind", newBind)
 
