@@ -436,7 +436,7 @@
 	}
 
 	//** modernBrowser
-	// Note: IE8 don't support :disabled
+	// Note: querySelector in IE8 supports only CSS 2.1 selectors
 	proto.find = !ie678 && proto.querySelector || function(sel) {
 		return findEl(this, sel, true)
 	}
