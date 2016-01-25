@@ -61,10 +61,10 @@
 	, selectorCache = {}
 	, selectorMap = {
 		"first-child": "(a=_.parentNode)&&a.firstChild==_",
-		"last-child" : "(a=_.parentNode)&&a.lastChild==_",
+		"last-child": "(a=_.parentNode)&&a.lastChild==_",
 		".": "~_.className.split(/\\s+/).indexOf(a)",
 		"#": "_.id==a",
-		"^": "a.indexOf(v)==0",
+		"^": "!a.indexOf(v)",
 		"|": "a.split('-')[0]==v",
 		"$": "a.slice(-v.length)==v",
 		"~": "~a.split(/\\s+/).indexOf(v)",
