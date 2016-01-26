@@ -472,20 +472,19 @@
 	Object.keys(proto).each(addWrapProto)
 
 	function addWrapProto(key) {
+		var first = key == "closest" || key == "find"
+
 		wrapProto[key] = wrap
 		function wrap() {
 			for (var val, i = 0, len = this.length; i < len; ) {
 				val = proto[key].apply(this[i++], arguments)
-				if (wrap.first && val) return val
+				if (first && val) return val
 			}
-			return wrap.first ? null : this
+			return first ? null : this
 		}
 	}
 
 	addWrapProto("closest")
-
-	wrapProto.closest.first =
-	wrapProto.find.first = 1
 
 	wrapProto.cloneNode = function(deep) {
 		return new ElWrap(this.map(function(el) {
