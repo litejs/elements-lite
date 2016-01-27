@@ -622,7 +622,7 @@
 		template: template
 	}
 
-	El.create = El.tpl = tpl
+	El.view = El.tpl = tpl
 
 	El.include = function(id, data, parent) {
 		var src = El.get(id)
