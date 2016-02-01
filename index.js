@@ -533,7 +533,7 @@
 		, stack = [-1]
 
 		function work(all, indent, plugin, name, q, text) {
-			for (var i = indent.length; i <= stack[0]; ) {
+			for (q = indent.length; q <= stack[0]; ) {
 				stack.shift()
 				parent = (parent.plugin) ? parent.plugin.done() : parent.parentNode || parent[0].parentNode
 			}
@@ -543,7 +543,7 @@
 			} else if (plugin) {
 				if (El.plugins[name]) {
 					parent = (new El.plugins[name](parent, text)).el
-					stack.unshift(i)
+					stack.unshift(q)
 				} else {
 					parent.append(all)
 				}
@@ -551,7 +551,7 @@
 				if (name) {
 					parent = El(name, 0, 1).to(parent)
 					// TODO:2015-02-27:lauri:should we find a child to where put a content?
-					stack.unshift(i)
+					stack.unshift(q)
 				}
 				if (text) {
 					q = text.charAt(0)
