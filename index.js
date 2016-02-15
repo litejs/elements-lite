@@ -44,11 +44,11 @@
 	}
 
 	// Element.matches is supported from Chrome 34, Firefox 34
-	, matches = proto.matches || function(selector) {
+	, matches = proto.matches = proto.matches || function(selector) {
 		return !!selectorFn(selector)(this)
 	}
 	// Element.closest is supported from Chrome 41, Firefox 35
-	, closest = proto.closest || function(selector) {
+	, closest = proto.closest = proto.closest || function(selector) {
 		for (var el = this; el; el = el.parentNode) {
 			if (matches.call(el, selector)) return el
 		}
