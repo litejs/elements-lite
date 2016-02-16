@@ -357,7 +357,7 @@
 			fn = "data b r->data&&(" + bind.replace(renderRe, function(match, name, args) {
 				return bindings[name] ?
 				(hasOwn.call(bindings[name], "once") && (newBind = newBind.replace(match, "")),
-					"(r=b['" + name + "'].call(this," + (bindings[name].raw ? "data,'" + args + "'" : args) + ")||r),") :
+					"(r=b['" + name + "'].call(this" + (bindings[name].raw ? ",data,'" + args + "'" : args ? "," + args : "") + ")||r),") :
 				"this.attr('" + name + "'," + args + "),"
 			}) + "r)"
 			if (bind != newBind) attr.call(node, "data-bind", newBind)
