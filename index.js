@@ -2,8 +2,8 @@
 
 
 /*
- * @version    0.10.0
- * @date       2016-01-28
+ * @version    0.10.1
+ * @date       2016-02-16
  * @stability  1 - Experimental
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
