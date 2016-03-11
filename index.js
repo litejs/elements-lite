@@ -43,6 +43,7 @@
 		}
 	}
 
+	//** modernBrowser
 	// Element.matches is supported from Chrome 34, Firefox 34
 	, matches = proto.matches = proto.matches || function(selector) {
 		return !!selectorFn(selector)(this)
@@ -123,6 +124,9 @@
 			}).join("||")
 		))
 	}
+	/*/
+	, closest = proto.closest
+	//*/
 
 
 	/**
