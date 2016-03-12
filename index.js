@@ -627,12 +627,6 @@
 	}
 
 	El.view = El.tpl = tpl
-
-	El.include = function(id, data, parent) {
-		var src = El.get(id)
-		new template(null, id).el.append( tpl(src.innerHTML) ).plugin.done()
-		src.kill()
-	}
 	//*/
 
 

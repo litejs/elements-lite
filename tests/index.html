@@ -33,7 +33,7 @@
 	margin: 2em 0;
 }
 </style>
-<script src="../../_stable/browser-upgrade-lite/index.js"></script>
+<script src="../../up/index.js"></script>
 <script src="../../_stable/browser-cookie-lite/index.js"></script>
 <script src="../../functional-lite/index.js"></script>
 <script src="../index.js"></script>
@@ -195,7 +195,7 @@ _.use(cookie("lng") || "en")
 
 }(El.plugins)
 
-El.include("index")
+El.view(index.innerHTML)
 
 View.main = "home"
 history.start(View.show)
