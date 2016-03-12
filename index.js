@@ -14,9 +14,6 @@
 
 !function(window, document, protoStr) {
 	var currentLang, styleNode
-	// JScript engine in IE<9 does not recognize vertical tabulation character
-	, ie678 = !+"\v1"
-	, ie67 = ie678 && (document.documentMode|0) < 8
 	, hasOwn = Object[protoStr].hasOwnProperty
 	, wrapProto = []
 	, body = document.body
@@ -44,6 +41,11 @@
 	}
 
 	//** modernBrowser
+
+	// JScript engine in IE<9 does not recognize vertical tabulation character
+	, ie678 = !+"\v1"
+	, ie67 = ie678 && (document.documentMode|0) < 8
+
 	// Element.matches is supported from Chrome 34, Firefox 34
 	, matches = proto.matches = proto.matches || function(selector) {
 		return !!selectorFn(selector)(this)
