@@ -512,15 +512,6 @@
 
 	El[protoStr] = proto
 
-	El.get = function(id) {
-		if (typeof id == "string") id = document.getElementById(id)
-		//** modernBrowser
-		return id && id.to ? id : Object.merge(id, proto)
-		/*/
-		return id
-		//*/
-	}
-
 	El.css = function(str) {
 		if (!styleNode) {
 			// Safari and IE6-8 requires dynamically created

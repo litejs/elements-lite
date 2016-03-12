@@ -7,6 +7,10 @@ require("./format.js")
 require("../")
 global.i18n = window.El.i18n
 
+El.get = function(id) {
+	return document.getElementById(id)
+}
+
 function getString(node) {
 	if ('outerHTML' in node)
 		return node.outerHTML.toLowerCase().replace(/>[\n\r]+</g, "><").trim()
