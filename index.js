@@ -2,9 +2,9 @@
 
 
 /*
- * @version    0.10.1
- * @date       2016-02-16
- * @stability  1 - Experimental
+ * @version    1.0.0
+ * @date       2016-03-12
+ * @stability  3 - Stable
  * @author     Lauri Rooden <lauri@rooden.ee>
  * @license    MIT License
  * @homepage   https://www.litejs.com/elements-lite/
