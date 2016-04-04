@@ -52,7 +52,7 @@
 	}
 	// Element.closest is supported from Chrome 41, Firefox 35
 	, closest = proto.closest = proto.closest || function(selector) {
-		for (var el = this; el; el = el.parentNode) {
+		for (var el = this; el && el.nodeType == 1; el = el.parentNode) {
 			if (matches.call(el, selector)) return el
 		}
 		return null
