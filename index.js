@@ -662,9 +662,6 @@
 			i18nAdd(tag, map)
 		})
 	}
-	String[protoStr].lang = function(lang) {
-		return i18n(this, lang)
-	}
 	// navigator.userLanguage for IE, navigator.language for others
 	// var lang = navigator.language || navigator.userLanguage;
 	// i18nUse("en")
