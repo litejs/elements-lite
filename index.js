@@ -657,10 +657,10 @@
 	i18n.get = i18nGet
 	i18n.use = i18nUse
 	i18n.add = i18nAdd
-	i18n.def = function(map) {
-		Object.each(map, function(name, tag) {
-			i18nAdd(tag, map)
-		})
+	i18n.def = function(map, key) {
+		for (key in map) {
+			i18nAdd(key, map)
+		}
 	}
 	// navigator.userLanguage for IE, navigator.language for others
 	// var lang = navigator.language || navigator.userLanguage;
