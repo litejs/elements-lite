@@ -1,11 +1,10 @@
 {
   "name": "elements-lite",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "stability": 3,
   "author": "Lauri Rooden <lauri@rooden.ee>",
   "license": "MIT",
-  "homepage": "https://www.litejs.com/elements-lite/",
-  "description": "DOM buildel for browser",
+  "description": "deprecated!",
   "keywords": [
     "browser",
     "elements",
@@ -26,20 +25,5 @@
   "repository": "git://github.com/litejs/elements-lite.git",
   "bugs": {
     "url": "https://github.com/litejs/elements-lite/issues"
-  },
-  "devDependencies": {
-    "testman": "*",
-    "buildman": "*",
-    "browser-event-lite": "*",
-    "browser-upgrade-lite": "*",
-    "functional-lite": "0.5.0",
-    "dom-lite": "*"
-  },
-  "buildman": {
-    "dist/index-min.js": "index.js",
-    "dist/index-modern-min.js": {
-      "input": "index.js",
-      "toggle": "modernBrowser"
-    }
   }
 }
